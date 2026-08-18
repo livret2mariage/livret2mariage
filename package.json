@@ -1,0 +1,15 @@
+{
+  "name": "livret2mariage",
+  "version": "1.0.0",
+  "description": "Livret2Mariage — service de génération de livret de mariage",
+  "main": "backend/server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node backend/server.js",
+    "postinstall": "playwright install chromium"
+  },
+  "dependencies": {
+    "playwright": "^1.56.0",
+    "pdf-lib": "^1.17.1"
+  }
+}
