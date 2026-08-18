@@ -6,6 +6,8 @@ services:
     buildCommand: npm install
     startCommand: node backend/server.js
     envVars:
+      - key: PLAYWRIGHT_BROWSERS_PATH
+        value: "0"
       - key: RESEND_API_KEY
         sync: false
       - key: RESEND_FROM_EMAIL
