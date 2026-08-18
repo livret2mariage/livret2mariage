@@ -3,9 +3,8 @@ services:
     name: livret2mariage
     runtime: node
     plan: free
-    rootDir: backend
     buildCommand: npm install
-    startCommand: node server.js
+    startCommand: node backend/server.js
     envVars:
       - key: RESEND_API_KEY
         sync: false
