@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Livret2Mariage — Préparez votre livret de mariage</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Parisienne&family=Alex+Brush&family=Great+Vibes&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#FBF8F2;
+  --card:#FFFFFF;
+  --ink:#2E3328;
+  --ink-soft:#5B6455;
+  --sage:#7C8F73;
+  --sage-dark:#52604A;
+  --sage-pale:#EEF1E9;
+  --gold:#C9A227;
+  --line:#E4DED0;
+  --error:#B3543F;
+  --radius:10px;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--cream);color:var(--ink);font-family:'Inter',sans-serif;line-height:1.5;}
+h1,h2,h3{font-family:'Cormorant Garamond',serif;font-weight:600;color:var(--ink);margin:0;}
+.script{font-family:'Parisienne',cursive;font-weight:400;}
+
+/* ---------- Layout général ---------- */
+.page-wrap{
+  max-width:1180px;
+  margin:0 auto;
+  padding:0 24px;
+  display:grid;
+  grid-template-columns:1fr 380px;
+  gap:56px;
+  align-items:start;
+}
+@media (max-width:900px){
+  .page-wrap{grid-template-columns:1fr; gap:0;}
+  .preview-col{order:-1; position:static !important; margin-bottom:28px;}
+}
+
+/* ---------- Header ---------- */
+.top-header{
+  padding:48px 24px 8px;
+  max-width:1180px;
+  margin:0 auto;
+}
+.top-header .brand-mark{
+  font-family:'Cormorant Garamond',serif;
+  font-style:italic;
+  font-weight:600;
+  font-size:22px;
+  color:var(--sage-dark);
+  margin-bottom:16px;
+}
+.top-header .eyebrow{
+  text-transform:uppercase;
+  letter-spacing:.14em;
+  font-size:12px;
+  color:var(--sage-dark);
+  font-weight:600;
+}
+.top-header h1{font-size:38px; margin-top:6px; font-style:italic;}
+.top-header p{color:var(--ink-soft); max-width:56ch; margin-top:10px; font-size:15px;}
+
+/* ---------- Nav latérale (sections liturgiques) ---------- */
+.section-nav{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  padding:18px 0 30px;
+  border-bottom:1px solid var(--line);
+  margin-bottom:8px;
+  position:sticky;
+  top:0;
+  background:var(--cream);
+  z-index:5;
+}
+.section-nav a{
+  font-size:13px;
+  text-decoration:none;
+  color:var(--ink-soft);
+  padding:7px 13px;
+  border-radius:100px;
+  border:1px solid var(--line);
+  background:var(--card);
+  transition:.15s;
+  white-space:nowrap;
+}
+.section-nav a.done{color:var(--sage-dark); border-color:var(--sage);}
+.section-nav a.done::before{content:"✓ "; color:var(--sage);}
+.section-nav a:hover{border-color:var(--sage);}
+
+/* ---------- Sections du formulaire ---------- */
+.form-col{padding-bottom:80px;}
+section.step{
+  padding:38px 0;
+  border-bottom:1px solid var(--line);
+  scroll-margin-top:70px;
+}
+section.step:last-of-type{border-bottom:none;}
+.step-eyebrow{
+  font-size:12px;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:var(--gold);
+  font-weight:600;
+  margin-bottom:6px;
+}
+section.step h2{font-size:28px; font-style:italic; margin-bottom:4px;}
+.step-desc{color:var(--ink-soft); font-size:14px; margin-top:6px; margin-bottom:26px;}
+
+.field{margin-bottom:20px;}
+.field label{
+  display:block;
+  font-size:13px;
+  font-weight:600;
+  color:var(--ink);
+  margin-bottom:6px;
+}
+.field .hint{font-size:12px; color:var(--ink-soft); font-weight:400; margin-left:6px;}
+.field input[type=text], .field input[type=date], .field input[type=time], .field select{
+  width:100%;
+  padding:12px 14px;
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  background:var(--card);
+  font-family:'Inter',sans-serif;
+  font-size:14.5px;
+  color:var(--ink);
+  appearance:none;
+}
+.field select{
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23516148'><path d='M5.5 7.5l4.5 5 4.5-5z'/></svg>");
+  background-repeat:no-repeat;
+  background-position:right 12px center;
+  padding-right:36px;
+}
+.field input:focus, .field select:focus{
+  outline:none;
+  border-color:var(--sage);
+  box-shadow:0 0 0 3px rgba(124,143,115,.18);
+}
+.row2{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+@media (max-width:520px){.row2{grid-template-columns:1fr;}}
+
+/* ---- Personnalisation de la couverture ---- */
+.custo-block{margin-top:28px; padding-top:22px; border-top:1px dashed var(--line);}
+.custo-label{display:block; font-size:13px; font-weight:600; margin-bottom:10px;}
+.swatch-row{display:flex; flex-wrap:wrap; gap:8px;}
+.swatch-btn{
+  display:flex; align-items:center; gap:7px;
+  font-family:'Inter',sans-serif; font-size:12.5px; font-weight:500;
+  padding:7px 12px 7px 8px;
+  border-radius:100px;
+  border:1px solid var(--line);
+  background:var(--card);
+  color:var(--ink);
+  cursor:pointer;
+  transition:.15s;
+}
+.swatch-dot{width:16px; height:16px; border-radius:50%; background:var(--sw); display:inline-block; box-shadow:inset 0 0 0 1px rgba(0,0,0,.08);}
+.swatch-btn.active{border-color:var(--sw); background:color-mix(in srgb, var(--sw) 14%, white);}
+.swatch-btn:hover{border-color:var(--sw);}
+
+.font-row{display:flex; flex-wrap:wrap; gap:10px;}
+.font-btn{
+  font-size:19px;
+  padding:12px 18px;
+  border-radius:var(--radius);
+  border:1px solid var(--line);
+  background:var(--card);
+  color:var(--ink);
+  cursor:pointer;
+  transition:.15s;
+}
+.font-btn.active{border-color:var(--sage); background:var(--sage-pale);}
+.font-btn:hover{border-color:var(--sage);}
+
+.layout-row{display:flex; flex-wrap:wrap; gap:10px;}
+.layout-btn{
+  display:flex; flex-direction:column; align-items:center; gap:6px;
+  font-family:'Inter',sans-serif; font-size:11.5px; font-weight:500;
+  padding:10px 12px;
+  border-radius:var(--radius);
+  border:1px solid var(--line);
+  background:var(--card);
+  color:var(--ink-soft);
+  cursor:pointer;
+  transition:.15s;
+}
+.layout-btn.active{border-color:var(--sage); background:var(--sage-pale); color:var(--ink);}
+
+.format-row{display:flex; flex-wrap:wrap; gap:10px; margin-bottom:8px;}
+.format-btn{
+  display:flex; flex-direction:column; align-items:center; gap:6px;
+  font-family:'Inter',sans-serif; font-size:12.5px; font-weight:500;
+  padding:10px 16px;
+  border-radius:var(--radius);
+  border:1px solid var(--line);
+  background:var(--card);
+  color:var(--ink-soft);
+  cursor:pointer;
+  transition:.15s;
+}
+.format-btn.active{border-color:var(--sage); background:var(--sage-pale); color:var(--ink);}
+.format-btn:hover{border-color:var(--sage);}
+.badge-recommande-inline{
+  display:inline-block;
+  font-size:9.5px;
+  font-weight:700;
+  letter-spacing:.03em;
+  text-transform:uppercase;
+  color:var(--sage-dark);
+  background:var(--card);
+  border:1px solid var(--sage);
+  border-radius:100px;
+  padding:1px 6px;
+  margin-left:5px;
+  vertical-align:middle;
+}
+.format-note{font-size:12px; color:var(--ink-soft); margin:0;}
+.layout-btn:hover{border-color:var(--sage);}
+
+.apercu{
+  margin-top:10px;
+  padding:12px 14px;
+  background:var(--sage-pale);
+  border-left:3px solid var(--sage);
+  border-radius:0 8px 8px 0;
+  font-size:13.5px;
+  color:var(--ink-soft);
+  font-style:italic;
+  display:none;
+}
+.apercu.show{display:block;}
+.apercu .ref{display:block; font-style:normal; font-weight:600; color:var(--sage-dark); margin-bottom:3px;}
+.apercu .badge-recommande{
+  display:inline-block;
+  font-style:normal;
+  font-size:10.5px;
+  font-weight:700;
+  letter-spacing:.03em;
+  text-transform:uppercase;
+  color:var(--sage-dark);
+  background:var(--sage-pale);
+  border:1px solid var(--sage);
+  border-radius:100px;
+  padding:2px 8px;
+  margin-right:6px;
+  vertical-align:middle;
+}
+.resume-texte{margin:6px 0 8px; font-style:normal;}
+.resume-lien{margin:0 0 10px; font-style:normal;}
+.resume-lien-label{
+  display:block;
+  font-size:10.5px;
+  font-weight:700;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  color:var(--gold);
+  margin-bottom:2px;
+}
+.texte-integral{margin-top:4px;}
+.texte-integral summary{
+  cursor:pointer;
+  font-size:12.5px;
+  font-weight:600;
+  font-style:normal;
+  color:var(--sage-dark);
+  list-style:none;
+}
+.texte-integral summary::-webkit-details-marker{display:none;}
+.texte-integral[open] summary{margin-bottom:8px;}
+.texte-integral-contenu{
+  font-style:normal;
+  font-size:12.5px;
+  line-height:1.6;
+  border-top:1px dashed var(--line);
+  padding-top:8px;
+}
+.texte-integral-contenu p{margin:0 0 8px;}
+
+/* ---------- Chants (grille compacte) ---------- */
+.chants-grid{display:grid; grid-template-columns:1fr 1fr; gap:16px 20px;}
+@media (max-width:560px){.chants-grid{grid-template-columns:1fr;}}
+
+.copyright-note{
+  font-size:12px;
+  color:var(--ink-soft);
+  background:var(--sage-pale);
+  border-left:3px solid var(--sage);
+  border-radius:0 8px 8px 0;
+  padding:9px 12px;
+  margin-bottom:22px;
+}
+
+.paroles-toggle{margin-top:6px;}
+.paroles-toggle summary{
+  cursor:pointer;
+  font-size:12px;
+  font-weight:600;
+  color:var(--sage-dark);
+  list-style:none;
+}
+.paroles-toggle summary::-webkit-details-marker{display:none;}
+.paroles-toggle[open] summary{margin-bottom:6px;}
+.paroles-textarea{
+  width:100%;
+  min-height:90px;
+  padding:10px 12px;
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  background:var(--card);
+  font-family:'Inter',sans-serif;
+  font-size:13px;
+  resize:vertical;
+}
+.paroles-textarea:focus{
+  outline:none;
+  border-color:var(--sage);
+  box-shadow:0 0 0 3px rgba(124,143,115,.18);
+}
+
+/* ---------- Bouton final ---------- */
+.submit-zone{padding-top:10px;}
+.btn-primary{
+  background:var(--sage-dark);
+  color:#fff;
+  border:none;
+  padding:15px 30px;
+  border-radius:100px;
+  font-size:15px;
+  font-weight:600;
+  font-family:'Inter',sans-serif;
+  cursor:pointer;
+  transition:.15s;
+}
+.btn-primary:hover{background:var(--ink);}
+.submit-note{font-size:12.5px; color:var(--ink-soft); margin-top:12px; max-width:52ch;}
+
+.status-banner{
+  margin-top:22px;
+  padding:16px 18px;
+  border-radius:var(--radius);
+  background:var(--sage-pale);
+  border:1px solid var(--sage);
+  color:var(--sage-dark);
+  font-size:13.5px;
+  display:none;
+}
+.status-banner.show{display:block;}
+.status-banner a{color:var(--sage-dark); font-weight:600;}
+
+/* ---------- Colonne prévisualisation (élément signature) ---------- */
+.preview-col{position:sticky; top:24px; padding-top:48px;}
+
+.preview-tabs{display:flex; gap:6px; margin-bottom:14px;}
+.preview-tab{
+  flex:1;
+  font-family:'Inter',sans-serif;
+  font-size:12.5px;
+  font-weight:600;
+  padding:8px 10px;
+  border-radius:100px;
+  border:1px solid var(--line);
+  background:var(--card);
+  color:var(--ink-soft);
+  cursor:pointer;
+  transition:.15s;
+}
+.preview-tab.active{background:var(--sage-dark); border-color:var(--sage-dark); color:#fff;}
+.preview-tab:not(.active):hover{border-color:var(--sage);}
+
+.cover-mock, .page-mock{display:none;}
+.cover-mock.active, .page-mock.active{display:block;}
+
+/* ---- Mockup page intérieure ---- */
+.page-mock{
+  background:#fff;
+  border-radius:4px;
+  box-shadow:0 18px 40px -12px rgba(46,51,40,.28), 0 2px 8px rgba(46,51,40,.08);
+  aspect-ratio:148/210;
+  overflow:hidden;
+  padding:26px 22px;
+}
+.page-mock-inner{height:100%; overflow:hidden; display:flex; flex-direction:column;}
+.page-mock-placeholder{
+  margin:auto;
+  text-align:center;
+  font-size:12px;
+  color:var(--ink-soft);
+  font-style:italic;
+  max-width:22ch;
+}
+.page-mock .pm-eyebrow{
+  text-align:center;
+  font-size:9.5px;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  color:var(--gold);
+  font-weight:600;
+  margin-bottom:4px;
+}
+.page-mock .pm-title{
+  font-family:'Cormorant Garamond',serif;
+  font-style:italic;
+  font-weight:600;
+  text-align:center;
+  font-size:19px;
+  margin-bottom:10px;
+}
+.page-mock .pm-ref{
+  text-align:center;
+  font-size:10.5px;
+  font-weight:600;
+  color:var(--sage-dark);
+  margin-bottom:8px;
+}
+.page-mock .pm-lecteur{
+  text-align:center;
+  font-size:9.5px;
+  font-style:italic;
+  color:var(--ink-soft);
+  margin-bottom:10px;
+}
+.page-mock .pm-body{
+  font-family:'Cormorant Garamond',serif;
+  font-size:12.5px;
+  line-height:1.6;
+  text-align:center;
+  color:var(--ink);
+  overflow:hidden;
+  display:-webkit-box;
+  -webkit-line-clamp:9;
+  -webkit-box-orient:vertical;
+}
+.page-mock .pm-fade{
+  margin-top:auto;
+  text-align:center;
+  font-size:10px;
+  color:var(--ink-soft);
+  font-style:italic;
+  padding-top:8px;
+}
+.cover-mock{
+  position:relative;
+  background:#fff;
+  border-radius:4px;
+  box-shadow:0 18px 40px -12px rgba(46,51,40,.28), 0 2px 8px rgba(46,51,40,.08);
+  aspect-ratio:148/210;
+  overflow:hidden;
+  padding:26px 20px;
+  text-align:center;
+}
+.cover-mock.tint-sauge{--accent:#6E8261;}
+.cover-mock.tint-rose{--accent:#C1607B;}
+.cover-mock.tint-bleu{--accent:#5D7FA8;}
+.cover-mock.tint-or{--accent:#A9791A;}
+
+/* ---- Cadre (présentation "encadrée") ---- */
+.frame-inset{display:none;}
+.cover-mock.layout-encadre .frame-inset{
+  display:block;
+  position:absolute; z-index:1;
+  top:18px; left:16px; right:16px; bottom:18px;
+  border:1px solid var(--accent, var(--line));
+}
+.cover-mock.layout-encadre .frame-inset::before{
+  content:"";
+  position:absolute; top:5px; left:5px; right:5px; bottom:5px;
+  border:1px solid var(--accent, var(--line));
+  opacity:.5;
+}
+
+/* ---- Monogramme ---- */
+.monogram{display:none;}
+.cover-mock.layout-monogramme .monogram{
+  display:block;
+  font-family:'Cormorant Garamond', serif;
+  font-style:italic;
+  font-weight:600;
+  font-size:46px;
+  color:var(--accent, var(--sage-dark));
+  margin-bottom:2px;
+}
+.cover-mock.layout-monogramme .names-block{padding-top:0;}
+.cover-mock.layout-monogramme .names{font-size:18px; font-family:'Cormorant Garamond',serif !important; font-style:italic;}
+.cover-mock.layout-monogramme .amp{font-size:13px;}
+.cover-mock.layout-monogramme .eyebrow-cover{margin-bottom:10px;}
+.cover-mock .inner{
+  position:relative; z-index:2;
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  padding-top:10px;
+  padding-bottom:8px;
+}
+.cover-mock .names-block{padding-top:8px;}
+.cover-mock .eyebrow-cover{font-size:10.5px; font-weight:600; letter-spacing:.04em; color:var(--ink-soft);}
+.cover-mock .names{font-size:30px; line-height:1.15; margin:10px 0 2px; transition:font-family .1s;}
+.cover-mock .amp{font-size:20px; color:var(--accent, var(--sage-dark)); margin:2px 0; transition:font-family .1s, color .2s;}
+.cover-mock .rule{
+  width:46px; height:2px; margin:14px auto;
+  background:var(--accent, var(--sage-dark));
+  transition:background .2s;
+}
+.cover-mock.font-parisienne .names, .cover-mock.font-parisienne .amp{font-family:'Parisienne',cursive;}
+.cover-mock.font-alexbrush .names, .cover-mock.font-alexbrush .amp{font-family:'Alex Brush',cursive;}
+.cover-mock.font-greatvibes .names, .cover-mock.font-greatvibes .amp{font-family:'Great Vibes',cursive;}
+.cover-mock .infos{
+  font-size:10px; color:var(--ink-soft); line-height:1.7;
+}
+.preview-caption{
+  text-align:center;
+  font-size:12.5px;
+  color:var(--ink-soft);
+  margin-top:14px;
+  font-style:italic;
+}
+.progress-list{margin-top:30px; padding:0; list-style:none;}
+.progress-list li{
+  font-size:13px;
+  color:var(--ink-soft);
+  padding:7px 0 7px 22px;
+  position:relative;
+  border-bottom:1px solid var(--line);
+}
+.progress-list li:last-child{border-bottom:none;}
+.progress-list li::before{
+  content:"";
+  position:absolute; left:0; top:11px;
+  width:9px; height:9px; border-radius:50%;
+  border:1.5px solid var(--line);
+  background:#fff;
+}
+.progress-list li.done{color:var(--sage-dark); font-weight:600;}
+.progress-list li.done::before{background:var(--sage); border-color:var(--sage);}
+</style>
+</head>
+<body>
+
+<header class="top-header">
+  <div class="brand-mark">Livret2Mariage</div>
+  <div class="eyebrow">Préparation de votre célébration</div>
+  <h1>Composez votre livret de mariage</h1>
+  <p>Choisissez vos lectures, prières et bénédictions parmi les textes proposés par votre paroisse. Votre livret sera généré automatiquement, mis en page et vous sera envoyé — sans rien à faire de plus.</p>
+</header>
+
+<div class="page-wrap">
+  <div class="form-col">
+
+    <nav class="section-nav" id="sectionNav">
+      <a href="#s-couple" data-section="couple">Le couple</a>
+      <a href="#s-parole" data-section="parole">Dieu nous parle</a>
+      <a href="#s-liturgie" data-section="liturgie">La liturgie du mariage</a>
+      <a href="#s-prieres" data-section="prieres">Prières &amp; bénédictions</a>
+      <a href="#s-chants" data-section="chants">Les chants</a>
+      <a href="#s-mot" data-section="mot">Un mot pour vos invités</a>
+    </nav>
+
+    <form id="livretForm">
+
+      <!-- ================= LE COUPLE ================= -->
+      <section class="step" id="s-couple" data-section="couple">
+        <div class="step-eyebrow">Informations pratiques</div>
+        <h2>Le couple</h2>
+        <p class="step-desc">Ces informations apparaissent sur la couverture du livret.</p>
+
+        <div class="row2">
+          <div class="field">
+            <label for="epoux">Prénom de l'époux</label>
+            <input type="text" id="epoux" name="epoux" placeholder="ex. Teddy" required>
+          </div>
+          <div class="field">
+            <label for="epouse">Prénom de l'épouse</label>
+            <input type="text" id="epouse" name="epouse" placeholder="ex. Stéphanie" required>
+          </div>
+        </div>
+        <div class="row2">
+          <div class="field">
+            <label for="date">Date du mariage</label>
+            <input type="date" id="date" name="date" required>
+          </div>
+          <div class="field">
+            <label for="heure">Heure du mariage</label>
+            <input type="time" id="heure" name="heure" required>
+          </div>
+        </div>
+        <div class="field">
+          <label for="lieu">Lieu de la célébration</label>
+          <input type="text" id="lieu" name="lieu" placeholder="ex. Église du 17ème km" required>
+        </div>
+        <div class="field">
+          <label for="email">Votre adresse email</label>
+          <input type="email" id="email" name="email" placeholder="ex. kevin.anais@exemple.com" required>
+          <p class="format-note" style="margin-top:6px;">Votre livret vous sera envoyé automatiquement à cette adresse dès qu'il sera prêt, en plus du téléchargement immédiat.</p>
+        </div>
+
+        <div class="custo-block">
+          <label class="custo-label">Format du livret</label>
+          <div class="format-row" id="formatSwatches" data-name="format">
+            <button type="button" class="format-btn active" data-value="A5">
+              <svg viewBox="0 0 60 78" width="34" height="44"><rect x="8" y="0.5" width="44" height="63" rx="2" fill="none" stroke="var(--sage)" stroke-width="2"/></svg>
+              <span>A5 <span class="badge-recommande-inline">Recommandé</span></span>
+            </button>
+            <button type="button" class="format-btn" data-value="A4">
+              <svg viewBox="0 0 60 78" width="40" height="52"><rect x="4" y="0.5" width="52" height="74" rx="2" fill="none" stroke="var(--line)" stroke-width="2"/></svg>
+              <span>A4</span>
+            </button>
+          </div>
+          <p class="format-note">A5 est le format le plus courant pour un livret de messe — plus compact, plus économique à imprimer, et facile à tenir en main pendant la célébration.</p>
+        </div>
+
+        <div class="custo-block">
+          <label class="custo-label">Présentation de la couverture</label>
+          <div class="layout-row" id="layoutSwatches" data-name="mise_en_page">
+            <button type="button" class="layout-btn active" data-value="classique">
+              <svg viewBox="0 0 60 78" width="42" height="54"><rect x="0.5" y="0.5" width="59" height="77" fill="none" stroke="var(--line)"/><line x1="15" y1="28" x2="45" y2="28" stroke="var(--ink)" stroke-width="2"/><line x1="24" y1="37" x2="36" y2="37" stroke="var(--ink-soft)" stroke-width="1.5"/><line x1="15" y1="46" x2="45" y2="46" stroke="var(--ink)" stroke-width="2"/><line x1="26" y1="56" x2="34" y2="56" stroke="var(--sage)" stroke-width="2"/></svg>
+              <span>Classique</span>
+            </button>
+            <button type="button" class="layout-btn" data-value="encadre">
+              <svg viewBox="0 0 60 78" width="42" height="54"><rect x="0.5" y="0.5" width="59" height="77" fill="none" stroke="var(--line)"/><rect x="6" y="6" width="48" height="66" fill="none" stroke="var(--ink-soft)" stroke-width="1"/><line x1="15" y1="30" x2="45" y2="30" stroke="var(--ink)" stroke-width="2"/><line x1="24" y1="39" x2="36" y2="39" stroke="var(--ink-soft)" stroke-width="1.5"/><line x1="15" y1="48" x2="45" y2="48" stroke="var(--ink)" stroke-width="2"/></svg>
+              <span>Encadrée</span>
+            </button>
+            <button type="button" class="layout-btn" data-value="monogramme">
+              <svg viewBox="0 0 60 78" width="42" height="54"><rect x="0.5" y="0.5" width="59" height="77" fill="none" stroke="var(--line)"/><text x="30" y="30" font-size="16" text-anchor="middle" fill="var(--sage-dark)" font-family="serif">K&amp;A</text><line x1="20" y1="40" x2="40" y2="40" stroke="var(--sage)" stroke-width="1.5"/><line x1="18" y1="52" x2="42" y2="52" stroke="var(--ink)" stroke-width="1.5"/><line x1="22" y1="60" x2="38" y2="60" stroke="var(--ink-soft)" stroke-width="1.5"/></svg>
+              <span>Monogramme</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="custo-block">
+          <label class="custo-label">Teinte de la couverture</label>
+          <div class="swatch-row" id="couleurSwatches" data-name="couleur">
+            <button type="button" class="swatch-btn active" data-value="sauge" style="--sw:#8DA57E;">
+              <span class="swatch-dot"></span>Sauge
+            </button>
+            <button type="button" class="swatch-btn" data-value="rose" style="--sw:#D998A6;">
+              <span class="swatch-dot"></span>Rose poudré
+            </button>
+            <button type="button" class="swatch-btn" data-value="bleu" style="--sw:#8FA8CF;">
+              <span class="swatch-dot"></span>Bleu layette
+            </button>
+            <button type="button" class="swatch-btn" data-value="or" style="--sw:#C9A24A;">
+              <span class="swatch-dot"></span>Doré champagne
+            </button>
+          </div>
+        </div>
+
+        <div class="custo-block">
+          <label class="custo-label">Écriture des prénoms</label>
+          <div class="font-row" id="policeSwatches" data-name="police">
+            <button type="button" class="font-btn active" data-value="parisienne" style="font-family:'Parisienne',cursive;">
+              Kevin &amp; Anaïs
+            </button>
+            <button type="button" class="font-btn" data-value="alexbrush" style="font-family:'Alex Brush',cursive;">
+              Kevin &amp; Anaïs
+            </button>
+            <button type="button" class="font-btn" data-value="greatvibes" style="font-family:'Great Vibes',cursive;">
+              Kevin &amp; Anaïs
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= DIEU NOUS PARLE ================= -->
+      <section class="step" id="s-parole" data-section="parole">
+        <div class="step-eyebrow">Liturgie de la parole</div>
+        <h2>Dieu nous parle</h2>
+        <p class="step-desc">Choisissez les textes qui seront lus pendant la célébration.</p>
+
+        <div class="field">
+          <label>Première lecture</label>
+          <select data-choice="lecture" data-cat="lectures" required></select>
+          <div class="apercu" data-apercu="lecture"></div>
+        </div>
+        <div class="field">
+          <label>Lecteur <span class="hint">(optionnel)</span></label>
+          <input type="text" data-lecteur="lecture" placeholder="Prénom du lecteur">
+        </div>
+
+        <div class="field">
+          <label>Psaume</label>
+          <select data-choice="psaume" data-cat="psaumes" required></select>
+          <div class="apercu" data-apercu="psaume"></div>
+        </div>
+        <div class="field">
+          <label>Lecteur <span class="hint">(optionnel)</span></label>
+          <input type="text" data-lecteur="psaume" placeholder="Prénom du lecteur">
+        </div>
+
+        <div class="field">
+          <label>Évangile</label>
+          <select data-choice="evangile" data-cat="evangiles" required></select>
+          <div class="apercu" data-apercu="evangile"></div>
+        </div>
+      </section>
+
+      <!-- ================= LITURGIE DU MARIAGE ================= -->
+      <section class="step" id="s-liturgie" data-section="liturgie">
+        <div class="step-eyebrow">Célébration du mariage</div>
+        <h2>La liturgie du mariage</h2>
+        <p class="step-desc">Ces formules encadrent l'échange des consentements et des alliances.</p>
+
+        <div class="field">
+          <label>Dialogue initial avec les futurs époux</label>
+          <select data-choice="dialogueInitial" data-cat="dialoguesInitiaux" required></select>
+          <div class="apercu" data-apercu="dialogueInitial"></div>
+        </div>
+
+        <div class="field">
+          <label>Échange des consentements</label>
+          <select data-choice="consentements" data-cat="consentements" required></select>
+          <div class="apercu" data-apercu="consentements"></div>
+        </div>
+
+        <div class="field">
+          <label>Bénédiction des alliances</label>
+          <select data-choice="benedictionAlliances" data-cat="benedictionsAlliances" required></select>
+          <div class="apercu" data-apercu="benedictionAlliances"></div>
+        </div>
+
+        <div class="field">
+          <label>Bénédiction nuptiale</label>
+          <select data-choice="benedictionNuptiale" data-cat="benedictionsNuptiales" required></select>
+          <div class="apercu" data-apercu="benedictionNuptiale"></div>
+        </div>
+      </section>
+
+      <!-- ================= PRIÈRES & BÉNÉDICTIONS ================= -->
+      <section class="step" id="s-prieres" data-section="prieres">
+        <div class="step-eyebrow">Action de grâce et envoi</div>
+        <h2>Prières &amp; bénédictions</h2>
+
+        <div class="field">
+          <label>Prière des époux</label>
+          <select data-choice="priereEpoux" data-cat="prieresEpoux" required></select>
+          <div class="apercu" data-apercu="priereEpoux"></div>
+        </div>
+
+        <div class="field">
+          <label>Prière universelle</label>
+          <select data-choice="priereUniverselle" data-cat="prieresUniverselles" required></select>
+          <div class="apercu" data-apercu="priereUniverselle"></div>
+        </div>
+        <div class="field">
+          <label>Lecteur <span class="hint">(optionnel)</span></label>
+          <input type="text" data-lecteur="priereUniverselle" placeholder="Prénom du lecteur">
+        </div>
+
+        <div class="field">
+          <label>Bénédiction finale</label>
+          <select data-choice="benedictionFinale" data-cat="benedictionsFinales" required></select>
+          <div class="apercu" data-apercu="benedictionFinale"></div>
+        </div>
+      </section>
+
+      <!-- ================= CHANTS ================= -->
+      <section class="step" id="s-chants" data-section="chants">
+        <div class="step-eyebrow">Accompagnement musical</div>
+        <h2>Les chants <span class="hint">(facultatif)</span></h2>
+        <p class="step-desc">Si vous ne les connaissez pas encore, laissez ces champs vides — vous pourrez les ajouter plus tard, ou laisser la chorale s'en charger. Vous pouvez aussi coller les paroles si vous voulez qu'elles apparaissent dans le livret.</p>
+        <p class="copyright-note">Les paroles de chants restent souvent protégées par des droits d'auteur — assurez-vous d'avoir le droit de les reproduire avant de les coller ici (un usage privé pour quelques exemplaires, comme un mariage, est en général peu à risque).</p>
+
+        <div class="chants-grid">
+          <div class="field">
+            <label>Chant d'entrée <span class="hint">(facultatif)</span></label>
+            <input type="text" name="chant_entree">
+            <details class="paroles-toggle"><summary>+ Ajouter les paroles</summary><textarea name="chant_entreeParoles" class="paroles-textarea" placeholder="Collez les paroles ici…"></textarea></details>
+          </div>
+          <div class="field">
+            <label>Chant d'acclamation de l'Évangile <span class="hint">(facultatif)</span></label>
+            <input type="text" name="chant_acclamation">
+            <details class="paroles-toggle"><summary>+ Ajouter les paroles</summary><textarea name="chant_acclamationParoles" class="paroles-textarea" placeholder="Collez les paroles ici…"></textarea></details>
+          </div>
+          <div class="field">
+            <label>Chant à l'Esprit Saint <span class="hint">(facultatif)</span></label>
+            <input type="text" name="chant_espritSaint">
+            <details class="paroles-toggle"><summary>+ Ajouter les paroles</summary><textarea name="chant_espritSaintParoles" class="paroles-textarea" placeholder="Collez les paroles ici…"></textarea></details>
+          </div>
+          <div class="field">
+            <label>Chant de louange <span class="hint">(facultatif)</span></label>
+            <input type="text" name="chant_louange">
+            <details class="paroles-toggle"><summary>+ Ajouter les paroles</summary><textarea name="chant_louangeParoles" class="paroles-textarea" placeholder="Collez les paroles ici…"></textarea></details>
+          </div>
+          <div class="field">
+            <label>Chant pour la prière universelle <span class="hint">(facultatif)</span></label>
+            <input type="text" name="chant_priereUniverselle">
+            <details class="paroles-toggle"><summary>+ Ajouter les paroles</summary><textarea name="chant_priereUniverselleParoles" class="paroles-textarea" placeholder="Collez les paroles ici…"></textarea></details>
+          </div>
+          <div class="field">
+            <label>Chant à Marie <span class="hint">(facultatif)</span></label>
+            <input type="text" name="chant_marie">
+            <details class="paroles-toggle"><summary>+ Ajouter les paroles</summary><textarea name="chant_marieParoles" class="paroles-textarea" placeholder="Collez les paroles ici…"></textarea></details>
+          </div>
+          <div class="field">
+            <label>Chant pour la signature des registres <span class="hint">(facultatif)</span></label>
+            <input type="text" name="chant_signatureRegistres">
+            <details class="paroles-toggle"><summary>+ Ajouter les paroles</summary><textarea name="chant_signatureRegistresParoles" class="paroles-textarea" placeholder="Collez les paroles ici…"></textarea></details>
+          </div>
+          <div class="field">
+            <label>Chant de sortie <span class="hint">(facultatif)</span></label>
+            <input type="text" name="chant_sortie">
+            <details class="paroles-toggle"><summary>+ Ajouter les paroles</summary><textarea name="chant_sortieParoles" class="paroles-textarea" placeholder="Collez les paroles ici…"></textarea></details>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= MOT POUR LES INVITÉS ================= -->
+      <section class="step" id="s-mot" data-section="mot">
+        <div class="step-eyebrow">Dernière page</div>
+        <h2>Un mot pour vos invités <span class="hint">(facultatif)</span></h2>
+        <div class="field">
+          <label>Mots de remerciements</label>
+          <input type="text" name="motsRemerciements" placeholder="ex. Merci à tous d'être présents à nos côtés !">
+        </div>
+
+        <div class="submit-zone">
+          <button type="submit" class="btn-primary">Envoyer mes choix</button>
+          <p class="submit-note">Vos réponses seront transmises automatiquement au système qui prépare votre livret — vous n'avez rien d'autre à faire.</p>
+          <div class="status-banner" id="statusBanner"></div>
+        </div>
+      </section>
+
+    </form>
+  </div>
+
+  <!-- ================= COLONNE PRÉVISUALISATION ================= -->
+  <aside class="preview-col">
+    <div class="preview-tabs">
+      <button type="button" class="preview-tab active" data-tab="cover">Couverture</button>
+      <button type="button" class="preview-tab" data-tab="inner">Page intérieure</button>
+    </div>
+
+    <div class="cover-mock active tint-sauge font-parisienne layout-classique" id="tab-cover">
+      <div class="frame-inset"></div>
+      <div class="inner">
+        <div class="monogram" id="prevMonogram">K&amp;A</div>
+        <div class="names-block">
+          <div class="eyebrow-cover">Célébration du mariage de</div>
+          <div class="names" id="prevEpoux">Vos&nbsp;prénoms</div>
+          <div class="amp">&amp;</div>
+          <div class="names" id="prevEpouse">ici</div>
+        </div>
+        <div class="rule"></div>
+        <div class="infos" id="prevInfos">La date, l'heure et le lieu<br>apparaîtront ici</div>
+      </div>
+    </div>
+
+    <div class="page-mock" id="tab-inner">
+      <div class="page-mock-inner" id="innerPreviewContent">
+        <p class="page-mock-placeholder">Choisissez une lecture, un psaume ou une prière pour voir à quoi ressemblera cette page du livret.</p>
+      </div>
+    </div>
+
+    <p class="preview-caption" id="previewCaption">Aperçu de la couverture de votre livret</p>
+
+    <ul class="progress-list" id="progressList">
+      <li data-section="couple">Le couple</li>
+      <li data-section="parole">Dieu nous parle</li>
+      <li data-section="liturgie">La liturgie du mariage</li>
+      <li data-section="prieres">Prières &amp; bénédictions</li>
+      <li data-section="chants">Les chants</li>
+      <li data-section="mot">Un mot pour vos invités</li>
+    </ul>
+  </aside>
+</div>
+
+<script id="choix-data" type="application/json">{"lectures":[{"id":"L1","label":"Il les créa homme et femme","ref":"Lecture du livre de la Genèse (1, 26-28.31a)","apercu":"Au commencement, Dieu dit : « Faisons l'homme à notre image, selon notre ressemblance. Qu'…","resume":{"texte":"Ce récit fondateur de la Création rappelle que l'être humain est créé à l'image de Dieu, dans la dualité et la complémentarité de l'homme et de la femme. Dieu leur confie ensemble la responsabilité de la création et bénit leur fécondité.","lien":"Ce texte fonde la dignité sacrée de l'homme et de la femme ainsi que leur égalité fondamentale devant Dieu. Il souligne que la vocation du couple est d'être partenaire de la création de Dieu, appelés à porter du fruit et à prendre soin du monde ensemble."},"texteComplet":["Au commencement, Dieu dit : « Faisons l'homme à notre image, selon notre ressemblance. Qu'il soit le maître des poissons de la mer, des oiseaux du ciel, des bestiaux, de toutes les bêtes sauvages, et de toutes les bestioles qui vont et viennent sur la terre. »","Dieu créa l'homme à son image, à l'image de Dieu il le créa, il les créa homme et femme.","Dieu les bénit et leur dit : « Soyez féconds et multipliez-vous, remplissez la terre et soumettez-la. Soyez les maîtres des poissons de la mer, des oiseaux du ciel, et de tous les animaux qui vont et viennent sur la terre. »","Et Dieu vit tout ce qu'il avait fait ; et voici : cela était très bon."],"recommande":false},{"id":"L2","label":"Il n'est pas bon que l'homme soit seul","ref":"Lecture du livre de la Genèse (2, 18-24)","apercu":"Le Seigneur Dieu dit : « II n'est pas bon que l'homme soit seul. Je vais lui faire une aid…","resume":{"texte":"Dieu constate que l'homme ne peut s'épanouir seul et lui donne une aide qui lui correspond : la femme, tirée de sa propre chair. Ce texte fondateur affirme que l'homme et la femme se reconnaissent l'un dans l'autre et sont appelés à devenir « une seule chair ».","lien":"C'est le texte de référence sur l'union conjugale elle-même — il explique pourquoi l'homme quitte sa famille pour s'attacher à son épouse, et fonde l'unité profonde que crée le mariage entre deux personnes qui restent pourtant distinctes."},"texteComplet":["Le Seigneur Dieu dit : « II n'est pas bon que l'homme soit seul. Je vais lui faire une aide qui lui correspondra. »","Avec de la terre, le Seigneur Dieu façonna toutes les bêtes des champs et tous les oiseaux du ciel, et il les amena vers l'homme pour voir quels noms il leur donnerait.","C'étaient des êtres vivants, et l'homme donna un nom à chacun. L'homme donna donc leurs noms à tous les animaux, aux oiseaux du ciel et à toutes les bêtes des champs. Mais il ne trouva aucune aide qui lui corresponde.","Alors le Seigneur Dieu fît tomber sur lui un sommeil mystérieux, et l'homme s'endormit.","Le Seigneur Dieu prit une de ses côtes, puis il referma la chair à sa place. Avec la côte qu'il avait prise à l'homme, il façonna une femme et il l'amena vers l'homme.","L'homme dit alors : « Cette fois-ci, voilà l'os de mes os et la chair de ma chair ! On l'appellera : femme -- Ishsha- celle qui fut tirée de l'homme -Ish- »","A cause de cela, l'homme quittera son père et sa mère, il s'attachera à sa femme, et tous deux ne feront plus qu'un."],"recommande":false},{"id":"L3","label":"Dieu lui-même nous unit","ref":"Lecture du livre de Tobie (7, 6-14)","apercu":"En ces jours-là, Ragouël se précipita pour embrasser Tobie, se mit à pleurer et lui dit :","resume":{"texte":"Ragouël accueille Tobie avec joie et lui donne sa fille Sarra en mariage, selon la loi de Moïse, en confiant leur union à la bénédiction du Ciel. C'est un récit de rencontre familiale, de confiance et d'accueil réciproque entre deux familles.","lien":"Ce texte rappelle que le mariage s'inscrit dans une histoire de confiance donnée par les familles et par Dieu lui-même, qui veille sur les nouveaux époux dès le premier instant de leur union."},"texteComplet":["En ces jours-là, Ragouël se précipita pour embrasser Tobie, se mit à pleurer et lui dit :","« Béni sois-tu, mon enfant : tu es le fils d'un homme de bien ! Quel grand malheur que soit devenu aveugle cet homme juste et généreux ! »","Il se jeta au cou de Tobie, son frère, et se remit à pleurer. Et sa femme Edna pleura sur Tobith, et Sarra, leur fille, pleura elle aussi. Ragouël tua un bélier de son troupeau pour recevoir ses hôtes chaleureusement. Tobie et Raphaël prirent un bain, ils se lavèrent, avant de prendre place pour le repas. Puis, Tobie dit à Raphaël :","« Azarias, mon frère, demande à Ragouël de me donner en mariage Sarra ma parente. »","Ragouël entendit ces mots et dit au jeune Tobie :","« Cette nuit, mange, bois, prends du bon temps : toi seul as le droit d'épouser ma fille Sarra, et moi-même je n'ai pas le pouvoir de la donner à un autre homme, puisque tu es mon plus proche parent. Pourtant, je dois te dire la vérité, mon enfant : je l'ai donnée en mariage à sept de nos frères, et ils sont morts la nuit même, au moment où ils allaient s'approcher d'elle. Mais à présent, mon enfant, mange et bois : le Seigneur interviendra en votre faveur. »","Tobie répliqua :","« Je ne mangerai ni ne boirai rien, tant que tu n'auras pas pris de décision à mon sujet. »","Ragouël lui dit :","« Soit ! elle t'est donnée en mariage selon le décret du Livre de Moïse ; c'est un jugement du ciel qui te l'a accordée. Emmène donc ta sœur. Car, dès à présent, tu es son frère et elle est ta sœur. À partir d'aujourd'hui elle t'est donnée pour toujours. Que le Seigneur du ciel veille sur vous cette nuit, mon enfant, et vous comble de sa miséricorde et de sa paix ! »","Ragouël appela Sarra, qui vint vers lui. Il prit la main de sa fille et la confia à Tobie, en disant :","« Emmène-la : conformément à la Loi et au décret consigné dans le Livre de Moïse, elle t'est donnée pour femme. Prends-la et conduis-la en bonne santé chez ton père. Et que le Dieu du ciel vous guide dans la paix ! »","Puis il appela sa femme et lui dit d'apporter une feuille sur laquelle il écrivit l'acte de mariage, selon lequel il donnait Sarra à Tobie conformément au décret de la loi de Moïse. Après quoi, on commença à manger et à boire."],"recommande":false},{"id":"L4","label":"Se Marier comme des croyants","ref":"Lecture du livre de Tobie (8, 4b-8)","apercu":"Le soir des noces, Tobie dit à Sarra :","resume":{"texte":"La nuit de leurs noces, Tobie et Sarra prient ensemble avant toute chose, demandant à Dieu miséricorde et de pouvoir vieillir ensemble dans la fidélité. Leur union commence par la prière commune, unis d'un même cœur.","lien":"Ce texte montre que la prière partagée est au fondement d'un couple croyant — il invite les époux à placer leur intimité et leur avenir commun sous le regard de Dieu dès le début de leur vie conjugale."},"texteComplet":["Le soir des noces, Tobie dit à Sarra :","« Lève-toi ma soeur, prions et demandons à notre Seigneur de nous combler de sa miséricorde et de son salut. »","Elle se lava et ils se mirent à prier et à demander que leur soit accordé le salut.","Tobie commença ainsi :","« Béni sois-tu, Dieu de nos pères, béni soit ton nom dans toutes les générations à jamais. Que te bénissent les cieux, et toutes ta création, dans tous les siècles. C'est toi qui as fait Adam, tu lui as fait une aide et un appui : Eve, sa femme. Et de tous deux est né le genre humain.","C'est toi qui as dit :","« Il n'est pas bon que l'homme soit seul. Je vais lui faire une aide qui lui soit semblable ».","Ce n'est donc pas pour une union illégitime que je prends ma soeur que voici, mais dans la vérité e la Loi. Daigne me faire miséricorde, ainsi qu'à elle, et nous mener ensemble à un âge avancé. »","Puis ils dirent d'une seule voix: « Amen ! Amen »"],"recommande":false},{"id":"L5","label":"Mon bien-aimé est à moi","ref":"Lecture du Cantique des cantiques (2, 8-10.14-16a ; 8, 6-7a)","apercu":"Voici mon bien-aimé qui vient ! il escalade les montagnes, il franchit les collines, il ac…","resume":{"texte":"Ce chant d'amour biblique célèbre la beauté de l'attirance, de la tendresse et de la joie de deux amants qui se cherchent et se trouvent. Il proclame que l'amour vrai est aussi fort que la mort et que rien ne peut l'éteindre.","lien":"Texte rare et précieux dans la Bible qui célèbre sans détour la beauté de l'amour humain et du désir entre époux — un choix pour les couples qui souhaitent une lecture lyrique et sensible, centrée sur la tendresse partagée."},"texteComplet":["Voici mon bien-aimé qui vient ! il escalade les montagnes, il franchit les collines, il accourt comme la gazelle, comme le petit d'une biche. Le voici qui se tient derrière notre mur ; il regarde par la fenêtre, il guette à travers le treillage. Mon bien-aimé a parlé ; il m'a dit :","« Lève-toi, mon amie, viens, ma toute belle. Ma colombe, blottie dans le rocher, cachée dans la falaise, montre-moi ton visage, fais-moi entendre ta voix ; car ta voix est douée, et ton visage est beau. »","Mon bien-aimé est à moi, et moi je suis à lui. II m'a dit :","« Que mon nom soit gravé dans ton cœur, qu'il soit marqué sur ton bras. »","Car l'amour est fort comme la mort, la passion est implacable comme l'abîme. Ses flammes sont des flammes brûlantes, c'est un feu divin ! Les torrents ne peuvent éteindre l'amour, les fleuves ne l'emporteront pas."],"recommande":false},{"id":"L6","label":"Dieu fait alliance avec nous","ref":"Lecture du livre de Jérémie (31, 31-32a.33)","apercu":"Voici venir des jours, déclare le Seigneur, où je conclurai avec la maison d'Israël et ave…","resume":{"texte":"Dieu annonce une Alliance nouvelle, non plus gravée sur la pierre mais inscrite au plus profond du cœur de son peuple. C'est la promesse d'une relation renouvelée, intérieure et fidèle entre Dieu et les hommes.","lien":"Ce texte éclaire le mariage comme une alliance — un engagement qui prend racine non pas dans un contrat extérieur mais dans le cœur des époux, appelés à une fidélité vécue de l'intérieur, jour après jour."},"texteComplet":["Voici venir des jours, déclare le Seigneur, où je conclurai avec la maison d'Israël et avec la maison de Juda une Alliance nouvelle. Ce ne sera pas comme l'Alliance que j'ai conclue avec leurs pères le jour où je les ai pris par la main pour les faire sortir d'Égypte : Mais voici quelle sera l'Alliance que je conclurai avec la maison d'Israël quand ces jours-là seront passés, déclare le Seigneur. Je mettrai ma Loi au plus profond d'eux-mêmes : je l'inscrirai dans leur cœur. Je serai leur Dieu, et ils seront mon peuple.","Ils n'auront plus à instruire chacun son compagnon, ni chacun son frère en disant :","« Apprends à connaître le Seigneur ! »","Car tous me connaîtront, des plus petits jusqu'aux plus grands."],"recommande":false},{"id":"L7","label":"Rien ne peut nous séparer de l'amour du Christ","ref":"Lecture de la Lettre de Saint Paul Apôtre aux Romains (8, 31b-35.37-39)","apercu":"Frères, si Dieu est pour nous, qui sera contre nous ? Il n'a pas épargné son propre Fils,…","resume":{"texte":"Saint Paul proclame avec force que rien — ni épreuve, ni détresse, ni aucune puissance — ne peut nous séparer de l'amour de Dieu manifesté dans le Christ. C'est un texte de confiance absolue et de victoire sur toutes les difficultés de la vie.","lien":"Un texte de réconfort et de force pour les épreuves à venir — il rappelle aux époux que leur amour, enraciné dans celui de Dieu, peut traverser les difficultés de la vie sans jamais être brisé."},"texteComplet":["Frères, si Dieu est pour nous, qui sera contre nous ? Il n'a pas épargné son propre Fils, mais il l'a livré pour nous tous : comment pourrait-il avec lui ne pas nous donner tout ? Qui accusera ceux que Dieu a choisis ? Dieu est celui qui rend juste : alors qui pourra condamner ? Le Christ Jésus est mort ; plus encore : il est ressuscité, il est à la droite de Dieu, et il intercède pour nous : alors qui pourra nous séparer de l'amour du Christ ? la détresse ? l'angoisse ? la persécution ? la faim ? le dénuement ? le danger ? le glaive ?Mais en tout cela nous sommes les grands vainqueurs grâce à celui qui nous a aimés. J'en ai la certitude : ni la mort ni la vie, ni les anges, ni les Principautés célestes, ni le présent ni l'avenir, ni les Puissances, ni les hauteurs, ni les abîmes, ni aucune autre créature, rien ne pourra nous séparer de l'amour de Dieu qui est dans le Christ Jésus notre Seigneur."],"recommande":false},{"id":"L8","label":"Etre ouverts à tous les hommes","ref":"Lecture de la Lettre de St Paul Apôtre aux Romains (12, 1-2.9-18)","apercu":"Je vous exhorte donc, frères, par la tendresse de Dieu, à lui présenter votre corps -- vot…","resume":{"texte":"Saint Paul appelle à un amour sincère, sans hypocrisie, fait de patience, d'hospitalité et de solidarité envers tous, dans la joie comme dans l'épreuve. C'est un appel concret à vivre une charité active au quotidien.","lien":"Ce texte invite le couple à ne pas refermer son amour sur lui-même, mais à rester ouvert aux autres — accueillant, hospitalier et attentif à ceux qui les entourent, pour que leur foyer rayonne au-delà d'eux-mêmes."},"texteComplet":["Je vous exhorte donc, frères, par la tendresse de Dieu, à lui présenter votre corps -- votre personne tout entière --, en sacrifice vivant, saint, capable de plaire à Dieu : c'est là, pour vous, la juste manière de lui rendre un culte.","Ne prenez pas pour modèle le monde présent, mais transformez-vous en renouvelant votre façon de penser pour discerner quelle est la volonté de Dieu : ce qui est bon, ce qui est capable de lui plaire, ce qui est parfait.","Que votre amour soit sans hypocrisie. Fuyez le mal avec horreur, attachez-vous au bien.","Soyez unis les uns aux autres par l'affection fraternelle, rivalisez de respect les uns pour les autres.","Ne ralentissez pas votre élan, restez dans la ferveur de l'Esprit, servez le Seigneur, ayez la joie de l'espérance, tenez bon dans l'épreuve, soyez assidus à la prière.","Partagez avec les fidèles qui sont dans le besoin, pratiquez l'hospitalité avec empressement.","(On peut ne pas lire cette partie entre crochet)","[Bénissez ceux qui vous persécutent ; souhaitez leur du bien, et non pas du mal. Soyez joyeux avec ceux qui sont dans la joie, pleurez avec ceux qui pleurent. Soyez bien d'accord entre vous ; n'ayez pas le goût des grandeurs, mais laissez-vous attirer par ce qui est humble. Ne vous fiez pas à votre propre jugement. Ne rendez à personne le mal pour le mal, appliquez-vous à bien agir aux yeux de tous les hommes. Autant que possible, pour ce qui dépend de vous, vivez en paix avec tous les hommes.]"],"recommande":false},{"id":"L9","label":"Travailler au bien de l'autre","ref":"Lecture de la Lettre de Saint Paul Apôtre aux Romains (15, 1b-3a.5-7b.13)","apercu":"Nous les forts, nous devons porter la fragilité des faibles, et non pas faire ce qui nous…","resume":{"texte":"Saint Paul exhorte les croyants à porter la fragilité des autres et à chercher, non leur propre plaisir, mais le bien de leur prochain, à l'exemple du Christ. Il appelle à vivre d'un même cœur et d'une seule voix.","lien":"Ce texte invite les époux à faire toujours passer le bien de l'autre avant leurs propres intérêts — une clé essentielle de la vie à deux, où l'attention portée au conjoint prime sur la recherche de soi."},"texteComplet":["Nous les forts, nous devons porter la fragilité des faibles, et non pas faire ce qui nous plaît.","Que chacun de nous fasse ce qui plaît à son prochain, en vue du bien, dans un but constructif.","Car le Christ n'a pas fait ce qui lui plaisait.","Que le Dieu de la persévérance et du réconfort vous donne d'être d'accord les uns avec les autres selon le Christ Jésus.","Ainsi, d'un même cœur, d'une seule voix, vous rendrez gloire à Dieu, le Père de notre Seigneur Jésus Christ.","Accueillez-vous donc les uns les autres, comme le Christ vous a accueillis pour la gloire de Dieu.","Que le Dieu de l'espérance vous remplisse de toute joie et de paix dans la foi, afin que vous débordiez d'espérance par la puissance de l'Esprit Saint."],"recommande":false},{"id":"L10","label":"Un amour plus grand que l'amour","ref":"Lecture de la 1ère lettre de saint Paul Apôtre aux Corinthiens (12, 31-13, 8a)","apercu":"Frères, recherchez donc avec ardeur les dons les plus grands. Et maintenant, je vais vous…","resume":{"texte":"Le grand hymne de saint Paul à l'amour : sans lui, rien n'a de valeur. Il décrit ce qu'est l'amour vrai — patient, généreux, sans jalousie ni orgueil, capable de tout supporter, de tout espérer et de ne jamais passer.","lien":"C'est le texte le plus universellement choisi pour un mariage, tant catholique que civil — une description concrète et exigeante de ce à quoi les époux s'engagent chaque jour l'un envers l'autre."},"texteComplet":["Frères, recherchez donc avec ardeur les dons les plus grands. Et maintenant, je vais vous indiquer le chemin par excellence.","J'aurais beau parler toutes les langues de la terre et du ciel, si je n'ai pas la charité, s'il me manque l'amour, je ne suis qu'un cuivre qui résonne, une cymbale retentissante","J'aurais beau être prophète, avoir toute la science des mystères et toute la connaissance de Dieu, et toute la foi jusqu'à transporter les montagnes, s'il me manque l'amour, je ne suis rien.","J'aurais beau distribuer toute ma fortune aux affamés, j'aurais beau me faire brûler vif, s'il me manque l'amour, cela ne me sert à rien.","L'amour prend patience ; l'amour rend service, l'amour ne jalouse pas ; il ne se vante pas, ne se gonfle pas d'orgueil ; il ne fait rien de malhonnête ; il ne cherche pas son intérêt ; il ne s'emporte pas ; il n'entretient pas de rancune ; il ne se réjouit pas de ce qui est mal, mais il trouve sa joie dans ce qui est vrai ; il supporte tout, il fait confiance en tout, il espère tout, il endure tout. L'amour ne passera jamais."],"recommande":true},{"id":"L11","label":"Un seul corps, un seul esprit","ref":"Lecture de la Lettre de saint Paul, Apôtre, aux Ephésiens (4, 1-6)","apercu":"Frères,","resume":{"texte":"Saint Paul appelle à vivre dans l'humilité, la douceur et la patience, en gardant l'unité dans le lien de la paix, car il n'y a qu'un seul Corps, un seul Esprit, une seule espérance.","lien":"Ce texte rappelle que l'unité du couple se construit chaque jour par l'humilité et la patience mutuelle — des qualités concrètes plus que des sentiments, essentielles pour durer dans le temps."},"texteComplet":["Frères,","Moi qui suis en prison à cause du Seigneur, je vous exhorte donc à vous conduire d'une manière digne de votre vocation : ayez beaucoup d'humilité, de douceur et de patience, supportez-vous les uns les autres avec amour ; ayez soin de garder l'unité dans l'Esprit par le lien de la paix.","Comme votre vocation vous a tous appelés à une seule espérance, de même il y a un seul Corps et un seul Esprit.","Il y a un seul Seigneur, une seule foi, un seul baptême, un seul Dieu et Père de tous, au-dessus de tous, par tous, et en tous."],"recommande":false},{"id":"L12","label":"Aimez à l'exemple du Christ","ref":"Lecture de la Lettre de saint Paul Apôtre aux Éphésiens (5, 2a.21-33)","apercu":"Frères, vivez dans l'amour, comme le Christ nous a aimés et s'est livré lui-même pour nous…","resume":{"texte":"Saint Paul compare l'amour des époux à celui du Christ pour son Église : un don total, qui cherche à faire grandir et à rendre heureux l'autre plus que soi-même.","lien":"Texte central de la théologie du mariage chrétien, qui élève l'amour conjugal au rang de signe de l'amour du Christ — un idéal exigeant de don de soi mutuel, souvent choisi pour sa profondeur symbolique."},"texteComplet":["Frères, vivez dans l'amour, comme le Christ nous a aimés et s'est livré lui-même pour nous.","(On peut ne pas lire cette partie entre crochet)","[Par respect pour le Christ, soyez soumis les uns aux autres ; les femmes, à leur mari, comme au Seigneur Jésus ; car, pour la femme, le mari est la tête, tout comme, pour l'Église, le Christ est la tête, lui qui est le Sauveur de son corps. Eh bien ! puisque l'Église se soumet au Christ, qu'il en soit toujours de même pour les femmes à l'égard de leur mari.]","Vous les hommes, aimez votre femme à l'exemple du Christ : il a aimé l'Église, il s'est livré lui-même pour elle, afin de la rendre sainte en la purifiant par le bain de l'eau baptismale, accompagné d'une parole ; il voulait se la présenter à lui-même, cette Église, resplendissante, sans tache, ni ride, ni rien de tel ; il la voulait sainte et immaculée.","C'est de la même façon que les maris doivent aimer leur femme : comme leur propre corps. Celui qui aime sa femme s'aime soi-même.","Jamais personne n'a méprisé son propre corps : au contraire, on le nourrit, on en prend soin. C'est ce que fait le Christ pour l'Église, parce que nous sommes les membres de son corps. Comme dit l'Écriture :","À cause de cela, l'homme quittera son père et sa mère, il s'attachera à sa femme, et tous deux ne feront plus qu'un.","Ce mystère est grand : je le dis en référence au Christ et à l'Église.","(On peut ne pas lire cette partie entre crochet)","[Pour en revenir à vous, chacun doit aimer sa propre femme comme 1ui-même, et la femme doit avoir du respect pour son mari.]"],"recommande":false},{"id":"L13","label":"La joie et la paix dans le Seigneur","ref":"Lecture de la Lettre de saint Paul, Apôtre, aux Philippiens (4, 4-9)","apercu":"Frères, Soyez toujours dans la joie du Seigneur ; je le redis : soyez dans la joie. Que vo…","resume":{"texte":"Saint Paul invite à vivre dans la joie constante, sans inquiétude excessive, en tournant son cœur et son esprit vers tout ce qui est vrai, juste et digne d'amour. C'est un appel à la paix intérieure et à la confiance.","lien":"Ce texte encourage les époux à cultiver la joie et la sérénité dans leur foyer, à ne pas se laisser envahir par l'inquiétude, et à nourrir leur relation de ce qui est beau et bon."},"texteComplet":["Frères, Soyez toujours dans la joie du Seigneur ; je le redis : soyez dans la joie. Que votre bienveillance soit connue de tous les hommes. Le Seigneur est proche.","Ne soyez inquiets de rien, mais, en toute circonstance, priez et suppliez, tout en rendant grâce, pour faire connaître à Dieu vos demandes.","Et la paix de Dieu, qui dépasse tout ce qu'on peut concevoir, gardera vos cœurs et vos pensées dans le Christ Jésus.","Enfin, mes frères, tout ce qui est vrai et noble, tout ce qui est juste et pur, tout ce qui est digne d'être aimé et honoré, tout ce qui s'appelle vertu et qui mérite des éloges, tout cela, prenez-le en compte.","Ce que vous avez appris et reçu, ce que vous avez vu et entendu de moi, mettez-le en pratique. Et le Dieu de la paix sera avec vous."],"recommande":false},{"id":"L14","label":"C'est l'amour qui fait l'unité","ref":"Lecture de la Lettre de saint Paul Apôtre aux Colossiens (3, 12-17)","apercu":"Frères, Puisque vous avez été choisis par Dieu, que vous êtes sanctifiés, aimés par lui, r…","resume":{"texte":"Saint Paul dresse la liste des qualités qui font tenir une communauté unie : tendresse, bonté, humilité, patience et surtout le pardon mutuel — « par-dessus tout, l'amour, qui est le lien le plus parfait ».","lien":"Ce texte donne au couple une véritable feuille de route pour la vie quotidienne — se supporter, se pardonner et vivre dans l'action de grâce, avec l'amour comme ciment de toute la vie commune."},"texteComplet":["Frères, Puisque vous avez été choisis par Dieu, que vous êtes sanctifiés, aimés par lui, revêtez-vous de tendresse et de compassion, de bonté, d'humilité, de douceur et de patience.","Supportez-vous les uns les autres, et pardonnez-vous mutuellement si vous avez des reproches à vous faire. Le Seigneur vous a pardonnés : faites de même.","Par-dessus tout cela, ayez l'amour, qui est le lien le plus parfait.","Et que, dans vos cœurs, règne la paix du Christ à laquelle vous avez été appelés, vous qui formez un seul corps. Vivez dans l'action de grâce.","Que la parole du Christ habite en vous dans toute sa richesse ; instruisez-vous et reprenez-vous les uns les autres en toute sagesse ; par des psaumes, des hymnes et des chants inspirés, chantez à Dieu, dans vos cœurs, votre reconnaissance.","Et tout ce que vous dites, tout ce que vous faites, que ce soit toujours au nom du Seigneur Jésus, en offrant par lui votre action de grâce à Dieu le Père."],"recommande":false},{"id":"L15","label":"L' Amour est la vraie sagesse","ref":"Lecture de la Lettre aux Hébreux (13, 1-6)","apercu":"Frères, Que demeure l'amour fraternel !","resume":{"texte":"L'auteur appelle à l'amour fraternel, à l'hospitalité et rappelle que « le mariage doit être honoré de tous » — un état de vie précieux à respecter et à protéger.","lien":"Ce texte affirme explicitement la dignité du mariage aux yeux de Dieu et de la communauté, et invite les époux à fonder leur sécurité non sur les biens matériels mais sur la présence fidèle de Dieu à leurs côtés."},"texteComplet":["Frères, Que demeure l'amour fraternel !","N'oubliez pas l'hospitalité : elle a permis à certains, sans le savoir, de recevoir chez eux des anges.","Souvenez-vous de ceux qui sont en prison, comme si vous étiez prisonniers avec eux. Souvenez-vous de ceux qui sont maltraités, car vous aussi, vous avez un corps.","Que le mariage soit honoré de tous, que l'union conjugale ne soit pas profanée, car les débauchés et les adultères seront jugés par Dieu.","Que votre conduite ne soit pas inspirée par l'amour de l'argent : contentez-vous de ce que vous avez, car Dieu lui-même a dit : Jamais je ne te lâcherai, jamais je ne t'abandonnerai.","C'est pourquoi nous pouvons dire en toute assurance : Le Seigneur est mon secours, je n'ai rien à craindre ! Que pourrait me faire un homme ?"],"recommande":false},{"id":"L16","label":"Un amour qui soit vrai","ref":"Lecture de la 1ère lettre de saint Jean (3, 18-24)","apercu":"Mes enfants, n'aimons pas en paroles ni par des discours, mais par des actes et en vérité.","resume":{"texte":"Saint Jean appelle à aimer « non pas en paroles, mais par des actes et en vérité » — un amour concret, vérifiable, qui se prouve dans la manière de vivre plus que dans les discours.","lien":"Ce texte rappelle aux époux que leur amour se construit avant tout dans les gestes quotidiens et la fidélité concrète, bien plus que dans les grandes déclarations — un rappel utile pour la durée d'une vie entière."},"texteComplet":["Mes enfants, n'aimons pas en paroles ni par des discours, mais par des actes et en vérité.","Voilà comment nous reconnaîtrons que nous appartenons à la vérité, et devant Dieu nous apaiserons notre cœur ; car si notre cœur nous accuse, Dieu est plus grand que notre cœur, et il connaît toutes choses.","Mes bien-aimés, si notre cœur ne nous accuse pas, nous avons de l'assurance devant Dieu.","Quoi que nous demandions à Dieu, nous le recevons de lui, parce que nous gardons ses commandements, et que nous faisons ce qui est agréable à ses yeux.","Or, voici son commandement : mettre notre foi dans le nom de son Fils Jésus Christ, et nous aimer les uns les autres comme il nous l'a commandé.","Celui qui garde ses commandements demeure en Dieu, et Dieu en lui ; et voilà comment nous reconnaissons qu'il demeure en nous, puisqu'il nous a donné part à son Esprit."],"recommande":false},{"id":"L17","label":"Tout amour vient de Dieu","ref":"Lecture de la 1ère lettre de saint Jean (4, 7-12)","apercu":"Mes bien-aimés, aimons-nous les uns les autres, puisque l'amour vient de Dieu. Celui qui a…","resume":{"texte":"Saint Jean proclame que « Dieu est amour » et que tout amour véritable trouve sa source en lui — aimer, c'est donc à la fois connaître Dieu et le rendre présent au monde.","lien":"Ce texte donne un fondement spirituel profond à l'amour conjugal : en s'aimant l'un l'autre, les époux ne font pas que construire leur bonheur, ils rendent visible quelque chose de Dieu lui-même."},"texteComplet":["Mes bien-aimés, aimons-nous les uns les autres, puisque l'amour vient de Dieu. Celui qui aime est né de Dieu et connaît Dieu.","Celui qui n'aime pas n'a pas connu Dieu, car Dieu est amour.","Voici comment l'amour de Dieu s'est manifesté parmi nous : Dieu a envoyé son Fils unique dans le monde pour que nous vivions par lui.","Voici en quoi consiste l'amour : ce n'est pas nous qui avons aimé Dieu, mais c'est lui qui nous a aimés, et il a envoyé son Fils en sacrifice de pardon pour nos péchés.","Mes bien-aimés, puisque Dieu nous a tellement aimés, nous devons, nous aussi, nous aimer les uns les autres.","Dieu, personne ne l'a jamais vu. Mais si nous nous aimons les uns les autres, Dieu demeure en nous, et, en nous, son amour atteint la perfection."],"recommande":false}],"psaumes":[{"id":"P1","label":"La joie de notre cœur vient de Dieu","ref":"Psaume 32","apercu":"Seigneur, ton amour soit sur nous, comme notre espoir est en toi.","resume":{"texte":"Ce psaume chante la confiance en Dieu qui protège et bénit ceux qui espèrent en lui — « la joie de notre cœur vient de Dieu ».","lien":"Un psaume de confiance et de joie, idéal pour exprimer que le bonheur du couple prend sa source dans la présence bienveillante de Dieu sur leur nouvelle vie commune."},"texteComplet":["Seigneur, ton amour soit sur nous, comme notre espoir est en toi.","Toute la terre, Seigneur, est remplie de ton amour.","Heureux le peuple dont le Seigneur est le Dieu,","heureuse la nation qu'il s'est choisie pour domaine!","Du haut des cieux, le Seigneur regarde:","il voit la race des hommes.","Dieu veille sur ceux qui le craignent,","qui mettent leur espoir en son amour,","Nous attendons notre vie du Seigneur:","il est pour nous un appui, un bouclier.","La joie de notre coeur vient de lui,","notre confiance est dans son nom très saint.","Que ton amour, Seigneur, soit sur nous","comme notre espoir est en toi!"],"recommande":true},{"id":"P2","label":"Goûtez et voyez comme est bon le Seigneur","ref":"Psaume 33","apercu":"Je bénirai le Seigneur toujours et partout","resume":{"texte":"Le psalmiste invite à goûter et voir la bonté du Seigneur, qui répond à ceux qui le cherchent et les délivre de leurs angoisses.","lien":"Ce psaume de louange et de reconnaissance convient bien à un couple qui veut exprimer sa gratitude pour le bonheur présent et sa confiance en la bonté de Dieu pour l'avenir."},"texteComplet":["Je bénirai le Seigneur toujours et partout","Goutez et voyez comme est bon le Seigneur","Qui cherche Dieu ne manque d'aucun bien","Je bénirai le Seigneur en tout temps,","sa louange sans cesse à mes lèvres.","Je me glorifierai dans le Seigneur:","que les pauvres m'entendent et soient en fête!","Magnifiez avec moi le Seigneur,","exaltons tous ensemble son nom.","Je cherche le Seigneur, il me répond :","de toutes mes frayeurs, il me délivre.","Qui regarde vers lui resplendira,","sans ombre ni trouble au visage.","Un pauvre crie; le Seigneur entend :","il le sauve de toutes ses angoisses.","L'ange du Seigneur campe à l'entour","pour libérer ceux qui le craignent.","Goûtez et voyez: le Seigneur est bon !","Heureux qui trouve en lui son refuge !"],"recommande":false},{"id":"P4","label":"Heureux qui aime entièrement la volonté de Dieu","ref":"Psaume 111 (112)","apercu":"Heureux qui craint le Seigneur qui aime entièrement sa volonté !","resume":{"texte":"Ce psaume décrit le bonheur de celui qui craint le Seigneur et agit avec justice et générosité — sa maison est bénie et sa descendance affermie.","lien":"Un psaume qui associe la fidélité à Dieu à la bénédiction du foyer, adapté aux couples qui souhaitent placer leur vie de famille sous le signe de la droiture et de la générosité."},"texteComplet":["Heureux qui craint le Seigneur qui aime entièrement sa volonté !","Heureux l'homme qui marche suivant la loi de Dieu !","Alléluia !","Heureux qui craint le Seigneur,","qui aime entièrement sa volonté!","Sa lignée sera puissante sur la terre;","la race des justes est bénie.","Les richesses affluent dans sa maison:","à jamais se maintiendra sa justice.","Lumière des coeurs droits, il s'est levé dans les ténèbres,","homme de justice, de tendresse et de pitié.","L'homme de bien a pitié, il partage;","il mène ses affaires avec droiture.","Cet homme jamais ne tombera;","toujours on fera mémoire du juste.","Il ne craint pas l'annonce d'un malheur:","le coeur ferme, il s'appuie sur le Seigneur.","Son coeur est confiant, il ne craint pas:","il verra ce que valaient ses oppresseurs.","A pleines mains, il donne au pauvre;","à jamais se maintiendra sa justice,","sa puissance grandira, et sa gloire!"],"recommande":false},{"id":"P3","label":"L'amour du Seigneur est pour toujours","ref":"Psaume 102","apercu":"Béni sois-tu, Seigneur, Dieu de tendresse et d'amour !","resume":{"texte":"Ce psaume célèbre la tendresse infinie de Dieu, « lent à la colère et plein d'amour », dont la fidélité se transmet de génération en génération.","lien":"Il invite le couple à prendre modèle sur la tendresse et la patience de Dieu, et à espérer transmettre cette fidélité à leurs propres enfants et à leur descendance."},"texteComplet":["Béni sois-tu, Seigneur, Dieu de tendresse et d'amour !","Mon âme, bénis le Seigneur, proclame les louanges de son nom très saint.","Bénis le Seigneur, ô mon âme,","bénis son nom très saint, tout mon être !","Bénis le Seigneur, ô mon âme,","n'oublie aucun de ses bienfaits !","Le Seigneur est tendresse et pitié,","lent à la colère et plein d'amour ;","comme la tendresse du père pour ses fils,","la tendresse du Seigneur pour qui le craint !","Mais l'amour du Seigneur, sur ceux qui le craignent,","est de toujours à toujours,","et sa justice pour les enfants de leurs enfants,","pour ceux qui gardent son alliance."],"recommande":false},{"id":"P5","label":"Tu verras les fils de tes fils","ref":"Psaume 127","apercu":"Que le Seigneur te bénisse tous les jours de ta vie !","resume":{"texte":"Ce psaume bénit le foyer fondé sur la crainte du Seigneur : le travail est béni, la famille grandit dans la joie, jusqu'à voir « les fils de ses fils ».","lien":"Un psaume traditionnellement associé à la fécondité et à la longévité du foyer — un choix pour les couples qui espèrent voir leur famille grandir et prospérer dans la durée."},"texteComplet":["Que le Seigneur te bénisse tous les jours de ta vie !","Heureux qui craint le Seigneur et marche selon ses voies !","Heureux qui craint le Seigneur","et marche selon ses voies!","Tu te nourriras du travail de tes mains:","Heureux es-tu ! A toi, le bonheur!","Ta femme sera dans ta maison","comme une vigne généreuse,","et tes fils, autour de la table,","comme des plants d'olivier.","Voilà comment sera béni","l'homme qui craint le Seigneur.","De Sion, que le Seigneur te bénisse!","Tu verras le bonheur de Jérusalem","tous les jours de ta vie,","et tu verras les fils de tes fils."],"recommande":false},{"id":"P6","label":"Le Seigneur est plein d'amour","ref":"Psaume 144","apercu":"Proche est le Seigneur de ceux qui l'invoquent.","resume":{"texte":"Ce psaume loue un Dieu proche, juste et fidèle en tout ce qu'il fait, plein de tendresse pour toutes ses œuvres, attentif à ceux qui l'invoquent.","lien":"Un psaume de louange simple et accessible, qui rappelle au couple que Dieu reste proche et attentif à leur vie quotidienne, bien au-delà du jour de la cérémonie."},"texteComplet":["Proche est le Seigneur de ceux qui l'invoquent.","Beni sois-tu Seigneur : Dieu de tendresse et d'amour","Le Seigneur est tendresse et pitié,","lent à la colère et plein d'amour;","la bonté du Seigneur est pour tous,","sa tendresse, pour toutes ses œuvres.","Que tes œuvres, Seigneur, te rendent grâce","et que tes fidèles te bénissent !","Les yeux sur toi, tous, ils espèrent :","tu leur donnes la nourriture au temps voulu.","Le Seigneur est juste en toutes ses voies,","fidèle en tout ce qu'il fait.","Il est proche de ceux qui l'invoquent,","de tous ceux qui l'invoquent en vérité."],"recommande":false},{"id":"P7","label":"Vous tous bénissez le Seigneur","ref":"Psaume 148","apercu":"Alléluia, louez le Seigneur, alléluia, alléluia !","resume":{"texte":"Ce psaume rassemble toute la création — cieux, astres, peuples, jeunes et vieux — dans une même louange universelle à Dieu.","lien":"Un psaume festif et joyeux qui convient bien à une célébration où toute l'assemblée, familles et amis réunis, est invitée à partager la joie du couple dans une même action de grâce."},"texteComplet":["Alléluia, louez le Seigneur, alléluia, alléluia !","Chantons le nom du Seigneur et rendons gloire à notre Dieu","Louez le Seigneur du haut des cieux,","louez-le dans les hauteurs.","Vous, tous ses anges, louez-le,","louez-le, tous les univers.","Louez-le, soleil et lune,","louez-le, tous les astres de lumière ;","vous, cieux des cieux, louez-le,","et les eaux des hauteurs des cieux.","Les rois de la terre et tous les peuples,","les princes et tous les juges de la terre ;","tous les jeunes gens et jeunes filles,","les vieillards comme les enfants.","Qu'ils louent le nom du Seigneur,","le seul au-dessus de tout nom ;","sur le ciel et sur la terre, sa splendeur :","il accroît la vigueur de son peuple."],"recommande":false}],"evangiles":[{"id":"E1","label":"Le chemin du bonheur","ref":"Évangile de Jésus-Christ selon saint Matthieu (5, 1-12)","apercu":"En ces temps-là, voyant les foules, Jésus gravit la montagne. Il s'assit, et ses disciples…","resume":{"texte":"Jésus proclame les Béatitudes : le vrai bonheur n'est pas dans la richesse ou la puissance, mais dans la douceur, la miséricorde, la pureté de cœur et la recherche de la paix.","lien":"Ce texte propose au couple une véritable feuille de route du bonheur selon l'Évangile — un chemin exigeant mais profondément libérateur pour construire leur vie ensemble."},"texteComplet":["En ces temps-là, voyant les foules, Jésus gravit la montagne. Il s'assit, et ses disciples s'approchèrent de lui.","Alors, ouvrant la bouche, il les enseignait. Il disait :","« Heureux les pauvres de cœur : le Royaume des cieux est à eux !","Heureux les doux : car ils recevront la terre en héritage.","Heureux ceux qui pleurent : ils seront consolés !","Heureux ceux qui ont faim et soif de la justice : ils seront rassasiés !","Heureux les miséricordieux : ils obtiendront miséricorde !","Heureux les cœurs purs : ils verront Dieu !","Heureux les artisans de paix : ils seront appelés fils de Dieu !","Heureux ceux qui sont persécutés pour la justice : le Royaume des cieux est à eux !","Heureux serez-vous si l'on vous insulte, si l'on vous persécute et si l'on dit faussement toute sorte de mal contre vous, à cause de moi.","Réjouissez-vous, soyez dans l'allégresse, car votre récompense sera grande dans les cieux !"],"recommande":false},{"id":"E2","label":"Le rayonnement du couple","ref":"Évangile de Jésus-Christ selon saint Matthieu (5, 13-16)","apercu":"En ces temps-là, Jésus disait à ses disciples :","resume":{"texte":"Jésus appelle ses disciples à être « le sel de la terre » et « la lumière du monde », à ne pas cacher le bien qu'ils font mais à le laisser rayonner autour d'eux.","lien":"Ce texte invite les époux à vivre leur amour non pas refermé sur eux-mêmes, mais comme une lumière qui rayonne sur leur entourage, leur famille et leurs amis."},"texteComplet":["En ces temps-là, Jésus disait à ses disciples :","« Vous êtes le sel de la terre. Mais si le sel devient fade, comment lui rendre de la saveur ? Il ne vaut plus rien : on le jette dehors et il est piétiné par les gens.","Vous êtes la lumière du monde. Une ville située sur une montagne ne peut être cachée.","Et l'on n'allume pas une lampe pour la mettre sous le boisseau ; on la met sur le lampadaire, et elle brille pour tous ceux qui sont dans la maison.","De même, que votre lumière brille devant les hommes : alors, voyant ce que vous faites de bien, ils rendront gloire à votre Père qui est aux cieux."],"recommande":false},{"id":"E3","label":"Bâtir sur le roc","ref":"Évangile de Jésus-Christ selon saint Matthieu (7, 21.24-29)","apercu":"En ces temps-là, Jésus disait à ses disciples :","resume":{"texte":"Jésus compare celui qui met sa parole en pratique à un homme qui bâtit sa maison sur le roc : elle résiste aux tempêtes, contrairement à celle bâtie sur le sable.","lien":"Une image forte pour un couple qui veut fonder son foyer sur des bases solides — la foi et les valeurs partagées — plutôt que sur des fondations fragiles, pour traverser ensemble les épreuves de la vie."},"texteComplet":["En ces temps-là, Jésus disait à ses disciples :","Ce n'est pas en me disant : \"Seigneur, Seigneur !\" qu'on entrera dans le royaume des Cieux, mais c'est en faisant la volonté de mon Père qui est aux cieux.","Ainsi, celui qui entend les paroles que je dis là et les met en pratique est comparable à un homme prévoyant qui a construit sa maison sur le roc.","La pluie est tombée, les torrents ont dévalé, les vents ont soufflé et se sont abattus sur cette maison ; la maison ne s'est pas écroulée, car elle était fondée sur le roc.","Et celui qui entend de moi ces paroles sans les mettre en pratique est comparable à un homme insensé qui a construit sa maison sur le sable.","La pluie est tombée, les torrents ont dévalé, les vents ont soufflé, ils sont venus battre cette maison ; la maison s'est écroulée, et son écroulement a été complet. »","Lorsque Jésus eut terminé ce discours, les foules restèrent frappées de son enseignement, car il les enseignait en homme qui a autorité, et non pas comme leurs scribes."],"recommande":false},{"id":"E4","label":"Tous deux ne font plus qu'un","ref":"Évangile de Jésus-Christ selon saint Matthieu (19, 3-6)","apercu":"En ces temps-là, des pharisiens s'approchèrent de lui pour le mettre à l'épreuve ; ils lui…","resume":{"texte":"Jésus rappelle qu'au commencement, Dieu a créé l'homme et la femme pour qu'ils deviennent « une seule chair », et conclut : « ce que Dieu a uni, que l'homme ne le sépare pas ».","lien":"Texte fondateur qui exprime le cœur même du sacrement du mariage — l'union indissoluble voulue par Dieu — souvent choisi pour sa force et sa clarté."},"texteComplet":["En ces temps-là, des pharisiens s'approchèrent de lui pour le mettre à l'épreuve ; ils lui demandèrent :","« Est-il permis à un homme de renvoyer sa femme pour n'importe quel motif ? »","Il répondit : « N'avez-vous pas lu ceci ? Dès le commencement, le Créateur les fit homme et femme, et dit : À cause de cela, l'homme quittera son père et sa mère, il s'attachera à sa femme, et tous deux deviendront une seule chair.","Ainsi, ils ne sont plus deux, mais une seule chair. Donc, ce que Dieu a uni, que l'homme ne le sépare pas ! »"],"recommande":false},{"id":"E5","label":"Amour de Dieu, amour des autres","ref":"Évangile de Jésus-Christ selon saint Matthieu (22, 35-40)","apercu":"En ces temps-là, un docteur de la loi posa une question à Jésus pour le mettre à l'épreuve…","resume":{"texte":"Interrogé sur le plus grand commandement, Jésus répond : aimer Dieu de tout son cœur, et aimer son prochain comme soi-même — les deux inséparables.","lien":"Ce texte rappelle que l'amour conjugal s'inscrit dans un amour plus large : aimer son époux ou son épouse comme soi-même est une manière concrète de vivre le plus grand des commandements."},"texteComplet":["En ces temps-là, un docteur de la loi posa une question à Jésus pour le mettre à l'épreuve :","« Maître, dans la Loi, quel est le grand commandement ? »","Jésus lui répondit :","« Tu aimeras le Seigneur ton Dieu de tout ton cœur, de toute ton âme et de tout ton esprit. Voilà le grand, le premier commandement. Et voici le second, qui lui est semblable : Tu aimeras ton prochain comme toi-même. Tout ce qu'il y a dans l'Écriture, -- dans la Loi et les Prophètes -- dépend de ces deux commandements. »"],"recommande":false},{"id":"E6","label":"Ne séparez pas ce que Dieu a uni","ref":"Évangile de Jésus-Christ selon saint Marc (10, 6-9)","apercu":"Jésus disait à ses disciples :","resume":{"texte":"Jésus rappelle que dès l'origine, Dieu a voulu l'homme et la femme unis en une seule chair, et qu'il revient à Dieu seul, et à nul autre, de défaire ce qu'il a lui-même uni.","lien":"Une version plus brève et directe du même enseignement que Matthieu 19 — un choix pour les couples qui souhaitent une proclamation simple et forte de l'indissolubilité du mariage."},"texteComplet":["Jésus disait à ses disciples :","Au commencement de la création, Dieu les fit homme et femme. À cause de cela, l'homme quittera son père et sa mère, il s'attachera à sa femme, et tout deux deviendront une seule chair. Ainsi, ils ne sont plus deux, mais une seule chair. Donc, ce que Dieu a uni, que l'homme ne le sépare pas ! »"],"recommande":false},{"id":"E7","label":"Jésus présent aux noces","ref":"Évangile de Jésus-Christ selon saint Jean (2, 1-11)","apercu":"En ces temps-là, il y eut un mariage à Cana en Galilée. La mère de Jésus était là. Jésus a…","resume":{"texte":"Au mariage de Cana, Jésus change l'eau en vin à la demande de sa mère, manifestant sa gloire dès le début de sa vie publique — et gardant le meilleur vin pour la fin.","lien":"Le texte le plus emblématique pour un mariage chrétien : Jésus est présent et actif dans la joie d'une noce, un signe que Dieu accompagne le couple et transforme leur quotidien en abondance."},"texteComplet":["En ces temps-là, il y eut un mariage à Cana en Galilée. La mère de Jésus était là. Jésus aussi avait été invité au repas de noces avec ses disciples. Or, on manqua de vin; la mère de Jésus lui dit :","« Ils n'ont pas de vin ».","Jésus lui répond : « Femme, que me veux-tu ? Mon heure n'est pas encore venue ».","Sa mère dit aux serviteurs : « Tout ce qu'il vous dira, faites-le ».","Or, il y avait là six jarres de pierre pour les ablutions rituelles des Juifs ; chacune contenait deux à trois mesures, environ cent litres. Jésus dit aux serviteurs :","« Remplissez d'eau les jarres».","Et ils les remplirent jusqu'au bord. Il leur dit :","« Maintenant, puisez, et portez-en au maître du repas ».","Ils lui en portèrent et celui-ci goûta l'eau changée en vin. Il ne savait pas d'où venait ce vin, mais les serviteurs le savaient bien, eux qui avaient puisé l'eau. Alors le maître du repas appelle le marié et lui dit :","« Tout le monde sert le bon vin en premier, et, lorsque les gens ont bien bu, on apporte le moins bon. Mais toi, tu as gardé le bon vin jusqu'à maintenant ».","Tel fut le commencement des signes que Jésus accomplit.","C'était à Cana en Galilée. Il manifesta sa gloire, et ses disciples crurent en lui."],"recommande":true},{"id":"E8","label":"Aimer c'est donner sa vie","ref":"Évangile de Jésus-Christ selon saint Jean (15, 9-12)","apercu":"En ces temps-là, Jésus disait à ses disciples :","resume":{"texte":"Jésus invite ses disciples à demeurer dans son amour en gardant ses commandements, pour que leur joie soit complète — et résume tout en un seul commandement : « aimez-vous les uns les autres comme je vous ai aimés ».","lien":"Ce texte place l'amour du Christ comme la mesure et la source de l'amour conjugal — les époux sont invités à s'aimer non selon leurs propres forces, mais en demeurant reliés à l'amour de Dieu."},"texteComplet":["En ces temps-là, Jésus disait à ses disciples :","« Comme le Père m'a aimé, moi aussi je vous ai aimés.","Demeurez dans mon amour. Si vous gardez mes commandements, vous demeurez dans mon amour, comme moi, j'ai gardé les commandements de mon Père, et je demeure dans son amour.","Je vous ai dit cela pour que ma joie soit en vous, et que votre joie soit parfaite.","Mon commandement, le voici : Aimez-vous les uns les autres comme je vous ai aimés. »"],"recommande":false},{"id":"E9","label":"Aimez comme je vous ai aimés","ref":"Évangile de Jésus Christ selon saint Jean (15, 12-16)","apercu":"En ces temps-là, Jésus disait à ses disciples :","resume":{"texte":"Jésus proclame qu'il n'y a pas de plus grand amour que de donner sa vie pour ceux qu'on aime, et qu'il ne considère plus ses disciples comme des serviteurs mais comme des amis.","lien":"Ce texte élève le don de soi au rang de plus grande preuve d'amour — une invitation pour les époux à faire de leur mariage un don réciproque, gratuit et sans calcul, à l'exemple du Christ."},"texteComplet":["En ces temps-là, Jésus disait à ses disciples :","« Mon commandement, le voici : Aimez-vous les uns les autres comme je vous ai aimés.","Il n'y a pas de plus grand amour que de donner sa vie pour ceux qu'on aime.","Vous êtes mes amis si vous faites ce que je vous commande.","Je ne vous appelle plus serviteurs, car le serviteur ne sait pas ce que fait son maître ; je vous appelle mes amis, car tout ce que j'ai entendu de mon Père, je vous l'ai fait connaître.","Ce n'est pas vous qui m'avez choisi, c'est moi qui vous ai choisis et établis, afin que vous alliez, que vous portiez du fruit, et que votre fruit demeure.","Alors, tout ce que vous demanderez au Père en mon nom, il vous le donnera. »"],"recommande":false},{"id":"E10","label":"Que tous ils soient un","ref":"Évangile de Jésus-Christ selon saint Jean (17, 20-26)","apercu":"En ces temps-là, les yeux levés au ciel, Jésus priait ainsi :","resume":{"texte":"Dans sa prière avant sa Passion, Jésus demande à son Père que ses disciples soient un, à l'image de l'unité qui existe entre lui et le Père.","lien":"Un texte profond sur le mystère de l'unité — les époux peuvent y voir un modèle de leur propre vocation à devenir « un », à l'image de l'unité même de Dieu."},"texteComplet":["En ces temps-là, les yeux levés au ciel, Jésus priait ainsi :","« Père, Je ne prie pas seulement pour ceux qui sont là, mais encore pour ceux qui, grâce à leur parole, croiront en moi.","Que tous soient un, comme toi, Père, tu es en moi, et moi en toi. Qu'ils soient un en nous, eux aussi, pour que le monde croie que tu m'as envoyé.","Et moi, je leur ai donné la gloire que tu m'a donnée, pour qu'ils soient un comme nous sommes moi en eux, et toi en moi.","Qu'ils deviennent ainsi parfaitement un, afin que le monde sache que tu m'as envoyé, et que tu les as aimés comme tu m'as aimé.","(On peut ne pas lire la partie entre crochets).","[Père, ceux que tu m'as donnés, je veux que là où je suis, ils soient eux aussi avec moi, et qu'ils contemplent ma gloire, celle que tu m'as donnée parce que tu m'as aimé avant la fondation du monde. Père juste, le monde ne t'a pas connu, mais moi je t'ai connu, et ceux-ci ont reconnu que tu m'as envoyé. Je leur ai fait connaître ton nom, et je le ferai connaître, pour que l'amour dont tu m'as aimé soit en eux, et que moi aussi, je sois en eux. »]"],"recommande":false}],"dialoguesInitiaux":[{"id":"dialogue_formule1","label":"Dialogue initial — 1ère formule","apercu":"Alors, le prêtre ou le diacre interroge les futurs époux","analyseUsage":{"analyse":"Le prêtre interroge les futurs époux question par question, sur des points distincts : liberté de l'engagement, promesse pour toute la vie, accueil des enfants, mission chrétienne. Chaque point reçoit sa propre réponse « Oui ».","usage":"Plus solennelle et progressive, elle convient aux cérémonies où l'on souhaite marquer chaque engagement séparément, avec un temps de réponse à chaque question."},"texteComplet":["Alors, le prêtre ou le diacre interroge les futurs époux","N. et N., vous avez écouté la parole de Dieu qui révèle la grandeur de l'amour humain et du mariage.","Vous allez vous engager l'un envers l'autre. Est-ce librement et sans contrainte ?","Les futurs époux (séparément) : Oui.","Le prêtre ou le diacre : En vous engageant dans la voie du mariage vous vous promettez amour mutuel et respect. Est-ce pour toute votre vie ?","Les futurs époux (séparément) : Oui pour toute notre vie.","Si les futurs époux sont avancés en âge on omettra ce qui est entre [ ].","Le prêtre ou le diacre : [Êtes-vous prêts à accueillir les enfants que Dieu vous donne et à les éduquer selon l'Évangile du Christ et dans la foi de l'Église ?]","Les futurs époux (séparément) : Oui.","Si cela convient, le prêtre ou le diacre peut ajouter, en ces termes ou en d'autres Semblables :","Le prêtre ou le diacre : Êtes vous disposés à assumer ensemble votre mission de chrétiens dans le monde et dans l'Église ?","Les futurs époux (ensemble) : Oui."],"recommande":false},{"id":"dialogue_formule2","label":"Dialogue initial — 2ème formule","apercu":"Le prêtre ou le diacre Avec N. et N., nous avons écouté la parole de Dieu, qui révèle la g…","analyseUsage":{"analyse":"Le prêtre énonce l'ensemble des piliers du mariage dans une seule déclaration récapitulative avant de demander la confirmation globale des mariés.","usage":"Plus sobre et directe, elle convient bien aux cérémonies plus intimes ou lorsque les mariés recherchent une formule plus concise."},"texteComplet":["Le prêtre ou le diacre Avec N. et N., nous avons écouté la parole de Dieu, qui révèle la grandeur de l'amour humain et du mariage. Le mariage suppose que les époux s'engagent l'un envers l'autre librement et sans contrainte, qu'ils se promettent amour mutuel et respect pour toute leur vie [qu'ils accueillent les enfants que Dieu leur donne et les éduquent selon l'Évangile du Christ et dans la foi de l'Église].","N. et N., est-ce bien ainsi que vous voulez vivre dans le mariage ?","(si les futurs époux sont avancés en âge on omettra ce qui est entre [ ] ):","Les futurs époux (séparément) : Oui.","Si cela convient, le prêtre ou le diacre peut ajouter, en ces termes ou en d'autres semblables","Le prêtre ou le diacre :Êtes-vous disposés à assumer ensemble votre mission de chrétiens dans le monde et dans l'Église ?","Les futurs époux (ensemble) : Oui."],"recommande":true}],"consentements":[{"id":"consentement_formule1","label":"Échange des consentements — formule 1","apercu":"Le futur époux : Moi, {EPOUX}, je te reçois {EPOUSE} comme épouse, et je promets de te res…","analyseUsage":{"analyse":"Les deux époux prononcent, l'un après l'autre, une même déclaration solennelle et symétrique : accueil de l'autre comme épouse ou époux, promesse de fidélité « dans le bonheur et dans les épreuves, dans la santé et dans la maladie ».","usage":"La formule la plus proche des vœux traditionnels que l'on connaît par les cérémonies civiles ou les films — un choix sûr pour des mariés qui veulent des vœux solennels et reconnaissables."},"texteComplet":["Le futur époux : Moi, {EPOUX}, je te reçois {EPOUSE} comme épouse, et je promets de te rester fidèle, dans le bonheur et dans les épreuves, dans la santé et dans la maladie, pour t'aimer tous les jours de ma vie.","La future épouse : Moi, {EPOUSE}, je te reçois {EPOUX} comme époux, et je promets de te rester fidèle, dans le bonheur et dans les épreuves, dans la santé et dans la maladie, pour t'aimer tous les jours de ma vie."],"recommande":false},{"id":"consentement_formule2","label":"Échange des consentements — formule 2","apercu":"Le futur époux : {EPOUSE}, veux-tu être ma femme (mon épouse) ?","analyseUsage":{"analyse":"Un dialogue en deux temps : chacun demande d'abord à l'autre s'il veut l'épouser, puis, après le « oui », prononce sa promesse de fidélité. L'échange est plus vivant, presque conversationnel.","usage":"Convient aux couples qui souhaitent un moment de consentement plus incarné et dialogué, où l'on sent l'échange réel entre les deux personnes plutôt qu'une déclaration parallèle."},"texteComplet":["Le futur époux : {EPOUSE}, veux-tu être ma femme (mon épouse) ?","La future épouse : Oui (je le veux). Et toi, {EPOUX}, veux-tu être mon mari (mon époux) ?","Le futur époux : Oui (je le veux). Moi, {EPOUX}, je te reçois {EPOUSE} comme épouse et je serai ton époux. Je promets de t'aimer fidèlement dans le bonheur et dans les épreuves tout au long de notre vie.","La future épouse : Moi, {EPOUSE}, je te reçois {EPOUX} comme époux et je serai ton épouse. Je promets de t'aimer fidèlement dans le bonheur et dans les épreuves tout au long de notre vie."],"recommande":true},{"id":"consentement_formule3","label":"Échange des consentements — formule 3","apercu":"Le futur époux : {EPOUSE}, veux-tu être ma femme (mon épouse) ?","analyseUsage":{"analyse":"Semblable à la formule 2 mais plus courte, elle se termine par une déclaration commune prononcée « Ensemble », qui scelle les deux consentements individuels en un seul engagement partagé.","usage":"Idéale pour les couples qui veulent un moment fort et bref, avec un final prononcé à l'unisson qui marque visuellement et symboliquement l'union des deux « oui »."},"texteComplet":["Le futur époux : {EPOUSE}, veux-tu être ma femme (mon épouse) ?","La future épouse : Oui, je veux être ta femme (ton épouse). Et toi, {EPOUX}, veux-tu être mon mari (mon époux) ?","Le futur époux : Oui, je veux être ton mari (ton époux).","La future épouse : Je te reçois comme époux et je me donne à toi.","Le futur époux : Je te reçois comme épouse et je me donne à toi.","Ensemble : Pour nous aimer fidèlement dans le bonheur et dans les épreuves, et nous soutenir l'un l'autre, tout au long de notre vie."],"recommande":false},{"id":"consentement_formule4","label":"Échange des consentements — formule 4","apercu":"Le prêtre ou le diacre interroge d'abord le futur époux : {EPOUX}, voulez-vous prendre {EP…","analyseUsage":{"analyse":"C'est le prêtre lui-même qui interroge tour à tour chaque futur époux, qui répond simplement « Oui ». Les mariés ne se parlent pas directement l'un à l'autre : c'est l'Église, à travers le prêtre, qui reçoit leur consentement.","usage":"La plus formelle des quatre — proche du modèle des cérémonies très classiques ou traditionnelles, pour des mariés qui préfèrent une structure entièrement conduite par le célébrant."},"texteComplet":["Le prêtre ou le diacre interroge d'abord le futur époux : {EPOUX}, voulez-vous prendre {EPOUSE} comme épouse, et promettez-vous de lui rester fidèle, dans le bonheur et dans les épreuves, dans la santé et dans la maladie, pour l'aimer tous les jours de votre vie ?","Le futur époux répond : Oui.","Puis le prêtre ou le diacre interroge la future épouse : {EPOUSE}, voulez-vous prendre {EPOUX} comme époux, et promettez-vous de lui rester fidèle, dans le bonheur et dans les épreuves, dans la santé et dans la maladie, pour l'aimer tous les jours de votre vie ?","La future épouse répond : Oui."],"recommande":false}],"benedictionsAlliances":[{"id":"benediction_alliances_1","label":"Bénédiction des alliances — formule 1","apercu":"Que le Seigneur bénisse les alliances que vous allez vous donner l'un à l'autre en signe d…","analyseUsage":{"analyse":"Une invocation brève et directe : le prêtre demande simplement à Dieu de bénir les alliances comme signe d'amour et de fidélité, suivie d'un « Amen » de l'assemblée.","usage":"La plus courte des quatre formules — pratique pour une cérémonie qui veut aller à l'essentiel sur ce moment précis."},"texteComplet":["Que le Seigneur bénisse les alliances que vous allez vous donner l'un à l'autre en signe d'amour et de fidélité. R. Amen."],"recommande":false},{"id":"benediction_alliances_2","label":"Bénédiction des alliances — formule 2","apercu":"Seigneur, bénis les alliances que nous bénissons en ton nom. Donne à N. et N. de se garder…","analyseUsage":{"analyse":"Le prêtre s'adresse à Dieu en nommant les époux et en demandant qu'ils se gardent « une entière fidélité », qu'ils demeurent dans la paix et vivent dans l'amour mutuel — la bénédiction est développée sur plusieurs intentions.","usage":"Convient à des mariés qui souhaitent une bénédiction un peu plus détaillée que la formule 1, sans pour autant être longue."},"texteComplet":["Seigneur, bénis les alliances que nous bénissons en ton nom. Donne à N. et N. de se garder l'un à l'autre une entière fidélité : qu'ils demeurent dans la paix en faisant ta volonté, qu'ils vivent toujours dans l'amour mutuel. R. Amen."],"recommande":false},{"id":"benediction_alliances_3","label":"Bénédiction des alliances — formule 3","apercu":"Bénis, Seigneur, et sanctifie dans leur amour tes serviteurs N. et N. ; Ces alliances sont…","analyseUsage":{"analyse":"Le prêtre bénit et sanctifie « dans leur amour » les deux époux eux-mêmes autant que les alliances, qui deviennent « le rappel de leur tendresse » — le lien entre l'objet (l'alliance) et la relation (la tendresse) est explicite.","usage":"Un bon équilibre entre brièveté et profondeur symbolique — c'est la formule la plus fréquemment choisie, à la fois simple et évocatrice."},"texteComplet":["Bénis, Seigneur, et sanctifie dans leur amour tes serviteurs N. et N. ; Ces alliances sont pour eux signes de fidélité : qu'elles soient aussi le rappel de leur tendresse. Amen."],"recommande":true},{"id":"benediction_alliances_4","label":"Bénédiction des alliances — formule 4","apercu":"Seigneur, notre Dieu, toi qui as fait Alliance avec nous par Jésus Christ, bénis maintenan…","analyseUsage":{"analyse":"Cette formule relie explicitement les alliances des époux à l'Alliance que Dieu a conclue avec l'humanité par Jésus Christ, inscrivant leur geste dans une histoire spirituelle plus large.","usage":"Pour les couples qui souhaitent souligner la dimension théologique du mariage comme alliance, en écho au mot lui-même utilisé pour les alliances qu'ils échangent."},"texteComplet":["Seigneur, notre Dieu, toi qui as fait Alliance avec nous par Jésus Christ, bénis maintenant ces alliances qu'elles soient pour N. et N. le signe de leur fidélité et le rappel de leur amour. R. Amen."],"recommande":false}],"benedictionsNuptiales":[{"id":"benediction_nuptiale_1","label":"Bénédiction nuptiale n°1","apercu":"Le prêtre, Prions le Seigneur pour ces époux N. et N., qui s'approchent de l'autel au jour…","analyseUsage":{"analyse":"Une bénédiction longue et détaillée qui s'adresse séparément à l'épouse puis à l'époux, en décrivant leurs vocations respectives (elle : tendresse et pureté de cœur ; lui : dévouement à ses tâches d'époux). Elle inclut une mention optionnelle de la communion eucharistique.","usage":"Pour une messe de mariage complète (avec communion), et pour des mariés à l'aise avec un langage qui distingue les rôles traditionnels de l'épouse et de l'époux."},"texteComplet":["Le prêtre, Prions le Seigneur pour ces époux N. et N., qui s'approchent de l'autel au jour de leur mariage (: que leur communion au corps et au sang du Christ les garde unis dans un mutuel amour).","Père saint, tu as créé l'homme et la femme pour qu'ils forment ensemble ton image dans l'unité de la chair et du cœur, et accomplissent ainsi leur mission dans le monde. Afin de révéler le dessein de ta grâce, tu as voulu que l'amour de l'homme et de la femme soit déjà un signe de l'Alliance que tu as conclue avec ton peuple, et tu veux que dans le sacrement de mariage l'union des époux exprime le mystère des noces du Christ et de l'Église. Nous te prions de bénir N. et N., de les prendre sous ta protection, et de mettre en eux la puissance de ton Esprit Saint. Fais que, tout au long de leur vie commune sanctifiée par ce sacrement, ils échangent entre eux les dons de ton amour, et qu'en étant l'un pour l'autre un signe de ta présence, ils deviennent un seul cœur et un seul esprit. Accorde-leur de pouvoir assurer par leur travail la vie de leur foyer [et d'élever leurs enfants selon l'Évangile pour qu'ils fassent partie de ta famille éternellement]. Accorde à N. - (l'épouse) - la plénitude de ta bénédiction ; qu'elle réponde à sa vocation d'épouse [et de mère], qu'elle soit par sa pureté de cœur et sa tendresse la joie de sa maison. Accorde aussi ta bénédiction à N. - (l'époux) - . qu'il se dévoue à toutes ses tâches d'époux fidèle [et de père attentif]. (Et puisqu'ils vont maintenant partager le repas de ton eucharistie,) Père saint, donne-leur à tous deux la joie d'être un jour tes convives au festin de ton Royaume. Par Jésus, le Christ, notre Seigneur. Tous :Amen"],"recommande":false},{"id":"benediction_nuptiale_2","label":"Bénédiction nuptiale n°2","apercu":"Le prêtre ou le diacre, Prions tous ensemble, et demandons à Dieu de répandre sa bénédicti…","analyseUsage":{"analyse":"La plus longue et la plus solennelle des six, de style classique, qui retrace le dessein de Dieu depuis la Création jusqu'à l'union des deux époux, avec des références bibliques appuyées.","usage":"Pour une cérémonie très solennelle, dans une tradition liturgique marquée — à réserver aux couples qui apprécient un style plus ample et cérémoniel."},"texteComplet":["Le prêtre ou le diacre, Prions tous ensemble, et demandons à Dieu de répandre sa bénédiction sur ces nouveaux époux pour que dans sa bienveillance il accorde sa grâce à ceux qu'il a unis par le sacrement du mariage.","Dieu tout-puissant, tu as créé toutes choses et dès le commencement tu as ordonné l'univers ; en faisant l'homme et la femme à ton image, tu as voulu que la femme demeure pour l'homme une compagne inséparable et qu'ils ne soient désormais plus qu'un, nous signifiant ainsi de ne jamais rompre l'unité qu'il t'avait plu de créer ; Dieu, tu as sanctifié les noces par un si grand mystère que tu en as fait le sacrement de (alliance du Christ et de l'Église ; Dieu qui as uni l'homme et la femme, et qui dés (origine as béni cette union de la seule bénédiction qui soit demeurée après la peine venue de la faute originelle, et la condamnation par le déluge ; Regarde avec bonté ton serviteur et ta servante N. et N., unis par les liens du mariage et qui demandent le secours de ta bénédiction. Envoie sur eux la grâce de l'Esprit Saint par ta charité répandue dans leurs cœurs, qu'ils demeurent fidèles à l'alliance conjugale. Que cette nouvelle mariée soit toute paix et tendresse qu'elle se conduise comme les saintes femmes dont l'Écriture a fait l'éloge. Que son époux lui donne sa confiance ; reconnaissant qu'elle est son égale, héritière avec lui de la grâce de vie, qu'il la respecte et l'aime toujours comme le Christ a aimé son Église. Et maintenant, Seigneur, nous t'en prions accorde-leur d'être fermes dans la foi et d'aimer tes commandements ; qu'ils se gardent fidèles l'un à l'autre et que leur vie soit belle aux yeux de tous ; que la puissance de l'Évangile les rende forts et qu'ils soient de vrais témoins du Christ. [Que leur union soit féconde, qu'ils se conduisent en parents justes et bons, et que tous deux aient la joie de voir les enfants de leurs enfants.] Après une vieillesse heureuse, qu'ils parviennent à la vie sans fin dans le Royaume des cieux. Par Jésus, le Christ, notre Seigneur. Tous : Amen."],"recommande":false},{"id":"benediction_nuptiale_3","label":"Bénédiction nuptiale n°3","apercu":"Le prêtre ou le diacre, Et maintenant, appelons sur ces époux la bénédiction de notre Dieu…","analyseUsage":{"analyse":"Une bénédiction équilibrée : elle rappelle que Dieu a voulu et béni l'union de l'homme et de la femme, puis demande concrètement force, joie et persévérance pour les épreuves à venir.","usage":"La formule la plus polyvalente des six — ni trop courte ni trop longue, avec un ton chaleureux qui convient à la plupart des cérémonies. C'est la plus fréquemment choisie."},"texteComplet":["Le prêtre ou le diacre, Et maintenant, appelons sur ces époux la bénédiction de notre Dieu : il leur a fait la grâce du sacrement, que lui-même la renouvelle sans cesse dans son amour.","Père très saint, créateur du monde, toi qui as fait l'homme et la femme à ton image, toi qui as voulu leur union et qui l'as bénie, nous te prions humblement pour N. et N., qui sont unis aujourd'hui par le sacrement de mariage. Que ta bénédiction descende en abondance sur eux. Que la force de l'Esprit Saint les enflamme de ton amour ; Qu'ils trouvent le bonheur en se donnant l'un à l'autre ; [Que des enfants viennent embellir leur foyer et que (Église en soit enrichie.] Dans la joie, qu'ils sachent te remercier ; dans la tristesse, qu'ils se tournent vers toi ; que ta présence les aide dans leur travail ; qu'ils te trouvent à leur côté dans l'épreuve pour alléger leur fardeau. Qu'ils participent â la prière de ton Église et témoignent de toi dans le monde. Enfin, après avoir vécu longtemps heureux, qu'ils parviennent, entourés de leurs amis, dans le Royaume des cieux. Par Jésus, le Christ, notre Seigneur. Tous : Amen."],"recommande":true},{"id":"benediction_nuptiale_4","label":"Bénédiction nuptiale n°4","apercu":"Le prêtre Frères et sœurs, demandons à Dieu de bénir ces nouveaux époux qui vont recevoir…","analyseUsage":{"analyse":"Cette bénédiction est spécifiquement conçue pour accompagner la communion eucharistique reçue ensemble par les époux au cours de la messe — le texte y fait référence explicitement.","usage":"Réservée aux couples qui communient pendant la messe de mariage — à ne pas choisir si la cérémonie ne comporte pas de communion."},"texteComplet":["Le prêtre Frères et sœurs, demandons à Dieu de bénir ces nouveaux époux qui vont recevoir ensemble le corps (et le sang) de Jésus Christ.","Seigneur notre Dieu, tu as appelé par leur nom N. et N., pour qu'en se donnant l'un à l'autre ils deviennent une seule chair et un seul esprit ; donne-leur le corps de ton Fils en qui s'accomplira leur unité. Tu es la source de leur amour et tu as mis en eux le désir de bonheur qui les anime (; donne-leur le sang de ton Fils qui sanctifiera leur amour et leur joie). En recevant le pain de vie (et la coupe de bénédiction), qu'ils apprennent à donner leur vie pour les autres ; sous la conduite de ton Esprit Saint [ : qu'ils élèvent dans la fidélité à l'Évangile les enfants qui naîtront de leur amour;] qu'ils recherchent avant toutes choses le Royaume de Dieu et sa justice ; qu'ils soient utiles au monde où ils vivront; qu'ils se montrent accueillants aux plus pauvres ; qu'ils puissent toujours te rendre grâce, et viennent souvent renouveler leur alliance en communiant ensemble au corps ressuscité de Jésus Christ. C'est par lui que nous te prions puisqu'il a sanctifié les noces de Cana, et purifié son Église en se livrant pour elle, nous savons qu'il intercède auprès de toi pour N. et N., aujourd'hui, demain et tous les jours de leur vie, jusque dans les siècles des siècles. Tous Amen."],"recommande":false},{"id":"benediction_nuptiale_5","label":"Bénédiction nuptiale n°5","apercu":"Le prêtre ou le diacre Et maintenant appelons sur ces époux la bénédiction de notre Dieu :…","analyseUsage":{"analyse":"Cette formule est prévue pour les mariages où l'un des époux est baptisé dans une confession chrétienne non catholique, avec un langage volontairement plus large et œcuménique.","usage":"À choisir uniquement dans le cas d'un mariage entre un catholique et un chrétien d'une autre confession — sans quoi les formules 1, 2, 3 ou 6 conviennent mieux."},"texteComplet":["Le prêtre ou le diacre Et maintenant appelons sur ces époux la bénédiction de notre Dieu : il leur a fait la grâce du mariage, que lui-même la renouvelle sans cesse dans son amour","Seigneur notre Dieu, créateur de l'univers et de tout ce qui vit, tu as fait l'homme et la femme à ta ressemblance ; et pour qu'ils soient associés â ton oeuvre d'amour, tu leur as donné un coeur capable d'aimer. Tu as voulu qu'aujourd'hui, dans cette église, N. et N. unissent leur vie. Tu veux maintenant qu'ils construisent leur foyer, qu'ils cherchent à s'aimer chaque jour davantage et suivent l'exemple du Christ, lui qui a aimé jusqu'à mourir sur une croix. Bénis, protège et fortifie l'amour de ces nouveaux époux : que leur amour soutienne leur fidélité ; qu'il les rende heureux et leur fasse découvrir dans le Christ la joie du don total â celui qu'on aime. Que leur amour, semblable à ton amour, Seigneur, devienne une source de vie ; qu'il les garde attentifs aux appels de leur prochain, et que leur foyer soit ouvert aux autres. En s'appuyant sur leur amour, avec la force de l'Esprit, qu'ils prennent une part active à la construction d'un monde plus juste et fraternel, et soient ainsi fidèles à leur vocation humaine et chrétienne. Par jésus, le Christ, notre Seigneur. Tous Amen."],"recommande":false},{"id":"benediction_nuptiale_6","label":"Bénédiction nuptiale n°6","apercu":"Le prêtre ou le diacre Frères et sueurs, bénissons Dieu, et demandons-lui de bénir ces nou…","analyseUsage":{"analyse":"Construite comme un chant à plusieurs voix, avec un refrain repris par l'assemblée (« Béni sois-tu, Seigneur, ton amour fait pour nous des merveilles ») entre chaque strophe de la bénédiction.","usage":"Pour les cérémonies où l'assemblée participe activement à voix haute — un choix vivant et communautaire si une chorale ou les invités peuvent reprendre le refrain."},"texteComplet":["Le prêtre ou le diacre Frères et sueurs, bénissons Dieu, et demandons-lui de bénir ces nouveaux époux qui mettent en lui leur confiance.","Tous chantent R. Béni sois-tu, Seigneur, ton amour fait pour nous des merveilles.","Béni sois-tu, Dieu notre Père pour ton amour, source de tout amour. Tu as voulu que l'amour de l'homme et de la femme soit un signe de l'Alliance que tu conclus avec ton peuple. Béni sois-tu !","R. Béni sois-tu, Seigneur, ton amour fait pour nous des merveilles.","Béni sois-tu, Père de notre Sauveur, pour l'Alliance nouvelle scellée dans la Pâque de ton Fils. Toi qui veux aujourd'hui que l'union de N. et N. signifie l'union du Christ et de son Église, béni sois-tu !","R. Béni sois-tu, Seigneur, ton amour fait pour nous des merveilles.","Béni sois-tu, toi qui envoies ton Esprit pour associer tes enfants à la mission de ton Fils. Toi qui veux que ces nouveaux époux, en étant l'un pour l'autre un signe de ta tendresse, deviennent un seul corps et un seul esprit, béni sois-tu !","R. Béni sois-tu, Seigneur, ton amour fait pour nous des merveilles,","Dieu de l'Alliance, nous te prions pour ces époux dont tu as consacré l'union ; envoie sur eux ton Esprit et comble-les de tes bienfaits. Qu'ils connaissent ensemble de longues années de bonheur, qu'ils se soutiennent dans les épreuves. Que leur foyer grandisse dans le respect, l'écoute et le pardon mutuel, dans la recherche de la justice, et le souci des pauvres. [Qu'ils connaissent la joie d'une famille heureuse, qu'ils donnent à leurs enfants le goût de vivre selon l'Évangile.] Au terme d'une vie sanctifiée par la grâce de leur mariage, qu'ils parviennent â la plénitude du bonheur avec les saints du ciel dans ton Royaume. Par Jésus, le Christ, notre Seigneur. Tous. Amen"],"recommande":false}],"prieresEpoux":[{"id":"priere_epoux_1","label":"Prière des époux — option 1","apercu":"Dieu, Père de toute alliance, nous te prions - nous te rendons grâce pour notre rencontre,…","analyseUsage":{"analyse":"Une prière structurée en plusieurs mouvements (gratitude, offrande, confiance) où chaque idée est introduite par un tiret, comme une litanie, et qui se conclut par une invocation à la Vierge Marie.","usage":"La plus complète et la plus construite des trois — pour des mariés qui veulent une prière qui couvre plusieurs dimensions de leur engagement (gratitude, avenir, fragilités)."},"texteComplet":["Dieu, Père de toute alliance, nous te prions - nous te rendons grâce pour notre rencontre, donnée gratuitement, et pour ce chemin d'amour parcouru sous ton regard de tendresse ; - nous te rendons grâce pour nos parents, nos familles, nos témoins, nos amis et tous ceux qui ont été sur notre route des signes de vie et des témoins de l'amour. Seigneur Jésus, nous te prions : - aujourd'hui nous offrons par toi ce qui nous été donné et ce qui nous sera donné encore : nos vies, notre foyer [les enfants que nous espérons] ; - tu connais nos limites et nos faiblesses : qu'elles soient le lieu de ta grâce et de ton pardon. Esprit du Père et du Fils, Esprit d'amour, nous te prions : - rends nous attentifs à ton action dans le monde, et donne nous d'être un soutien l'un pour l'autre ; - renouvelle en nous le goût d'être fidèles au Christ Jésus, et de marcher à sa suite. Que la Vierge Marie, Mère de Dieu et notre Mère, femme bénie entre toutes les femmes, intercède pour nous auprès de son Fils bien- aimé, et que par lui notre prière soit pleinement exaucée. R. Amen."],"recommande":true},{"id":"priere_epoux_2","label":"Prière des époux — option 2","apercu":"Seigneur notre Dieu, tu nous as conduits jusqu'à ce jour de bonheur : Nous te disons notre…","analyseUsage":{"analyse":"Une prière plus courte et plus personnelle, centrée sur la reconnaissance du chemin parcouru et une demande simple d'unité et de fidélité pour l'avenir.","usage":"Pour les couples qui préfèrent une prière plus brève et directe, avec un ton intime plutôt que solennel."},"texteComplet":["Seigneur notre Dieu, tu nous as conduits jusqu'à ce jour de bonheur : Nous te disons notre reconnaissance. Tu nous as confiés l'un à l'autre : maintenant, ensemble, nous te confions notre amour. Nous te demandons, Seigneur, de nous tenir unis, de nous garder dans ta paix. Protège notre mariage. [Donne-nous la joie d'accueillir des enfants.] Ouvre nos cœurs aux autres. Donne-nous d'être fidèles tout au long de notre vie. Accueille-nous un jour au Royaume de ton amour, où nous pourrons te louer dans le bonheur et dans la paix. R. Amen"],"recommande":false},{"id":"priere_epoux_3","label":"Prière des époux — option 3","apercu":"Seigneur Dieu dont l'amour est fidèle, nous croyons que tu nous appelles à être ensemble s…","analyseUsage":{"analyse":"Construite en trois affirmations de foi parallèles (« nous croyons que tu nous appelles à... »), cette prière a la forme d'une profession de foi commune plus que d'une demande.","usage":"Pour les couples qui souhaitent affirmer leur vocation commune davantage que demander une grâce — un ton plus déclaratif que suppliant."},"texteComplet":["Seigneur Dieu dont l'amour est fidèle, nous croyons que tu nous appelles à être ensemble signe de ton amour pour le monde. Seigneur Dieu dont l'alliance avec ton peuple est sans faille, nous croyons que tu nous appelles à témoigner de la grandeur de l'amour humain. Seigneur Dieu dont la présence est sûre, nous croyons que tu nous appelles à nous aider mutuellement à nous approcher de toi. Seigneur Dieu dont la tendresse est infinie, nous croyons que tu nous appelles a faire de notre vie une offrande d'amour. R. Amen."],"recommande":false}],"prieresUniverselles":[{"id":"priere_universelle_1","label":"Prière universelle — PU1","apercu":"Pour ces nouveaux époux et pour le bonheur de leur foyer, prions le Seigneur.","analyseUsage":{"analyse":"Six intentions classiques et larges : les nouveaux époux, leurs proches, les jeunes qui se préparent au mariage, toutes les familles du monde, les défunts, l'unité de l'Église.","usage":"La formule la plus généraliste et la plus consensuelle — un choix sûr qui convient à toutes les assemblées, quelle que soit leur composition."},"texteComplet":["Pour ces nouveaux époux et pour le bonheur de leur foyer, prions le Seigneur.","Pour leurs proches et leurs amis et pour tous ceux qui les ont aidés, prions le Seigneur. R","Pour les jeunes qui se préparent au mariage, et pour tous ceux que le Seigneur appelle â une autre vocation, prions le Seigneur. R.","Pour toutes les familles dans le monde et pour que s'affermisse la paix entre les nations, prions le Seigneur. R.","Pour les membres de nos familles qui ont quitté cette vie, et pour tous les défunts, prions le Seigneur. R.","Pour l'Église, Peuple saint de Dieu, et pour l'unité de tous les chrétiens, prions le Seigneur. R"],"recommande":true},{"id":"priere_universelle_2","label":"Prière universelle — PU2","apercu":"1\\. Pour que N. et N. baptisés dans le Christ, et unis dans la sainteté par le lien du mar…","analyseUsage":{"analyse":"Cinq intentions centrées plus spécifiquement sur le sens sacramentel du mariage lui-même (le baptême des époux, l'exemple des noces de Cana, la fécondité, l'espérance, le sacrement).","usage":"Pour une cérémonie qui veut garder les intentions bien centrées sur la théologie du mariage plutôt que sur des thèmes plus larges."},"texteComplet":["1\\. Pour que N. et N. baptisés dans le Christ, et unis dans la sainteté par le lien du mariage, soient heureux de vivre ensemble et d'être sauvés, prions le Seigneur. R","2\\. Pour que le Christ consacre leur union comme il a sanctifié les noces, à Cana de Galilée, prions le Seigneur. R","3\\. Pour que leur soit donné un amour parfait et fécond, dans l'entraide mutuelle et dans la paix, et qu'ils sachent témoigner du beau nom de chrétien, prions le Seigneur. R","4\\. Pour que l'espérance du peuple chrétien grandisse de jour en jour, et que le secours de la grâce divine soit accordé à ceux qui sont dans les épreuves, prions le Seigneur. R","Pour que l'Esprit Saint renouvelle en tous les époux ici présents la grâce du sacrement de mariage, prions le Seigneur. R"],"recommande":false},{"id":"priere_universelle_3","label":"Prière universelle — PU3","apercu":"Pour N, et N. qui se sont unis dans le Seigneur, et pour tous les couples chrétiens, deman…","analyseUsage":{"analyse":"Six intentions qui élargissent le regard vers ceux qui souffrent : familles divisées, enfants mal aimés, injustice dans le monde — en plus des intentions attendues pour le couple et l'Église.","usage":"Pour des mariés sensibles à une dimension plus sociale et solidaire dans leur prière, qui ne veulent pas que la cérémonie reste centrée uniquement sur eux."},"texteComplet":["Pour N, et N. qui se sont unis dans le Seigneur, et pour tous les couples chrétiens, demandons au Dieu fidèle la richesse de sa grâce. R,","Pour que s'accomplissent dans la joie leur vocation de parents et l'éducation de leurs enfants, demandons la sagesse du Verbe de Dieu.R.","Pour toutes les personnes qui souffrent dans leur esprit ou dans leur corps, pour les familles divisées, les enfants mal aimés, implorons la miséricorde de notre Rédempteur.","Pour que règnent dans le monde la justice et la paix, pour que s'éteignent les haines et les discordes, implorons la bonté du Père de toute alliance. R.","Pour l'Église, Épouse bien-aimée du Christ, qui invite tous les vivants aux noces éternelles, prions Celui qui accorde les dons de l'Esprit. R.","Pour le repos de tous les défunts, pour nos frères et nos sueurs endormis dans le Seigneur, prions le Maître de la vie, le Sauveur de toute chair. R."],"recommande":false},{"id":"priere_universelle_4","label":"Prière universelle — PU4","apercu":"1 « Ils ne sont plus deux mais un seul. Ce que Dieu a uni, que l'homme ne le sépare pas »,…","analyseUsage":{"analyse":"Chaque intention démarre par une citation directe de parole du Christ (« Ce que Dieu a uni... », « Venez à moi... »), suivie d'une prière qui en découle — une structure biblique originale.","usage":"Pour une cérémonie qui veut ancrer chaque intention très explicitement dans une parole d'Évangile citée — un choix plus littéraire et méditatif."},"texteComplet":["1 « Ils ne sont plus deux mais un seul. Ce que Dieu a uni, que l'homme ne le sépare pas », dit le Seigneur. Prions-le pour N. et N. qu'il les garde dans (amour mutuel et la fidélité. R.","2\\. « Venez à moi, vous tous qui peinez sous le poids du fardeau, et moi, je vous procurerai le repos », dit le Seigneur. Prions-le pour toutes nos familles qu'il les soutienne dans les épreuves et qu'il fortifie leur courage. R","3\\. « Ce que vous avez fait à l'un de ces petits qui sont mes frères, c'est à moi que vous l'avez fait », dit le Seigneur. Prions-le pour tous ceux qui souffrent qu'il nous donne de leur venir en aide. R.","4\\. « Celui qui croit en moi, même s'il meurt, vivra », dit le Seigneur. Prions-le pour tous nos frères et soeurs défunts qu'il leur accorde, près de lui, le repos et la paix. R"],"recommande":false},{"id":"priere_universelle_5","label":"Prière universelle — PU5","apercu":"1 Pour ces nouveaux époux et pour le bonheur de leur foyer, prions le Seigneur. R.","analyseUsage":{"analyse":"Très proche de la PU1 dans son contenu et ses six intentions classiques, avec de légères variations de formulation.","usage":"Une alternative presque équivalente à la PU1 si l'on veut de très légères nuances de ton sans changer la structure générale."},"texteComplet":["1 Pour ces nouveaux époux et pour le bonheur de leur foyer, prions le Seigneur. R.","2\\. Pour leurs proches et leurs amis et pour tous ceux qui les ont aidés, prions le Seigneur. R,.","3\\. Pour les jeunes qui se préparent au mariage, et pour tous ceux que le Seigneur appelle â une autre vocation, prions le Seigneur. R.","4\\. Pour toutes les familles dans le monde, et pour que s'affermisse la paix entre les nations, prions le Seigneur. R.","5\\. Pour tous les membres de nos familles qui ont quitté cette vie, et pour tous les défunts, prions le Seigneur. R.","6\\. Pour l'Église, Peuple saint de Dieu, et pour l'unité de tous les chrétiens, prions le Seigneur. R."],"recommande":false}],"benedictionsFinales":[{"id":"benediction_finale_1","label":"Bénédiction finale n°1","apercu":"Que Dieu votre Père vous garde vraiment unis dans un mutuel amour, afin que la paix du Chr…","analyseUsage":{"analyse":"Une bénédiction en quatre temps, chacun suivi d'un « Amen » de l'assemblée : unité du couple, amitié et paix, témoignage envers les pauvres, bénédiction finale sur tous les présents.","usage":"Pour une cérémonie qui veut faire participer l'assemblée à plusieurs reprises avec des réponses régulières — un rythme processionnel et communautaire."},"texteComplet":["Que Dieu votre Père vous garde vraiment unis dans un mutuel amour, afin que la paix du Christ habite en vous et demeure toujours dans votre maison. R. Amen.","Puissiez-vous [être bénis dans vos enfants,] avoir auprès de vous des amis qui vous aident, et vivre en paix avec tous. R. Amen.","Soyez dans le monde des témoins de l'amour de Dieu ; ouvrez votre porte aux malheureux et aux pauvres, qui vous recevront un jour avec reconnaissance dans la maison du Père. R. Amen.","Et vous tous qui êtes ici réunis autour de ces nouveaux époux, que Dieu tout-puissant vous bénisse, le Père, le Fils et le Saint-Esprit. R. Amen."],"recommande":false},{"id":"benediction_finale_2","label":"Bénédiction finale n°2","apercu":"Que Dieu le Père tout-puissant vous donne sa joie et vous bénisse dans vos enfants. R/ Ame…","analyseUsage":{"analyse":"Une bénédiction trinitaire en trois temps courts (le Père, le Fils, l'Esprit), chacun suivi d'un « Amen », avant la bénédiction finale sur l'assemblée.","usage":"Plus brève que la formule 1 tout en gardant la même structure participative — pour une cérémonie qui veut aller à l'essentiel sans sacrifier les réponses de l'assemblée."},"texteComplet":["Que Dieu le Père tout-puissant vous donne sa joie et vous bénisse dans vos enfants. R/ Amen.","Que le Fils unique de Dieu veille sur vous et vous assiste dans le bonheur et dans l'épreuve. R/ Amen.","Que l'Esprit de Dieu ne cesse de répandre son amour dans vos cœurs. R/ Amen.","Et vous tous qui êtes ici réunis autour de ces nouveaux époux, que Dieu tout-puissant vous bénisse, le Père, le Fils et le Saint-Esprit. / Amen."],"recommande":false},{"id":"benediction_finale_3","label":"Bénédiction finale n°3","apercu":"Que le Seigneur Jésus vous bénisse, ainsi que vos familles et vos amis, lui qui est venu a…","analyseUsage":{"analyse":"Cette bénédiction fait explicitement référence aux noces de Cana, reliant la fin de la cérémonie à l'épisode évangélique où Jésus est présent à un mariage — un écho thématique fort si l'évangile de Cana a aussi été choisi.","usage":"Un choix naturel pour les couples qui ont retenu l'évangile de Cana comme lecture — la bénédiction finale reprend alors le même fil symbolique du début à la fin."},"texteComplet":["Que le Seigneur Jésus vous bénisse, ainsi que vos familles et vos amis, lui qui est venu aux noces de Cana. Amen ! Qu'il répande lui-même son amour dans vos cœurs, lui qui s'est donné totalement à son Église. Amen !","Que le Seigneur vous donne d'être des témoins de sa résurrection et d'attendre dans la joie le bonheur promis. Amen","Et vous tous qui êtes ici réunis autour de ces nouveaux époux, que Dieu tout-puissant vous bénisse, le Père, le Fils et le Saint-Esprit. Amen."],"recommande":true},{"id":"benediction_finale_4","label":"Bénédiction finale n°4","apercu":"Que le Seigneur votre Dieu vous garde unis dans un même amour et fasse grandir encore cet…","analyseUsage":{"analyse":"Une bénédiction longue et continue, sans réponse de l'assemblée, qui égrène de nombreux souhaits pour le couple : amour, paix, amitié, soutien aux autres — un style plus poétique et enveloppant.","usage":"Pour les mariés qui préfèrent une bénédiction ininterrompue, dite d'un seul tenant, plutôt qu'un dialogue rythmé par des « Amen »."},"texteComplet":["Que le Seigneur votre Dieu vous garde unis dans un même amour et fasse grandir encore cet amour venu de lui. [Que vos enfants soient la bénédiction de votre foyer et vous rendent sans mesure la joie que vous leur donnerez.] Que la paix du Christ habite en votre maison et qu'elle règne toujours entre vous. Que votre travail à tous deux soit béni, sans que les soucis vous accablent, sans que le bonheur vous égare loin de Dieu. Que de vrais amis se tiennent à vos côtés pour partager vos joies et vous aider dans la peine. Que toute personne en difficulté trouve auprès de vous soutien et réconfort. Que votre foyer soit un exemple pour les autres et qu'il réponde aux appels du prochain. Que le Seigneur vous aide et vous guide tout au long de votre vie. N. et N., et vous tous ici présents, que Dieu tout-puissant vous bénisse, le Père, le Fils + et le Saint-Esprit. Amen"],"recommande":false},{"id":"benediction_finale_5","label":"Bénédiction finale n°5","apercu":"Seigneur notre Dieu, regarde avec bonté ces nouveaux époux et daigne répandre sur eux tes…","analyseUsage":{"analyse":"De structure proche de la formule 4 (continue, sans réponse), elle insiste davantage sur la justice, la charité et le témoignage du foyer dans le monde.","usage":"Pour des mariés qui veulent, dans les derniers mots de la cérémonie, un appel explicite à rayonner et à témoigner au-delà de leur couple."},"texteComplet":["Seigneur notre Dieu, regarde avec bonté ces nouveaux époux et daigne répandre sur eux tes bénédictions : Qu'ils soient unis dans un même amour et avancent vers une même sainteté. [Qu'ils aient la joie de participer à ton amour créateur et puissent ensemble éduquer leurs enfants.] Qu'ils vivent dans la justice et la charité pour montrer ta lumière à ceux qui te cherchent. Qu'ils mettent leur foyer au service du monde et répondent aux appels de leur prochain. Qu'ils soient fortifiés par les sacrifices et les joies de leur vie et sachent témoigner de l'Évangile. Qu'ils vivent longtemps sans malheur ni maladie et que leur travail à tous deux soit béni. [Qu'ils voient grandir en paix leurs enfants, qu'ils aient le soutien d'une famille heureuse.] Qu'ils parviennent enfin avec tous ceux qui les ont précédés dans ta demeure où leur amour ne finira jamais. N. et N., et vous tous ici présents, que Dieu tout-puissant vous bénisse, le Père, le Fils + et le Saint-Esprit. Amen !"],"recommande":false},{"id":"benediction_finale_6","label":"Bénédiction finale n°6","apercu":"Que Dieu votre Père vous garde unis et fasse grandir votre amour; [que des enfants soient…","analyseUsage":{"analyse":"La plus courte des six formules, elle condense l'essentiel en quelques phrases : unité, amour grandissant, amitié, paix du foyer.","usage":"Pour une conclusion sobre et rapide, quand les mariés souhaitent une bénédiction finale simple plutôt que développée."},"texteComplet":["Que Dieu votre Père vous garde unis et fasse grandir votre amour; [que des enfants soient la joie de votre foyer et] qu'en toute occasion de vrais amis vous entourent ; que votre travail à tous deux soit béni et que la paix demeure en votre maison. N. et N., et vous tous ici présents, que Dieu tout-puissant vous bénisse, le Père, le Fils + et le Saint-Esprit. Amen !","[SIGNATURE DE L'ACTE DE MARIAGE]","CHANT","La célébration achevée, les témoins, le prêtre ou le diacre et les époux signent l'acte de mariage","[CHANT DE SORTIE]"],"recommande":false}]}</script>
+<script src="app.js"></script>
+</body>
+</html>

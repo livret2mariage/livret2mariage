@@ -1,0 +1,220 @@
+/* ===== Réglages généraux ===== */
+@page {
+  size: A5;
+  margin: 15mm 14mm 18mm 14mm;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  font-family: "Georgia", "Times New Roman", serif;
+  font-size: 10.5pt;
+  line-height: 1.45;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+/* Chaque <section class="page"> commence sur une nouvelle page PDF.
+   Le contenu À L'INTÉRIEUR n'est PAS forcé à une hauteur fixe : il coule
+   naturellement et se répartit sur autant de pages que nécessaire.
+   -> c'est ça qui rend la mise en page adaptative aux textes courts/longs. */
+section.page {
+  page-break-after: always;
+  break-after: page;
+}
+section.page:last-child {
+  page-break-after: auto;
+}
+
+/* Évite qu'un titre se retrouve seul en bas de page, séparé de son texte */
+h2, h3 {
+  break-after: avoid;
+  page-break-after: avoid;
+}
+h2 + *, h3 + * {
+  break-before: avoid;
+}
+
+/* Évite qu'un paragraphe soit coupé en deux entre deux pages si possible */
+p {
+  orphans: 3;
+  widows: 3;
+}
+
+/* ===== Couverture ===== */
+.couverture {
+  position: relative;
+  height: var(--page-content-height, 177mm);
+  text-align: center;
+}
+
+/* Teintes (appliquées au "&", au trait décoratif, au cadre et au monogramme) */
+.couverture.tint-sauge { --accent: #6E8261; }
+.couverture.tint-rose  { --accent: #C1607B; }
+.couverture.tint-bleu  { --accent: #5D7FA8; }
+.couverture.tint-or    { --accent: #A9791A; }
+
+/* Cadre (présentation "encadrée") */
+.frame-inset { display: none; }
+.layout-encadre .frame-inset {
+  display: block;
+  position: absolute;
+  z-index: 1;
+  top: 6mm; left: 5mm; right: 5mm; bottom: 6mm;
+  border: 0.6pt solid var(--accent, #ccc);
+}
+.layout-encadre .frame-inset::before {
+  content: "";
+  position: absolute;
+  top: 1.5mm; left: 1.5mm; right: 1.5mm; bottom: 1.5mm;
+  border: 0.4pt solid var(--accent, #ccc);
+  opacity: 0.5;
+}
+
+/* Monogramme (présentation "monogramme") */
+.monogramme-cover { display: none; }
+.layout-monogramme .monogramme-cover {
+  display: block;
+  font-family: Georgia, "Times New Roman", serif;
+  font-style: italic;
+  font-weight: 700;
+  font-size: 34pt;
+  color: var(--accent, #52604A);
+  margin-bottom: 1mm;
+}
+.layout-monogramme .contenu-couverture { padding-top: calc(var(--page-content-height, 177mm) * 0.09); }
+.layout-monogramme .sous-titre { margin-top: 4mm; }
+.layout-monogramme .prenom { font-size: 15pt; font-family: Georgia, "Times New Roman", serif !important; font-style: italic; }
+.layout-monogramme .esperluette { font-size: 11pt; }
+
+.contenu-couverture {
+  position: relative;
+  z-index: 2;
+  padding-top: calc(var(--page-content-height, 177mm) * 0.125);
+}
+.sous-titre {
+  font-size: 12pt;
+  font-weight: bold;
+  margin: 0 0 5mm 0;
+}
+.prenom {
+  font-family: "Parisienne", "Brush Script MT", "Segoe Script", cursive;
+  font-size: 24pt;
+  margin: 1mm 0;
+}
+.font-alexbrush .prenom, .font-alexbrush .esperluette { font-family: "Alex Brush", "Brush Script MT", cursive; }
+.font-greatvibes .prenom, .font-greatvibes .esperluette { font-family: "Great Vibes", "Brush Script MT", cursive; }
+.esperluette {
+  font-family: "Parisienne", "Brush Script MT", "Segoe Script", cursive;
+  font-size: 18pt;
+  margin: 0;
+  color: var(--accent, inherit);
+}
+.rule-cover {
+  width: 12mm;
+  height: 0.6pt;
+  background: var(--accent, #999);
+  margin: 5mm auto;
+}
+.infos-pratiques {
+  margin-top: calc(var(--page-content-height, 177mm) * 0.21);
+  font-size: 9.5pt;
+}
+.infos-pratiques p { margin: 1mm 0; }
+.remerciement-couverture { margin-top: 6mm; font-size: 9.5pt; }
+.signature { margin-top: 3mm; }
+
+.derniere-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.remerciements-finaux {
+  position: relative;
+  z-index: 1;
+  font-size: 13pt;
+  font-weight: bold;
+}
+.signature-filigrane {
+  position: absolute;
+
+  z-index: 1;
+  bottom: 14mm;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-family: Georgia, "Times New Roman", serif;
+  font-style: italic;
+  font-size: 8pt;
+  letter-spacing: 0.5pt;
+  color: #B9B9AE;
+}
+
+/* ===== Pages de contenu ===== */
+.titre-partie {
+  text-align: center;
+  font-size: 15pt;
+  margin: 0 0 6mm 0;
+}
+.titre-section {
+  text-align: center;
+  font-size: 12pt;
+  margin: 7mm 0 3mm 0;
+}
+.texte-liturgique {
+  text-align: center;
+  margin: 2mm 0;
+}
+.verset-psaume {
+  margin: 3.5mm 0;
+  line-height: 1.55;
+}
+.rubrique {
+  text-align: center;
+  color: #444;
+  margin: 3mm 0;
+}
+.chant {
+  text-align: center;
+  margin: 3mm 0;
+}
+.chant-paroles {
+  text-align: center;
+  font-style: italic;
+  font-size: 9.5pt;
+  color: #333;
+  margin: 0 0 4mm 0;
+}
+.chant-paroles p {
+  margin: 2mm 0;
+}
+.lecteur {
+  text-align: center;
+  font-style: italic;
+  margin: 0 0 2mm 0;
+}
+.reference {
+  text-align: center;
+  font-weight: bold;
+  margin: 1mm 0;
+}
+.refrain, .refrain-alt {
+  text-align: center;
+  font-style: italic;
+  margin: 2mm 0;
+}
+.reponse {
+  text-align: center;
+  font-weight: bold;
+  margin: 1mm 0 3mm 0;
+}
+.acclamation {
+  text-align: center;
+  margin: 5mm 0 2mm 0;
+}
+.reception {
+  text-align: center;
+  margin-top: 3mm;
+}

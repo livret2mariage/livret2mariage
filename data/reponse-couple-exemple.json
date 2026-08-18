@@ -1,0 +1,53 @@
+{
+  "epoux": "Teddy",
+  "epouse": "Stephanie",
+  "date": "22/08/2026",
+  "heure": "15h00",
+  "lieu": "Eglise du 17ème km",
+  "choix": {
+    "lecture": {
+      "id": "L10",
+      "lecteur": "Lucas"
+    },
+    "psaume": {
+      "id": "P1",
+      "lecteur": "Chorale"
+    },
+    "evangile": {
+      "id": "E7"
+    },
+    "dialogueInitial": {
+      "id": "dialogue_formule2"
+    },
+    "consentements": {
+      "id": "consentement_formule2"
+    },
+    "benedictionAlliances": {
+      "id": "benediction_alliances_3"
+    },
+    "benedictionNuptiale": {
+      "id": "benediction_nuptiale_3"
+    },
+    "priereEpoux": {
+      "id": "priere_epoux_1"
+    },
+    "priereUniverselle": {
+      "id": "priere_universelle_1",
+      "lecteur": "Laure"
+    },
+    "benedictionFinale": {
+      "id": "benediction_finale_3"
+    }
+  },
+  "chants": {
+    "entree": "Que ces lieux soient visités",
+    "acclamation": "Alleluia",
+    "espritSaint": "Viens Saint Esprit",
+    "louange": "Je suis dans la joie",
+    "priereUniverselle": "Entends nos prières",
+    "marie": "Vierge Marie",
+    "signatureRegistres": "Cantique des Cantiques",
+    "sortie": "Aujourd'hui nous les mariés"
+  },
+  "motsRemerciements": "Merci à tous !"
+}
