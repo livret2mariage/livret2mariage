@@ -98,8 +98,6 @@ function assembleLivret(reponse, base) {
       <p>À ${esc(lieu).toUpperCase()}</p>
       <p>À ${esc(heure).toUpperCase()}</p>
     </div>
-    <p class="remerciement-couverture"><em>Nous vous remercions de partager ce moment de joie avec nous.</em></p>
-    <p class="signature"><strong>${esc(epoux).toUpperCase()} &amp; ${esc(epouse).toUpperCase()}</strong></p>
   </div>
 </section>
 
@@ -154,24 +152,32 @@ function assembleLivret(reponse, base) {
   <p class="rubrique"><em>Avant d'entrer dans la liturgie du mariage, nous invoquons l'Esprit Saint pour qu'Il éclaire et guide les époux.</em></p>
   ${chantHtml("Chant à l'Esprit Saint", chants.espritSaint, chants.espritSaintParoles)}
 
-  <h3 class="titre-section">Dialogue initial</h3>
-  ${paragraphes(dialogue.texte, epoux, epouse, "texte-liturgique")}
+  <div class="bloc-liturgique">
+    <h3 class="titre-section">Dialogue initial</h3>
+    ${paragraphes(dialogue.texte, epoux, epouse, "texte-liturgique")}
+  </div>
 
-  <h3 class="titre-section">Échange des consentements</h3>
-  <p class="rubrique"><em>Invitation à échanger les consentements :</em></p>
-  ${paragraphes(invitation.texte, epoux, epouse, "texte-liturgique")}
-  ${paragraphes(consentement.texte, epoux, epouse, "texte-liturgique")}
-  ${paragraphes(reception.texte, epoux, epouse, "reception")}
+  <div class="bloc-liturgique">
+    <h3 class="titre-section">Échange des consentements</h3>
+    <p class="rubrique"><em>Invitation à échanger les consentements :</em></p>
+    ${paragraphes(invitation.texte, epoux, epouse, "texte-liturgique")}
+    ${paragraphes(consentement.texte, epoux, epouse, "texte-liturgique")}
+    ${paragraphes(reception.texte, epoux, epouse, "reception")}
+  </div>
 
-  <h3 class="titre-section">Bénédiction et remise des alliances</h3>
-  <p class="texte-liturgique"><strong>Bénédiction des alliances :</strong></p>
-  ${paragraphes(benAlliances.texte, epoux, epouse, "texte-liturgique")}
-  <p class="texte-liturgique"><strong>Remise des alliances :</strong></p>
-  ${paragraphes(remise.texte, epoux, epouse, "texte-liturgique")}
+  <div class="bloc-liturgique">
+    <h3 class="titre-section">Bénédiction et remise des alliances</h3>
+    <p class="texte-liturgique"><strong>Bénédiction des alliances :</strong></p>
+    ${paragraphes(benAlliances.texte, epoux, epouse, "texte-liturgique")}
+    <p class="texte-liturgique"><strong>Remise des alliances :</strong></p>
+    ${paragraphes(remise.texte, epoux, epouse, "texte-liturgique")}
+  </div>
 
-  <h3 class="titre-section">Bénédiction nuptiale</h3>
-  <p class="rubrique"><em>Le prêtre invoque la bénédiction de Dieu sur les époux afin que leur amour soit fortifié et sanctifié.</em></p>
-  ${paragraphes(benNuptiale.texte, epoux, epouse, "texte-liturgique")}
+  <div class="bloc-liturgique">
+    <h3 class="titre-section">Bénédiction nuptiale</h3>
+    <p class="rubrique"><em>Le prêtre invoque la bénédiction de Dieu sur les époux afin que leur amour soit fortifié et sanctifié.</em></p>
+    ${paragraphes(benNuptiale.texte, epoux, epouse, "texte-liturgique")}
+  </div>
 </section>
 
 <!-- ===================== ACTION DE GRÂCE ET PRIÈRE ===================== -->
@@ -179,16 +185,22 @@ function assembleLivret(reponse, base) {
   <h2 class="titre-partie">Action de grâce et prière</h2>
   ${chantHtml("Chant de louange", chants.louange, chants.louangeParoles)}
 
-  <h3 class="titre-section">Prière des époux</h3>
-  ${paragraphes(priereEpoux.texte, epoux, epouse, "texte-liturgique")}
+  <div class="bloc-liturgique">
+    <h3 class="titre-section">Prière des époux</h3>
+    ${paragraphes(priereEpoux.texte, epoux, epouse, "texte-liturgique")}
+  </div>
 
-  <h3 class="titre-section">Prière universelle</h3>
-  ${lecteurTag(choix.priereUniverselle?.lecteur)}
-  ${chantHtml("Chant", chants.priereUniverselle, chants.priereUniverselleParoles)}
-  ${paragraphes(priereUniv.texte, epoux, epouse, "texte-liturgique")}
+  <div class="bloc-liturgique">
+    <h3 class="titre-section">Prière universelle</h3>
+    ${lecteurTag(choix.priereUniverselle?.lecteur)}
+    ${chantHtml("Chant", chants.priereUniverselle, chants.priereUniverselleParoles)}
+    ${paragraphes(priereUniv.texte, epoux, epouse, "texte-liturgique")}
+  </div>
 
-  <h3 class="titre-section">Notre Père</h3>
-  ${paragraphes(notrePere.texte, epoux, epouse, "texte-liturgique")}
+  <div class="bloc-liturgique">
+    <h3 class="titre-section">Notre Père</h3>
+    ${paragraphes(notrePere.texte, epoux, epouse, "texte-liturgique")}
+  </div>
 </section>
 
 <!-- ===================== ENVOI ET CONCLUSION ===================== -->
@@ -206,7 +218,6 @@ function assembleLivret(reponse, base) {
 <!-- ===================== DERNIÈRE PAGE / REMERCIEMENTS ===================== -->
 <section class="page couverture derniere-page tint-${couleur}">
   ${motsRemerciements ? `<p class="remerciements-finaux">${esc(motsRemerciements)}</p>` : ""}
-  <p class="signature-filigrane">Livret2Mariage</p>
 </section>
 
 </body>
