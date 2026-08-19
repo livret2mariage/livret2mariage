@@ -6,6 +6,8 @@ const { chromium } = require("playwright");
 const { assembleLivret, formatChoisi } = require("../moteur/assembler");
 const { completerPourImpressionLivret } = require("../moteur/pagination");
 const { envoyerLivretParEmail } = require("./email");
+const { creerSessionPaiement, verifierSignatureWebhook } = require("./paiement");
+const crypto = require("crypto");
 
 const DATA_DIR = path.join(__dirname, "../data");
 const TEMPLATE_DIR = path.join(__dirname, "../template");
@@ -52,6 +54,30 @@ function readJsonBody(req) {
   });
 }
 
+/** Lit le corps BRUT d'une requête (sans le parser en JSON) — nécessaire pour
+ * vérifier la signature des webhooks Stripe, qui porte sur les octets exacts
+ * envoyés, avant toute transformation. */
+function readRawBody(req) {
+  return new Promise((resolve, reject) => {
+    let data = "";
+    req.on("data", (chunk) => (data += chunk));
+    req.on("end", () => resolve(data));
+    req.on("error", reject);
+  });
+}
+
+// Réponses du formulaire en attente de paiement, le temps que Stripe confirme
+// la transaction (webhook). Stockage en mémoire simple : suffisant pour le
+// délai de quelques secondes entre "créer la session" et "paiement confirmé".
+// Purge automatique des entrées de plus de 24h à chaque nouvel ajout.
+const reponsesEnAttente = new Map();
+function purgerReponsesExpirees() {
+  const limite = Date.now() - 24 * 60 * 60 * 1000;
+  for (const [id, { creeLe }] of reponsesEnAttente) {
+    if (creeLe < limite) reponsesEnAttente.delete(id);
+  }
+}
+
 const MIME = {
   ".html": "text/html; charset=utf-8",
   ".js": "text/javascript; charset=utf-8",
@@ -59,6 +85,49 @@ const MIME = {
   ".png": "image/png",
   ".json": "application/json; charset=utf-8",
 };
+
+/** Page HTML minimale de confirmation après paiement (succès ou annulation),
+ * dans un style cohérent avec le formulaire. */
+function servePageConfirmation(res, { titre, message }) {
+  const html = `<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${titre} — Livret2Mariage</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,400&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  body{font-family:'Inter',sans-serif;background:#FBF8F2;color:#2E3328;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;padding:24px;text-align:center;}
+  .carte{max-width:440px;}
+  h1{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:500;font-size:32px;margin-bottom:14px;}
+  p{font-size:15px;line-height:1.6;color:#5B6455;}
+  a{display:inline-block;margin-top:22px;color:#52604A;font-weight:600;text-decoration:none;border-bottom:1px solid #52604A;}
+</style>
+</head>
+<body>
+  <div class="carte">
+    <h1>${titre}</h1>
+    <p>${message}</p>
+    <a href="/">Retour à l'accueil</a>
+  </div>
+</body>
+</html>`;
+  res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
+  res.end(html);
+}
+
+/** Sert un fichier HTML statique du dossier formulaire/ par un chemin propre
+ * (ex. /contact au lieu de /contact.html). */
+function serveFichierFormulaire(res, nomFichier) {
+  fs.readFile(path.join(FORMULAIRE_DIR, nomFichier), (err, content) => {
+    if (err) {
+      res.writeHead(404);
+      return res.end("Introuvable");
+    }
+    res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
+    res.end(content);
+  });
+}
 
 function serveStatic(req, res) {
   let reqPath = req.url === "/" ? "/index.html" : req.url;
@@ -134,19 +203,14 @@ function handleChoix(req, res) {
 // ------------------------------------------------------------------
 // POST /api/livrets — assemble le livret et renvoie le PDF généré
 // ------------------------------------------------------------------
-async function handleGenerateLivret(req, res) {
-  let reponse;
-  try {
-    reponse = await readJsonBody(req);
-  } catch (e) {
-    return sendJson(res, 400, { erreur: e.message });
-  }
-
-  const erreurs = validateReponse(reponse);
-  if (erreurs.length > 0) {
-    return sendJson(res, 400, { erreur: "Réponses incomplètes", details: erreurs });
-  }
-
+/**
+ * Génère le PDF du livret et l'envoie par email. Fonction centrale, appelée
+ * uniquement après confirmation réelle du paiement (webhook Stripe) — c'est
+ * la seule façon dont un livret est produit et envoyé dans le service.
+ * Retourne le buffer du PDF (utile pour du débogage local) et le résultat
+ * de l'envoi d'email.
+ */
+async function genererEtEnvoyerLivret(reponse) {
   let browser;
   let tmpDir;
   try {
@@ -180,17 +244,13 @@ async function handleGenerateLivret(req, res) {
 
     // Complète avec des pages blanches si besoin, pour que le livret soit
     // prêt à être imprimé "4 pages par feuille" (façonnage classique en livret).
-    const { bytes: pdfBuffer } = await completerPourImpressionLivret(pdfBufferBrut);
+    const { bytes: pdfBuffer } = await completerPourImpressionLivret(pdfBufferBrut, { format: formatChoisi(reponse) });
 
     const nomFichier = `livret_${reponse.epoux}_${reponse.epouse}`
       .toLowerCase()
       .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
       .replace(/[^a-z0-9_]/g, "");
 
-    // Envoi automatique par email si une adresse a été fournie et que le
-    // service est configuré (variables d'environnement RESEND_API_KEY et
-    // RESEND_FROM_EMAIL) — best-effort : un échec d'envoi n'empêche jamais
-    // le téléchargement direct du PDF de fonctionner.
     const resultatEmail = await envoyerLivretParEmail({
       destinataire: reponse.email,
       epoux: reponse.epoux,
@@ -199,6 +259,36 @@ async function handleGenerateLivret(req, res) {
       nomFichier,
     });
 
+    return { pdfBuffer, nomFichier, resultatEmail };
+  } catch (err) {
+    if (browser) await browser.close().catch(() => {});
+    if (tmpDir) fs.rmSync(tmpDir, { recursive: true, force: true });
+    throw err;
+  }
+}
+
+// ------------------------------------------------------------------
+// POST /api/livrets — route de test/debug UNIQUEMENT (usage interne).
+// Depuis la mise en place du paiement, ce n'est plus cette route que le
+// formulaire appelle : la génération + l'envoi ne se déclenchent désormais
+// que via la confirmation de paiement Stripe (voir handleWebhookStripe).
+// Conservée pour pouvoir tester le moteur sans repasser par un paiement réel.
+// ------------------------------------------------------------------
+async function handleGenerateLivret(req, res) {
+  let reponse;
+  try {
+    reponse = await readJsonBody(req);
+  } catch (e) {
+    return sendJson(res, 400, { erreur: e.message });
+  }
+
+  const erreurs = validateReponse(reponse);
+  if (erreurs.length > 0) {
+    return sendJson(res, 400, { erreur: "Réponses incomplètes", details: erreurs });
+  }
+
+  try {
+    const { pdfBuffer, nomFichier, resultatEmail } = await genererEtEnvoyerLivret(reponse);
     res.writeHead(200, {
       "Content-Type": "application/pdf",
       "Content-Disposition": `attachment; filename="${nomFichier}.pdf"`,
@@ -210,11 +300,92 @@ async function handleGenerateLivret(req, res) {
     });
     res.end(pdfBuffer);
   } catch (err) {
-    if (browser) await browser.close().catch(() => {});
-    if (tmpDir) fs.rmSync(tmpDir, { recursive: true, force: true });
     console.error("Erreur de génération du livret :", err);
     sendJson(res, 500, { erreur: "Échec de la génération du livret", details: err.message });
   }
+}
+
+// ------------------------------------------------------------------
+// POST /api/paiement/creer-session — stocke les réponses du couple en
+// attente, crée une session de paiement Stripe (29 €), renvoie l'URL de
+// paiement vers laquelle rediriger le navigateur.
+// ------------------------------------------------------------------
+async function handleCreerSessionPaiement(req, res) {
+  let reponse;
+  try {
+    reponse = await readJsonBody(req);
+  } catch (e) {
+    return sendJson(res, 400, { erreur: e.message });
+  }
+
+  const erreurs = validateReponse(reponse);
+  if (erreurs.length > 0) {
+    return sendJson(res, 400, { erreur: "Réponses incomplètes", details: erreurs });
+  }
+  if (!reponse.email) {
+    return sendJson(res, 400, { erreur: "Une adresse email est requise pour recevoir le livret." });
+  }
+
+  purgerReponsesExpirees();
+  const reponseId = crypto.randomBytes(12).toString("hex");
+  reponsesEnAttente.set(reponseId, { reponse, creeLe: Date.now() });
+
+  try {
+    const siteUrl = `https://${req.headers.host}`;
+    const url = await creerSessionPaiement({
+      reponseId,
+      epoux: reponse.epoux,
+      epouse: reponse.epouse,
+      email: reponse.email,
+      siteUrl,
+    });
+    sendJson(res, 200, { url });
+  } catch (err) {
+    reponsesEnAttente.delete(reponseId);
+    console.error("Erreur de création de la session de paiement :", err);
+    sendJson(res, 500, { erreur: "Impossible de démarrer le paiement", details: err.message });
+  }
+}
+
+// ------------------------------------------------------------------
+// POST /api/paiement/webhook — appelée par Stripe pour confirmer un paiement.
+// C'est le SEUL déclencheur de la génération + de l'envoi du livret.
+// ------------------------------------------------------------------
+async function handleWebhookStripe(req, res) {
+  const corpsBrut = await readRawBody(req);
+  const secret = process.env.STRIPE_WEBHOOK_SECRET;
+
+  if (!secret || !verifierSignatureWebhook(corpsBrut, req.headers["stripe-signature"], secret)) {
+    console.error("Webhook Stripe : signature invalide ou secret non configuré.");
+    res.writeHead(400);
+    return res.end("Signature invalide");
+  }
+
+  let event;
+  try {
+    event = JSON.parse(corpsBrut);
+  } catch (e) {
+    res.writeHead(400);
+    return res.end("JSON invalide");
+  }
+
+  if (event.type === "checkout.session.completed") {
+    const reponseId = event.data.object.client_reference_id;
+    const entree = reponsesEnAttente.get(reponseId);
+    if (!entree) {
+      console.error("Webhook Stripe : réponses introuvables pour", reponseId);
+    } else {
+      reponsesEnAttente.delete(reponseId);
+      // Ne bloque pas la réponse au webhook (Stripe attend une réponse rapide) :
+      // la génération + l'envoi se poursuivent en arrière-plan.
+      genererEtEnvoyerLivret(entree.reponse).catch((err) => {
+        console.error("Erreur de génération après paiement confirmé :", err);
+      });
+    }
+  }
+
+  res.writeHead(200);
+  res.end("ok");
 }
 
 // ------------------------------------------------------------------
@@ -235,6 +406,30 @@ const server = http.createServer(async (req, res) => {
 
   if (req.method === "POST" && url === "/api/livrets") {
     return handleGenerateLivret(req, res);
+  }
+  if (req.method === "POST" && url === "/api/paiement/creer-session") {
+    return handleCreerSessionPaiement(req, res);
+  }
+  if (req.method === "POST" && url === "/api/paiement/webhook") {
+    return handleWebhookStripe(req, res);
+  }
+  if (req.method === "GET" && url === "/paiement/succes") {
+    return servePageConfirmation(res, {
+      titre: "Merci !",
+      message: "Votre paiement a bien été reçu. Votre livret est en cours de génération et vous sera envoyé par email dans quelques instants.",
+    });
+  }
+  if (req.method === "GET" && url === "/paiement/annule") {
+    return servePageConfirmation(res, {
+      titre: "Paiement annulé",
+      message: "Aucun montant n'a été débité. Vous pouvez reprendre votre formulaire et réessayer quand vous le souhaitez.",
+    });
+  }
+  if (req.method === "GET" && (url === "/contact" || url === "/contact.html")) {
+    return serveFichierFormulaire(res, "contact.html");
+  }
+  if (req.method === "GET" && (url === "/tuto" || url === "/tuto.html")) {
+    return serveFichierFormulaire(res, "tuto.html");
   }
   if (req.method === "GET" && url === "/api/textes/choix") {
     return handleChoix(req, res);
