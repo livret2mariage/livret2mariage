@@ -147,9 +147,9 @@ p {
   text-align: center;
   font-family: Georgia, "Times New Roman", serif;
   font-style: italic;
-  font-size: 8pt;
+  font-size: 15pt;
   letter-spacing: 0.5pt;
-  color: #B9B9AE;
+  color: #9B9B90;
 }
 
 /* ===== Pages de contenu ===== */
@@ -158,6 +158,16 @@ p {
   font-size: 15pt;
   margin: 0 0 6mm 0;
 }
+/* Chaque élément liturgique (dialogue, consentements, alliances, bénédiction
+   nuptiale, prières...) essaie de tenir entier sur une même page plutôt que
+   de commencer sur une page et se terminer sur la suivante. S'il est plus
+   long qu'une page entière, il continue de se couper normalement (impossible
+   à éviter dans ce cas). */
+.bloc-liturgique {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
 .titre-section {
   text-align: center;
   font-size: 12pt;
