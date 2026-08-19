@@ -36,6 +36,12 @@ function assembleLivret(reponse, base) {
   };
   const format = FORMATS[reponse.format] ? reponse.format : "A5";
   const { size, hauteurPage, margeHaut, margeBas } = FORMATS[format];
+  // L'A4 étant nettement plus grand que l'A5, les mêmes tailles de police
+  // (en points, valeurs absolues) y paraissent trop petites proportionnellement
+  // à la page. On agrandit tout le contenu (texte ET espacements) d'un facteur
+  // qui suit le rapport de taille entre les deux formats, pour que le rendu
+  // garde des proportions similaires quel que soit le format choisi.
+  const echelle = format === "A4" ? 1.4 : 1;
   const hauteurContenu = hauteurPage - margeHaut - margeBas;
 
   const salutation = trouve(base, "salutations", choix.salutation?.id);
@@ -79,6 +85,7 @@ function assembleLivret(reponse, base) {
 <style>
   @page { size: ${size}; margin: ${margeHaut}mm 14mm ${margeBas}mm 14mm; }
   :root { --page-content-height: ${hauteurContenu}mm; }
+  body { zoom: ${echelle}; }
 </style>
 </head>
 <body>
