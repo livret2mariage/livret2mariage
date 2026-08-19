@@ -54,7 +54,19 @@ h1,h2,h3{font-family:'Cormorant Garamond',serif;font-weight:600;color:var(--ink)
   font-size:22px;
   color:var(--sage-dark);
   margin-bottom:16px;
+  display:flex;
+  align-items:baseline;
+  gap:16px;
+  flex-wrap:wrap;
 }
+.header-links{
+  font-family:'Inter',sans-serif;
+  font-style:normal;
+  font-weight:500;
+  font-size:12.5px;
+}
+.header-links a{color:var(--ink-soft); text-decoration:none;}
+.header-links a:hover{color:var(--sage-dark);}
 .top-header .eyebrow{
   text-transform:uppercase;
   letter-spacing:.14em;
@@ -397,41 +409,42 @@ section.step h2{font-size:28px; font-style:italic; margin-bottom:4px;}
 }
 .page-mock .pm-eyebrow{
   text-align:center;
-  font-size:9.5px;
-  letter-spacing:.06em;
-  text-transform:uppercase;
-  color:var(--gold);
-  font-weight:600;
-  margin-bottom:4px;
+  font-family:Georgia,'Times New Roman',serif;
+  font-weight:700;
+  font-size:13px;
+  margin-bottom:10px;
+  color:#1a1a1a;
 }
 .page-mock .pm-title{
-  font-family:'Cormorant Garamond',serif;
-  font-style:italic;
-  font-weight:600;
+  font-family:Georgia,'Times New Roman',serif;
+  font-weight:700;
   text-align:center;
-  font-size:19px;
-  margin-bottom:10px;
+  font-size:12px;
+  margin-bottom:8px;
+  color:#1a1a1a;
 }
 .page-mock .pm-ref{
   text-align:center;
+  font-family:Georgia,'Times New Roman',serif;
   font-size:10.5px;
-  font-weight:600;
-  color:var(--sage-dark);
-  margin-bottom:8px;
+  font-weight:700;
+  color:#1a1a1a;
+  margin-bottom:6px;
 }
 .page-mock .pm-lecteur{
   text-align:center;
+  font-family:Georgia,'Times New Roman',serif;
   font-size:9.5px;
   font-style:italic;
-  color:var(--ink-soft);
-  margin-bottom:10px;
+  color:#444;
+  margin-bottom:8px;
 }
 .page-mock .pm-body{
-  font-family:'Cormorant Garamond',serif;
-  font-size:12.5px;
-  line-height:1.6;
+  font-family:Georgia,'Times New Roman',serif;
+  font-size:10.5px;
+  line-height:1.5;
   text-align:center;
-  color:var(--ink);
+  color:#1a1a1a;
   overflow:hidden;
   display:-webkit-box;
   -webkit-line-clamp:9;
@@ -440,7 +453,7 @@ section.step h2{font-size:28px; font-style:italic; margin-bottom:4px;}
 .page-mock .pm-fade{
   margin-top:auto;
   text-align:center;
-  font-size:10px;
+  font-size:9px;
   color:var(--ink-soft);
   font-style:italic;
   padding-top:8px;
@@ -544,7 +557,7 @@ section.step h2{font-size:28px; font-style:italic; margin-bottom:4px;}
 <body>
 
 <header class="top-header">
-  <div class="brand-mark">Livret2Mariage</div>
+  <div class="brand-mark">Livret2Mariage <span class="header-links"><a href="/tuto">Comment ça marche</a> · <a href="/contact">Contact</a></span></div>
   <div class="eyebrow">Préparation de votre célébration</div>
   <h1>Composez votre livret de mariage</h1>
   <p>Choisissez vos lectures, prières et bénédictions parmi les textes proposés par votre paroisse. Votre livret sera généré automatiquement, mis en page et vous sera envoyé — sans rien à faire de plus.</p>

@@ -212,6 +212,23 @@ const SECTION_LABELS = {
   benedictionFinale: "Envoi et conclusion",
 };
 
+// Titres tels qu'ils apparaissent réellement dans le PDF final (voir
+// moteur/assembler.js) — utilisés dans l'aperçu "page intérieure" à la place
+// du nom technique de la formule choisie (ex. "PU2", "formule 3"), pour que
+// l'aperçu corresponde exactement à ce qui sera imprimé.
+const TITRES_PDF = {
+  lecture: "Première lecture",
+  psaume: "Le Psaume",
+  evangile: "Évangile",
+  dialogueInitial: "Dialogue initial",
+  consentements: "Échange des consentements",
+  benedictionAlliances: "Bénédiction et remise des alliances",
+  benedictionNuptiale: "Bénédiction nuptiale",
+  priereEpoux: "Prière des époux",
+  priereUniverselle: "Prière universelle",
+  benedictionFinale: "Bénédiction finale",
+};
+
 function renderInnerPreview(choice) {
   const container = document.getElementById("innerPreviewContent");
   if (!choice) {
@@ -239,7 +256,7 @@ document.querySelectorAll("select[data-cat]").forEach((select) => {
     const lecteurInput = document.querySelector(`[data-lecteur="${key}"]`);
     renderInnerPreview({
       section: SECTION_LABELS[key] || "",
-      label: chosen.label,
+      label: TITRES_PDF[key] || chosen.label,
       ref: chosen.ref,
       apercu: apercuAvecPrenoms(chosen.apercu),
       lecteur: lecteurInput ? lecteurInput.value.trim() : "",
@@ -391,7 +408,8 @@ form.addEventListener("submit", async (e) => {
 
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
-      throw new Error(err.details ? err.details.join(" ") : "Le serveur n'a pas pu générer le livret.");
+      const detailsTexte = Array.isArray(err.details) ? err.details.join(" ") : err.details;
+      throw new Error(detailsTexte || err.erreur || "Le serveur n'a pas pu générer le livret.");
     }
 
     const blob = await res.blob();
