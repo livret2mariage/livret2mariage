@@ -101,6 +101,12 @@ function assembleLivret(reponse, base) {
   </div>
 </section>
 
+<!-- ===================== PAGE BLANCHE (verso de couverture) ===================== -->
+<!-- Convention d'édition classique : le contenu commence toujours sur une
+     page de droite (recto), jamais juste après la couverture — comme au dos
+     d'une couverture de livre. -->
+<section class="page"></section>
+
 <!-- ===================== DIEU NOUS ACCUEILLE ===================== -->
 <section class="page">
   <h2 class="titre-partie">Dieu nous accueille</h2>
