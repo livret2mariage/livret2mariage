@@ -161,6 +161,14 @@ async function handleGenerateLivret(req, res) {
     browser = await chromium.launch();
     const page = await browser.newPage();
     await page.goto("file://" + htmlPath);
+    // Attend que les polices (Google Fonts) soient bien chargées avant de générer
+    // le PDF — sinon Playwright peut imprimer avec une police de secours si le
+    // téléchargement des polices n'est pas encore terminé au moment du rendu.
+    // Limité à 5s pour ne jamais bloquer indéfiniment en cas de souci réseau.
+    await Promise.race([
+      page.evaluate(() => document.fonts.ready),
+      new Promise((resolve) => setTimeout(resolve, 5000)),
+    ]);
     const pdfBufferBrut = await page.pdf({
       format: formatChoisi(reponse),
       printBackground: true,
