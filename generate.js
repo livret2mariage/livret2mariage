@@ -45,15 +45,20 @@ async function main() {
   // Complète avec des pages blanches si besoin, pour que le livret soit prêt
   // à être imprimé "4 pages par feuille" (façonnage classique en livret).
   const fs2 = require("fs");
+  const format = formatChoisi(reponse);
   const pdfBytes = fs2.readFileSync(outputPath);
-  const { bytes, pagesAjoutees, pagesTotal } = await completerPourImpressionLivret(pdfBytes);
+  const { bytes, pagesAjoutees, pagesTotal } = await completerPourImpressionLivret(pdfBytes, { format });
+  // On réécrit toujours le fichier : que des pages aient été ajoutées ou non,
+  // le filigrane a de toute façon été dessiné sur la dernière page.
+  fs2.writeFileSync(outputPath, bytes);
   if (pagesAjoutees > 0) {
-    fs2.writeFileSync(outputPath, bytes);
     console.log(
       `${pagesAjoutees} page(s) blanche(s) ajoutée(s) pour l'impression en livret (total : ${pagesTotal} pages, multiple de 4).`
     );
-  } else {
+  } else if (format === "A5") {
     console.log(`Le livret compte déjà ${pagesTotal} pages, un multiple de 4 — prêt pour l'impression en livret.`);
+  } else {
+    console.log(`Livret généré en format ${format} (${pagesTotal} pages) — pas de complétion à un multiple de 4 pour ce format.`);
   }
 
   console.log(`Livret généré : ${outputPath}`);
