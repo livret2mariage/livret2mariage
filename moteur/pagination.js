@@ -4,31 +4,40 @@ const { PDFDocument, StandardFonts, rgb } = require("pdf-lib");
  * Un livret imprimé "4 pages par feuille" (façonnage classique : feuilles A4
  * pliées en deux, imprimées recto-verso) exige que le nombre total de pages
  * soit un multiple de 4 — sinon l'imprimeur se retrouve avec des pages
- * manquantes, décalées ou mal positionnées au pliage.
+ * manquantes, décalées ou mal positionnées au pliage. Ce façonnage ne
+ * concerne que le format A5 (le livret imprimé sur des feuilles A4 pliées
+ * en deux) : un livret généré directement en A4 n'est pas destiné à ce
+ * pliage, donc pas besoin de compléter à un multiple de 4 dans ce cas — on
+ * se contente d'ajouter le filigrane.
  *
- * Cette fonction ajoute autant de pages blanches que nécessaire à la fin du
- * PDF pour atteindre le prochain multiple de 4, PUIS ajoute le filigrane
- * "Livret2Mariage" sur la toute dernière page du fichier final — qu'il
- * s'agisse d'une page de contenu ou d'une page blanche ajoutée. En faisant
- * ça après coup (plutôt que dans le template HTML), le filigrane est
- * toujours sur la vraie dernière page, à chaque génération, quel que soit
- * le nombre de pages ajoutées pour l'impression.
+ * Quand la complétion s'applique, les pages blanches sont insérées JUSTE
+ * AVANT la toute dernière page (plutôt qu'après), pour que le livret se
+ * termine toujours sur sa page de conclusion ("Merci à tous !" + filigrane)
+ * plutôt que sur une série de pages vides qui donnent une impression
+ * bizarre à la fin.
  *
  * @param {Buffer} pdfBytes - le PDF déjà généré (buffer)
+ * @param {{ format?: "A4" | "A5" }} options - le format choisi (A5 par défaut)
  * @returns {Promise<{ bytes: Buffer, pagesAjoutees: number, pagesTotal: number }>}
  */
-async function completerPourImpressionLivret(pdfBytes) {
+async function completerPourImpressionLivret(pdfBytes, { format = "A5" } = {}) {
   const pdfDoc = await PDFDocument.load(pdfBytes);
-  const pageCount = pdfDoc.getPageCount();
-  const reste = pageCount % 4;
   let pagesAjoutees = 0;
 
-  if (reste !== 0) {
-    pagesAjoutees = 4 - reste;
-    const derniere = pdfDoc.getPage(pageCount - 1);
-    const { width, height } = derniere.getSize();
-    for (let i = 0; i < pagesAjoutees; i++) {
-      pdfDoc.addPage([width, height]);
+  if (format === "A5") {
+    const pageCount = pdfDoc.getPageCount();
+    const reste = pageCount % 4;
+
+    if (reste !== 0) {
+      pagesAjoutees = 4 - reste;
+      const derniere = pdfDoc.getPage(pageCount - 1);
+      const { width, height } = derniere.getSize();
+      // Insère chaque page blanche juste avant l'ancienne dernière page
+      // (index pageCount - 1) : elles s'accumulent dans l'ordre juste devant
+      // elle, qui reste ainsi la toute dernière page du document final.
+      for (let i = 0; i < pagesAjoutees; i++) {
+        pdfDoc.insertPage(pageCount - 1, [width, height]);
+      }
     }
   }
 
