@@ -128,14 +128,18 @@ function assembleLivret(reponse, base) {
   <p class="reference">${esc(lecture.reference)}</p>
   ${paragraphes(lecture.texte, epoux, epouse, "texte-liturgique")}
   <p class="texte-liturgique">Parole du Seigneur.</p>
+</section>
 
+<section class="page">
   <h3 class="titre-section">Le Psaume</h3>
   ${lecteurTag(choix.psaume?.lecteur)}
   <p class="reference">${esc(psaume.reference)}</p>
   <p class="reference-titre">${esc(psaume.titre)}</p>
   ${psaume.refrains.map((r, i) => `${i > 0 ? '<p class="refrain-alt">ou</p>' : ""}<p class="refrain">${esc(r)}</p>`).join("\n")}
   ${versetsPsaume(psaume.texte, epoux, epouse, "texte-liturgique verset-psaume")}
+</section>
 
+<section class="page">
   ${chantHtml("Acclamation de l'Évangile", chants.acclamation || "Alléluia", chants.acclamationParoles)}
   <h3 class="titre-section">Évangile</h3>
   <p class="reference">${esc(evangile.reference)}</p>
