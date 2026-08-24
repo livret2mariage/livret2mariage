@@ -1,19 +1,24 @@
 const https = require("https");
 
 /**
- * Envoie le PDF du livret par email au couple, via l'API Resend
+ * Envoie le PDF du livret par email au professionnel (toi), via l'API Resend
  * (https://resend.com — gratuit jusqu'à 100 emails/jour, sans carte bancaire).
+ * Le livret n'est jamais envoyé automatiquement au client final : c'est toi
+ * qui le reçois, le relis, le personnalises si besoin, puis le transmets.
  *
- * Nécessite deux variables d'environnement pour fonctionner :
+ * Nécessite trois variables d'environnement pour fonctionner :
  *   RESEND_API_KEY   — la clé API de ton compte Resend
  *   RESEND_FROM_EMAIL — l'adresse d'expédition (doit être un domaine vérifié
  *                        sur Resend, ex. "Livret2Mariage <livret@tondomaine.fr>")
+ *   OWNER_EMAIL       — ton adresse email, où tous les livrets générés
+ *                        atterrissent (fixe, indépendante de ce qui est tapé
+ *                        dans le formulaire)
  *
- * Si l'une de ces deux variables manque, la fonction ne tente rien et renvoie
+ * Si l'une de ces variables manque, la fonction ne tente rien et renvoie
  * { envoye: false, raison: "non_configure" } — le reste du service continue
  * de fonctionner normalement (le PDF reste téléchargeable).
  */
-async function envoyerLivretParEmail({ destinataire, epoux, epouse, pdfBuffer, nomFichier }) {
+async function envoyerLivretParEmail({ destinataire, emailClientReference, notesPersonnalisation, epoux, epouse, pdfBuffer, nomFichier }) {
   const apiKey = process.env.RESEND_API_KEY;
   const expediteur = process.env.RESEND_FROM_EMAIL;
 
@@ -24,12 +29,18 @@ async function envoyerLivretParEmail({ destinataire, epoux, epouse, pdfBuffer, n
     return { envoye: false, raison: "email_invalide" };
   }
 
-  const sujet = `Votre livret de mariage — ${epoux} & ${epouse}`;
+  const sujet = `Livret généré — ${epoux} & ${epouse}`;
+  const ligneClient = emailClientReference
+    ? `<p><strong>Email du client (indiqué dans le formulaire) :</strong> ${emailClientReference}</p>`
+    : `<p><em>Aucune adresse client renseignée dans le formulaire.</em></p>`;
+  const ligneNotes = notesPersonnalisation && notesPersonnalisation.trim()
+    ? `<p><strong>Notes de personnalisation transmises par le client :</strong><br>${notesPersonnalisation.trim().replace(/\n/g, "<br>")}</p>`
+    : "";
   const corpsHtml = `
-    <p>Bonjour ${epoux} et ${epouse},</p>
-    <p>Voici votre livret de mariage, prêt à imprimer, généré automatiquement à partir de vos choix.</p>
-    <p>Vous le trouverez en pièce jointe de cet email, au format PDF.</p>
-    <p>Nous vous souhaitons une très belle célébration !</p>
+    <p>Le livret pour <strong>${epoux} &amp; ${epouse}</strong> vient d'être généré.</p>
+    ${ligneClient}
+    ${ligneNotes}
+    <p>Vous le trouverez en pièce jointe, au format PDF, prêt à être relu et transmis au couple.</p>
     <p><em>— Livret2Mariage</em></p>
   `;
 
