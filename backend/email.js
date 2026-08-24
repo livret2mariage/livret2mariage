@@ -18,7 +18,7 @@ const https = require("https");
  * { envoye: false, raison: "non_configure" } — le reste du service continue
  * de fonctionner normalement (le PDF reste téléchargeable).
  */
-async function envoyerLivretParEmail({ destinataire, emailClientReference, telephoneClient, notesPersonnalisation, typeLivraison, typeDemande, epoux, epouse, pdfBuffer, nomFichier }) {
+async function envoyerLivretParEmail({ destinataire, emailClientReference, telephoneClient, notesPersonnalisation, typeLivraison, typeDemande, couleur, couleurAutre, epoux, epouse, pdfBuffer, nomFichier }) {
   const apiKey = process.env.RESEND_API_KEY;
   const expediteur = process.env.RESEND_FROM_EMAIL;
 
@@ -40,6 +40,10 @@ async function envoyerLivretParEmail({ destinataire, emailClientReference, telep
     : "";
   const libellesLivraison = { pdf: "PDF uniquement (impression par le client)", "pdf-impression": "PDF + impression (par vos soins)" };
   const ligneLivraison = `<p><strong>Type de livraison souhaité :</strong> ${libellesLivraison[typeLivraison] || "Non précisé"}</p>`;
+  const libellesCouleur = { sauge: "Sauge", rose: "Rose poudré", bleu: "Bleu layette", or: "Doré champagne", bordeaux: "Bordeaux", terracotta: "Terracotta", lavande: "Lavande", emeraude: "Émeraude", gris: "Gris perle", noir: "Noir intense" };
+  const ligneCouleur = couleur === "autre" && couleurAutre
+    ? `<p><strong>Teinte souhaitée :</strong> Autre — « ${couleurAutre} »</p>`
+    : `<p><strong>Teinte souhaitée :</strong> ${libellesCouleur[couleur] || "Non précisée"}</p>`;
   const ligneNotes = notesPersonnalisation && notesPersonnalisation.trim()
     ? `<p><strong>Notes de personnalisation transmises par le client :</strong><br>${notesPersonnalisation.trim().replace(/\n/g, "<br>")}</p>`
     : "";
@@ -49,6 +53,7 @@ async function envoyerLivretParEmail({ destinataire, emailClientReference, telep
     ${ligneClient}
     ${ligneTelephone}
     ${ligneLivraison}
+    ${ligneCouleur}
     ${ligneNotes}
     <p>Vous trouverez cet aperçu en pièce jointe (PDF), à personnaliser avant l'envoi final au client.</p>
     <p><em>— Livret2Mariage</em></p>

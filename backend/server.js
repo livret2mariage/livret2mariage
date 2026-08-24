@@ -265,6 +265,8 @@ async function genererEtEnvoyerLivret(reponse) {
       notesPersonnalisation: reponse.notesPersonnalisation,
       typeLivraison: reponse.typeLivraison,
       typeDemande: reponse.typeDemande,
+      couleur: reponse.personnalisation?.couleur,
+      couleurAutre: reponse.personnalisation?.couleurAutre,
       epoux: reponse.epoux,
       epouse: reponse.epouse,
       pdfBuffer,
