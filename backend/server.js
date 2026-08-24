@@ -252,7 +252,13 @@ async function genererEtEnvoyerLivret(reponse) {
       .replace(/[^a-z0-9_]/g, "");
 
     const resultatEmail = await envoyerLivretParEmail({
-      destinataire: reponse.email,
+      // Le livret part toujours vers l'adresse du professionnel (toi), jamais
+      // directement au client — c'est toi qui reçois, ajustes si besoin, puis
+      // transmets. L'adresse cliente éventuellement saisie dans le formulaire
+      // sert uniquement de référence dans l'email (voir email.js).
+      destinataire: process.env.OWNER_EMAIL,
+      emailClientReference: reponse.email,
+      notesPersonnalisation: reponse.notesPersonnalisation,
       epoux: reponse.epoux,
       epouse: reponse.epouse,
       pdfBuffer,
@@ -389,6 +395,28 @@ async function handleWebhookStripe(req, res) {
 }
 
 // ------------------------------------------------------------------
+// Protection par mot de passe simple (authentification HTTP basique) : ce
+// n'est plus un outil grand public, mais un outil de travail pour toi seul.
+// Si SITE_PASSWORD n'est pas défini, le service reste ouvert sans mot de
+// passe (utile pour les tests locaux sans configuration supplémentaire).
+// ------------------------------------------------------------------
+function verifierMotDePasse(req) {
+  const motDePasseAttendu = process.env.SITE_PASSWORD;
+  if (!motDePasseAttendu) return true; // aucune protection configurée
+
+  const enTete = req.headers["authorization"] || "";
+  if (!enTete.startsWith("Basic ")) return false;
+
+  const decode = Buffer.from(enTete.slice(6), "base64").toString("utf8");
+  const motDePasseFourni = decode.split(":")[1] || "";
+
+  const a = Buffer.from(motDePasseFourni);
+  const b = Buffer.from(motDePasseAttendu);
+  if (a.length !== b.length) return false;
+  return crypto.timingSafeEqual(a, b);
+}
+
+// ------------------------------------------------------------------
 // Routeur principal
 // ------------------------------------------------------------------
 const server = http.createServer(async (req, res) => {
@@ -400,6 +428,16 @@ const server = http.createServer(async (req, res) => {
       "Access-Control-Allow-Headers": "Content-Type",
     });
     return res.end();
+  }
+
+  // Demande d'authentification avant tout accès (formulaire, API, pages) si
+  // un mot de passe est configuré sur le serveur.
+  if (!verifierMotDePasse(req)) {
+    res.writeHead(401, {
+      "WWW-Authenticate": 'Basic realm="Livret2Mariage"',
+      "Content-Type": "text/plain; charset=utf-8",
+    });
+    return res.end("Authentification requise.");
   }
 
   const url = req.url.split("?")[0];
