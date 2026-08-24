@@ -38,10 +38,11 @@ function assembleLivret(reponse, base) {
   const { size, hauteurPage, margeHaut, margeBas } = FORMATS[format];
   // L'A4 étant nettement plus grand que l'A5, les mêmes tailles de police
   // (en points, valeurs absolues) y paraissent trop petites proportionnellement
-  // à la page. On agrandit tout le contenu (texte ET espacements) d'un facteur
-  // qui suit le rapport de taille entre les deux formats, pour que le rendu
-  // garde des proportions similaires quel que soit le format choisi.
-  const echelle = format === "A4" ? 1.4 : 1;
+  // à la page. On agrandit uniquement le TEXTE (pas les dimensions de page,
+  // ni les hauteurs de conteneurs) via une variable CSS reprise par chaque
+  // taille de police du template — contrairement à un "zoom" global, cette
+  // approche n'agrandit jamais un conteneur au-delà de la page physique.
+  const echelle = format === "A4" ? 1.2 : 1;
   const hauteurContenu = hauteurPage - margeHaut - margeBas;
 
   const salutation = trouve(base, "salutations", choix.salutation?.id);
@@ -69,9 +70,11 @@ function assembleLivret(reponse, base) {
   // Valeurs par défaut si absentes (ex. génération via un JSON simple sans passer
   // par le formulaire).
   const perso = reponse.personnalisation || {};
-  const presentation = ["classique", "encadre", "monogramme"].includes(perso.presentation) ? perso.presentation : "classique";
-  const couleur = ["sauge", "rose", "bleu", "or"].includes(perso.couleur) ? perso.couleur : "sauge";
-  const policeChoisie = ["parisienne", "alexbrush", "greatvibes"].includes(perso.police) ? perso.police : "parisienne";
+  // Présentation de la couverture : plus de choix ici, toujours "classique"
+  // (le professionnel personnalise la couverture lui-même après réception).
+  const presentation = "classique";
+  const couleur = ["sauge", "rose", "bleu", "or", "bordeaux", "terracotta", "lavande", "emeraude", "gris", "noir"].includes(perso.couleur) ? perso.couleur : "sauge";
+  const policeChoisie = ["parisienne", "alexbrush", "greatvibes", "dancingscript", "sacramento", "allura", "tangerine", "pinyonscript", "playfairitalic", "cormorantitalic"].includes(perso.police) ? perso.police : "parisienne";
   const initEpoux = epoux ? epoux.trim()[0].toUpperCase() : "";
   const initEpouse = epouse ? epouse.trim()[0].toUpperCase() : "";
 
@@ -81,11 +84,10 @@ function assembleLivret(reponse, base) {
 <meta charset="UTF-8">
 <title>Livret de mariage — ${esc(epoux)} & ${esc(epouse)}</title>
 <link rel="stylesheet" href="style.css">
-<link href="https://fonts.googleapis.com/css2?family=Parisienne&family=Alex+Brush&family=Great+Vibes&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Parisienne&family=Alex+Brush&family=Great+Vibes&family=Dancing+Script&family=Sacramento&family=Allura&family=Tangerine&family=Pinyon+Script&family=Playfair+Display:ital,wght@1,600&family=Cormorant+Garamond:ital,wght@1,600&display=swap" rel="stylesheet">
 <style>
   @page { size: ${size}; margin: ${margeHaut}mm 14mm ${margeBas}mm 14mm; }
-  :root { --page-content-height: ${hauteurContenu}mm; }
-  body { zoom: ${echelle}; }
+  :root { --page-content-height: ${hauteurContenu}mm; --echelle-texte: ${echelle}; }
 </style>
 </head>
 <body>
