@@ -370,7 +370,6 @@
         "Que ton amour, Seigneur, soit sur nous",
         "comme notre espoir est en toi!"
       ],
-      "recommande": true,
       "resume": {
         "texte": "Ce psaume chante la confiance en Dieu qui protège et bénit ceux qui espèrent en lui — « la joie de notre cœur vient de Dieu ».",
         "lien": "Un psaume de confiance et de joie, idéal pour exprimer que le bonheur du couple prend sa source dans la présence bienveillante de Dieu sur leur nouvelle vie commune."
@@ -577,7 +576,12 @@
         "Par l'ombre des forêts et par les fleurs des champs",
         "Par les bourgeons des arbres et l'herbe des prairies",
         "Par le blé en épis, je veux crier..."
-      ]
+      ],
+      "resume": {
+        "texte": "Ce chant loue Dieu à travers toute la création : le ciel, le soleil, les océans, les montagnes, les forêts — tout proclame sa grandeur et sa beauté.",
+        "lien": "Un chant joyeux et universel, qui convient bien à une célébration en plein air ou pour des mariés sensibles à la nature — il invite à voir la beauté du monde comme un don de Dieu, à l'image de leur amour."
+      },
+      "recommande": true
     },
     {
       "id": "P9",
@@ -599,7 +603,11 @@
         "Tu répands le parfum, ma coupe est débordante,",
         "grâce et bonheur m'accompagnent pour tous les jours de ma vie,",
         "j'habiterai la maison, la maison du Seigneur. Et je chante, je chante."
-      ]
+      ],
+      "resume": {
+        "texte": "Le plus connu des psaumes : Dieu est comme un berger qui prend soin de nous, nous guide et nous rassure, même dans les moments difficiles.",
+        "lien": "Un texte de confiance et de réconfort, idéal pour des mariés qui veulent exprimer que Dieu les accompagnera et les guidera tout au long de leur vie commune, dans les bons moments comme dans les épreuves."
+      }
     },
     {
       "id": "P10",
@@ -621,7 +629,11 @@
         "sur la terre des vivants.",
         "Espère, sois fort et prends courage,",
         "espère, espère le Seigneur."
-      ]
+      ],
+      "resume": {
+        "texte": "Le psalmiste proclame sa confiance totale en Dieu, sa lumière et son salut, et exprime le désir profond d'habiter toujours proche de lui.",
+        "lien": "Un psaume de confiance et d'espérance, pour des mariés qui veulent placer leur union sous le signe de la lumière et de la présence de Dieu dans leur foyer."
+      }
     }
   ],
   "evangiles": [
