@@ -34,6 +34,66 @@ function apercuAvecPrenoms(texte) {
   return t;
 }
 
+// ---------- 0bis. Type de demande (devis rapide ou conception complète) ----------
+// En mode "devis", seule la section "Le couple" (qui contient déjà les infos
+// de contact + la personnalisation) reste nécessaire — les 4 sections
+// liturgiques intermédiaires sont masquées, ce qui exempte automatiquement
+// leurs champs "required" de la validation du navigateur (un champ caché
+// n'est jamais bloquant pour l'envoi du formulaire).
+const SECTIONS_LITURGIQUES = ["parole", "liturgie", "prieres", "chants"];
+
+function appliquerTypeDemande(type) {
+  const estDevis = type === "devis";
+  SECTIONS_LITURGIQUES.forEach((nom) => {
+    const section = document.querySelector(`section[data-section="${nom}"]`);
+    const lienNav = document.querySelector(`nav a[data-section="${nom}"]`);
+    const itemProgres = document.querySelector(`li[data-section="${nom}"]`);
+    if (section) {
+      section.style.display = estDevis ? "none" : "";
+      // Un champ "required" dans une section display:none reste malgré tout
+      // bloquant pour la validation HTML5 dans certains navigateurs : on
+      // retire/remet l'attribut explicitement plutôt que de compter sur le
+      // simple masquage visuel.
+      // Un champ "required" dans une section display:none reste malgré tout
+      // bloquant pour la validation HTML5 dans certains navigateurs : on
+      // retire/remet l'attribut explicitement plutôt que de compter sur le
+      // simple masquage visuel. On parcourt tous les champs (pas seulement
+      // ceux actuellement [required]) pour pouvoir restaurer l'attribut une
+      // fois qu'il a été retiré une première fois.
+      section.querySelectorAll("select, input, textarea").forEach((champ) => {
+        if (estDevis) {
+          if (champ.hasAttribute("required")) {
+            champ.dataset.requiredOriginel = "1";
+            champ.removeAttribute("required");
+          }
+        } else if (champ.dataset.requiredOriginel) {
+          champ.setAttribute("required", "");
+        }
+      });
+    }
+    if (lienNav) lienNav.style.display = estDevis ? "none" : "";
+    if (itemProgres) itemProgres.style.display = estDevis ? "none" : "";
+  });
+  const note = document.getElementById("typeDemandeNote");
+  if (note) {
+    note.textContent = estDevis
+      ? "Avec un simple devis, seules vos informations de couple sont nécessaires — les autres sections deviennent facultatives."
+      : "Vous allez pouvoir choisir vos lectures, prières, bénédictions et personnaliser votre livret en détail.";
+  }
+}
+
+document.querySelectorAll("#typeDemandeSwatches .format-btn").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll("#typeDemandeSwatches .format-btn").forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+    appliquerTypeDemande(btn.dataset.value);
+    updateProgress();
+  });
+});
+
+// Mode "devis" actif par défaut au chargement de la page.
+appliquerTypeDemande("devis");
+
 // ---------- 1. Remplissage des menus déroulants ----------
 
 // Construit le contenu HTML de l'aperçu : résumé + lien avec le mariage (quand
@@ -266,7 +326,7 @@ document.querySelectorAll("select[data-cat]").forEach((select) => {
   });
 });
 
-// ---------- 2quater. Personnalisation de la couverture (couleur + police) ----------
+// ---------- 2quater. Personnalisation de la couverture (couleur) ----------
 const coverMock = document.getElementById("tab-cover");
 
 document.querySelectorAll("#formatSwatches .format-btn").forEach((btn) => {
@@ -281,23 +341,39 @@ document.querySelectorAll("#couleurSwatches .swatch-btn").forEach((btn) => {
     document.querySelectorAll("#couleurSwatches .swatch-btn").forEach((b) => b.classList.remove("active"));
     btn.classList.add("active");
     coverMock.className = coverMock.className.replace(/tint-\S+/, "").trim();
-    coverMock.classList.add(`tint-${btn.dataset.value}`);
+    if (btn.dataset.value !== "autre") {
+      coverMock.classList.add(`tint-${btn.dataset.value}`);
+      coverMock.style.removeProperty("--accent");
+    } else {
+      const valeurLibre = document.getElementById("couleurAutre").value.trim();
+      if (valeurLibre) coverMock.style.setProperty("--accent", valeurLibre);
+    }
   });
 });
 
-document.querySelectorAll("#policeSwatches .font-btn").forEach((btn) => {
+document.getElementById("couleurAutre").addEventListener("input", () => {
+  const btnActif = document.querySelector("#couleurSwatches .swatch-btn.active");
+  if (btnActif?.dataset.value === "autre") {
+    const valeur = document.getElementById("couleurAutre").value.trim();
+    if (valeur) coverMock.style.setProperty("--accent", valeur);
+  }
+});
+
+document.querySelectorAll("#livraisonSwatches .format-btn").forEach((btn) => {
   btn.addEventListener("click", () => {
-    document.querySelectorAll("#policeSwatches .font-btn").forEach((b) => b.classList.remove("active"));
+    document.querySelectorAll("#livraisonSwatches .format-btn").forEach((b) => b.classList.remove("active"));
     btn.classList.add("active");
-    coverMock.className = coverMock.className.replace(/font-\S+/, "").trim();
-    coverMock.classList.add(`font-${btn.dataset.value}`);
   });
 });
 
 function getPersonnalisation() {
+  const couleur = document.querySelector("#couleurSwatches .swatch-btn.active")?.dataset.value || "sauge";
   return {
-    couleur: document.querySelector("#couleurSwatches .swatch-btn.active")?.dataset.value || "sauge",
-    police: document.querySelector("#policeSwatches .font-btn.active")?.dataset.value || "parisienne",
+    couleur,
+    couleurAutre: couleur === "autre" ? document.getElementById("couleurAutre").value.trim() : undefined,
+    // Une seule police élégante pour ce modèle — la couverture est de toute
+    // façon personnalisée à la main ensuite.
+    police: "parisienne",
   };
 }
 
@@ -346,6 +422,7 @@ function buildReponse() {
     heure: val("#heure"),
     lieu: val("#lieu"),
     email: val("#email"),
+    telephone: val("#telephone"),
     choix: {
       lecture: { id: choiceVal("lecture"), lecteur: lecteurVal("lecture") },
       psaume: { id: choiceVal("psaume"), lecteur: lecteurVal("psaume") },
@@ -378,6 +455,8 @@ function buildReponse() {
     },
     motsRemerciements: val('[name="motsRemerciements"]') || undefined,
     notesPersonnalisation: val("#notesPersonnalisation") || undefined,
+    typeLivraison: document.querySelector("#livraisonSwatches .format-btn.active")?.dataset.value || "pdf",
+    typeDemande: document.querySelector("#typeDemandeSwatches .format-btn.active")?.dataset.value || "devis",
     personnalisation: getPersonnalisation(),
   };
 }
@@ -388,7 +467,7 @@ form.addEventListener("submit", async (e) => {
   const submitBtn = form.querySelector('button[type="submit"]');
   const originalLabel = submitBtn.textContent;
   submitBtn.disabled = true;
-  submitBtn.textContent = "Génération du livret…";
+  submitBtn.textContent = "Envoi de votre demande…";
 
   try {
     const res = await fetch("/api/livrets", {
@@ -400,29 +479,14 @@ form.addEventListener("submit", async (e) => {
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
       const detailsTexte = Array.isArray(err.details) ? err.details.join(" ") : err.details;
-      throw new Error(detailsTexte || err.erreur || "Le serveur n'a pas pu générer le livret.");
+      throw new Error(detailsTexte || err.erreur || "Le serveur n'a pas pu transmettre votre demande.");
     }
 
-    const blob = await res.blob();
-    const url = URL.createObjectURL(blob);
-    const nomFichier = `livret_${(reponse.epoux || "couple").toLowerCase()}_${(reponse.epouse || "").toLowerCase()}.pdf`;
-
-    // Déclenche le téléchargement du PDF généré
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = nomFichier;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-
-    const emailEnvoye = res.headers.get("X-Email-Envoye") === "true";
-    const messageEmail = emailEnvoye
-      ? `Il vous a aussi été envoyé par email (à votre adresse professionnelle).`
-      : `L'envoi automatique par email n'est pas encore activé sur ce serveur — pensez à conserver le fichier téléchargé.`;
-
+    // Pas de PDF renvoyé au demandeur : la demande part à l'équipe d'édition,
+    // qui personnalise le livret avant de le transmettre elle-même.
     statusBanner.innerHTML =
-      `Merci ${reponse.epoux || ""} &amp; ${reponse.epouse || ""} ! Votre livret a été généré et téléchargé. ${messageEmail} ` +
-      `<a href="${url}" download="${nomFichier}">Retélécharger le PDF</a>.`;
+      `Merci ${reponse.epoux || ""} &amp; ${reponse.epouse || ""} ! Votre demande a bien été transmise à notre équipe d'édition. ` +
+      `Nous vous recontacterons prochainement pour finaliser votre livret.`;
     statusBanner.classList.add("show");
   } catch (err) {
     // Repli : si l'API n'est pas disponible (ex. fichier ouvert directement sans

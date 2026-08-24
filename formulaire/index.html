@@ -558,9 +558,9 @@ section.step h2{font-size:28px; font-style:italic; margin-bottom:4px;}
 
 <header class="top-header">
   <div class="brand-mark">Livret2Mariage <span class="header-links"><a href="/tuto">Comment ça marche</a> · <a href="/contact">Contact</a></span></div>
-  <div class="eyebrow">Préparation de votre célébration</div>
+  <div class="eyebrow">Demande de devis — Conception de livret de mariage</div>
   <h1>Composez votre livret de mariage</h1>
-  <p>Choisissez vos lectures, prières et bénédictions parmi les textes proposés par votre paroisse. Votre livret sera généré automatiquement, mis en page et vous sera envoyé — sans rien à faire de plus.</p>
+  <p>Choisissez vos lectures, prières et bénédictions parmi les textes proposés. Votre livret sera confectionné et mis en page par notre équipe, sans rien faire de plus — nous vous recontactons pour finaliser votre demande.</p>
 </header>
 
 <div class="page-wrap">
@@ -576,6 +576,22 @@ section.step h2{font-size:28px; font-style:italic; margin-bottom:4px;}
     </nav>
 
     <form id="livretForm">
+
+      <!-- ================= TYPE DE DEMANDE ================= -->
+      <section class="step" id="s-type-demande">
+        <div class="step-eyebrow">Avant de commencer</div>
+        <h2>Quel type de demande ?</h2>
+        <p class="step-desc">Un devis rapide (juste vos informations de base), ou la conception complète de votre livret (avec vos choix de lectures, prières, personnalisation...) ?</p>
+        <div class="format-row" id="typeDemandeSwatches" data-name="type_demande">
+          <button type="button" class="format-btn active" data-value="devis">
+            <span>Demande de devis</span>
+          </button>
+          <button type="button" class="format-btn" data-value="conception">
+            <span>Conception complète de mon livret</span>
+          </button>
+        </div>
+        <p class="format-note" id="typeDemandeNote" style="margin-top:8px;">Avec un simple devis, seules vos informations de couple sont nécessaires — les autres sections deviennent facultatives.</p>
+      </section>
 
       <!-- ================= LE COUPLE ================= -->
       <section class="step" id="s-couple" data-section="couple">
@@ -608,9 +624,13 @@ section.step h2{font-size:28px; font-style:italic; margin-bottom:4px;}
           <input type="text" id="lieu" name="lieu" placeholder="ex. Église du 17ème km" required>
         </div>
         <div class="field">
-          <label for="email">Email du client <span class="hint">(facultatif)</span></label>
-          <input type="email" id="email" name="email" placeholder="ex. kevin.anais@exemple.com">
-          <p class="format-note" style="margin-top:6px;">Pour référence uniquement — le livret vous est envoyé à vous, pas directement au client.</p>
+          <label for="email">Votre adresse email</label>
+          <input type="email" id="email" name="email" placeholder="ex. kevin.anais@exemple.com" required>
+          <p class="format-note" style="margin-top:6px;">Pour vous recontacter et finaliser votre demande.</p>
+        </div>
+        <div class="field">
+          <label for="telephone">Votre numéro de téléphone</label>
+          <input type="tel" id="telephone" name="telephone" placeholder="ex. 06 12 34 56 78" required>
         </div>
 
         <div class="custo-block">
@@ -661,28 +681,31 @@ section.step h2{font-size:28px; font-style:italic; margin-bottom:4px;}
             <button type="button" class="swatch-btn" data-value="noir" style="--sw:#2B2B2B;">
               <span class="swatch-dot"></span>Noir intense
             </button>
+            <button type="button" class="swatch-btn" data-value="autre" style="--sw:#FFFFFF; border-style:dashed;">
+              <span class="swatch-dot" style="border:1px dashed #999;"></span>Autre…
+            </button>
+          </div>
+          <div class="field" style="margin-top:10px;">
+            <input type="text" id="couleurAutre" name="couleurAutre" placeholder="Si « Autre » : précisez la couleur souhaitée (ex. #3B2F2F, ou « vert forêt »)">
           </div>
         </div>
 
         <div class="custo-block">
-          <label class="custo-label">Écriture des prénoms</label>
-          <div class="font-row" id="policeSwatches" data-name="police">
-            <button type="button" class="font-btn active" data-value="parisienne" style="font-family:'Parisienne',cursive;">Kevin &amp; Anaïs</button>
-            <button type="button" class="font-btn" data-value="alexbrush" style="font-family:'Alex Brush',cursive;">Kevin &amp; Anaïs</button>
-            <button type="button" class="font-btn" data-value="greatvibes" style="font-family:'Great Vibes',cursive;">Kevin &amp; Anaïs</button>
-            <button type="button" class="font-btn" data-value="dancingscript" style="font-family:'Dancing Script',cursive;">Kevin &amp; Anaïs</button>
-            <button type="button" class="font-btn" data-value="sacramento" style="font-family:'Sacramento',cursive;">Kevin &amp; Anaïs</button>
-            <button type="button" class="font-btn" data-value="allura" style="font-family:'Allura',cursive;">Kevin &amp; Anaïs</button>
-            <button type="button" class="font-btn" data-value="tangerine" style="font-family:'Tangerine',cursive; font-size:26px;">Kevin &amp; Anaïs</button>
-            <button type="button" class="font-btn" data-value="pinyonscript" style="font-family:'Pinyon Script',cursive;">Kevin &amp; Anaïs</button>
-            <button type="button" class="font-btn" data-value="playfairitalic" style="font-family:'Playfair Display',serif; font-style:italic;">Kevin &amp; Anaïs</button>
-            <button type="button" class="font-btn" data-value="cormorantitalic" style="font-family:'Cormorant Garamond',serif; font-style:italic;">Kevin &amp; Anaïs</button>
+          <label class="custo-label">Type de livraison souhaité</label>
+          <div class="format-row" id="livraisonSwatches" data-name="livraison">
+            <button type="button" class="format-btn active" data-value="pdf">
+              <span>PDF uniquement</span>
+            </button>
+            <button type="button" class="format-btn" data-value="pdf-impression">
+              <span>PDF + impression</span>
+            </button>
           </div>
+          <p class="format-note" style="margin-top:6px;">« PDF uniquement » : à imprimer vous-même. « PDF + impression » : nous imprimons pour vous.</p>
         </div>
 
         <div class="custo-block">
           <label class="custo-label">Notes pour la personnalisation <span class="hint">(facultatif)</span></label>
-          <textarea id="notesPersonnalisation" name="notesPersonnalisation" class="paroles-textarea" style="min-height:80px;" placeholder="Une couleur précise en tête, une ambiance particulière, une inspiration... écrivez-le ici, ce sera pris en compte lors de la personnalisation finale."></textarea>
+          <textarea id="notesPersonnalisation" name="notesPersonnalisation" class="paroles-textarea" style="min-height:80px;" placeholder="Une ambiance particulière, une inspiration, une demande spéciale... écrivez-le ici, ce sera pris en compte lors de la personnalisation finale."></textarea>
           <p class="format-note" style="margin-top:6px;">Ceci sert de base de départ — la version finale sera personnalisée à la main avant envoi.</p>
         </div>
       </section>
@@ -840,8 +863,8 @@ section.step h2{font-size:28px; font-style:italic; margin-bottom:4px;}
         </div>
 
         <div class="submit-zone">
-          <button type="submit" class="btn-primary">Envoyer mes choix</button>
-          <p class="submit-note">Vos réponses seront transmises automatiquement au système qui prépare votre livret — vous n'avez rien d'autre à faire.</p>
+          <button type="submit" class="btn-primary">Envoyer ma demande</button>
+          <p class="submit-note">Votre demande sera transmise à notre équipe d'édition, qui vous recontactera pour finaliser votre livret.</p>
           <div class="status-banner" id="statusBanner"></div>
         </div>
       </section>
