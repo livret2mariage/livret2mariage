@@ -8,7 +8,7 @@
 
 body {
   font-family: "Georgia", "Times New Roman", serif;
-  font-size: 10.5pt;
+  font-size: calc(var(--echelle-texte, 1) * 10.5pt);
   line-height: 1.45;
   color: #1a1a1a;
   margin: 0;
@@ -49,10 +49,16 @@ p {
 }
 
 /* Teintes (appliquées au "&", au trait décoratif, au cadre et au monogramme) */
-.couverture.tint-sauge { --accent: #6E8261; }
-.couverture.tint-rose  { --accent: #C1607B; }
-.couverture.tint-bleu  { --accent: #5D7FA8; }
-.couverture.tint-or    { --accent: #A9791A; }
+.couverture.tint-sauge     { --accent: #6E8261; }
+.couverture.tint-rose      { --accent: #C1607B; }
+.couverture.tint-bleu      { --accent: #5D7FA8; }
+.couverture.tint-or        { --accent: #A9791A; }
+.couverture.tint-bordeaux  { --accent: #7A2E33; }
+.couverture.tint-terracotta{ --accent: #B5651D; }
+.couverture.tint-lavande   { --accent: #8676A1; }
+.couverture.tint-emeraude  { --accent: #2F6F5E; }
+.couverture.tint-gris      { --accent: #6B7280; }
+.couverture.tint-noir      { --accent: #2B2B2B; }
 
 /* Cadre (présentation "encadrée") */
 .frame-inset { display: none; }
@@ -78,14 +84,14 @@ p {
   font-family: Georgia, "Times New Roman", serif;
   font-style: italic;
   font-weight: 700;
-  font-size: 34pt;
+  font-size: calc(var(--echelle-texte, 1) * 34pt);
   color: var(--accent, #52604A);
   margin-bottom: 1mm;
 }
 .layout-monogramme .contenu-couverture { padding-top: calc(var(--page-content-height, 177mm) * 0.09); }
 .layout-monogramme .sous-titre { margin-top: 4mm; }
-.layout-monogramme .prenom { font-size: 15pt; font-family: Georgia, "Times New Roman", serif !important; font-style: italic; }
-.layout-monogramme .esperluette { font-size: 11pt; }
+.layout-monogramme .prenom { font-size: calc(var(--echelle-texte, 1) * 15pt); font-family: Georgia, "Times New Roman", serif !important; font-style: italic; }
+.layout-monogramme .esperluette { font-size: calc(var(--echelle-texte, 1) * 11pt); }
 
 .contenu-couverture {
   position: relative;
@@ -93,20 +99,27 @@ p {
   padding-top: calc(var(--page-content-height, 177mm) * 0.125);
 }
 .sous-titre {
-  font-size: 12pt;
+  font-size: calc(var(--echelle-texte, 1) * 12pt);
   font-weight: bold;
   margin: 0 0 5mm 0;
 }
 .prenom {
   font-family: "Parisienne", "Brush Script MT", "Segoe Script", cursive;
-  font-size: 24pt;
+  font-size: calc(var(--echelle-texte, 1) * 24pt);
   margin: 1mm 0;
 }
 .font-alexbrush .prenom, .font-alexbrush .esperluette { font-family: "Alex Brush", "Brush Script MT", cursive; }
 .font-greatvibes .prenom, .font-greatvibes .esperluette { font-family: "Great Vibes", "Brush Script MT", cursive; }
+.font-dancingscript .prenom, .font-dancingscript .esperluette { font-family: "Dancing Script", "Brush Script MT", cursive; }
+.font-sacramento .prenom, .font-sacramento .esperluette { font-family: "Sacramento", "Brush Script MT", cursive; }
+.font-allura .prenom, .font-allura .esperluette { font-family: "Allura", "Brush Script MT", cursive; }
+.font-tangerine .prenom, .font-tangerine .esperluette { font-family: "Tangerine", "Brush Script MT", cursive; font-size: calc(var(--echelle-texte, 1) * 34pt); }
+.font-pinyonscript .prenom, .font-pinyonscript .esperluette { font-family: "Pinyon Script", "Brush Script MT", cursive; }
+.font-playfairitalic .prenom, .font-playfairitalic .esperluette { font-family: "Playfair Display", serif; font-style: italic; }
+.font-cormorantitalic .prenom, .font-cormorantitalic .esperluette { font-family: "Cormorant Garamond", serif; font-style: italic; }
 .esperluette {
   font-family: "Parisienne", "Brush Script MT", "Segoe Script", cursive;
-  font-size: 18pt;
+  font-size: calc(var(--echelle-texte, 1) * 18pt);
   margin: 0;
   color: var(--accent, inherit);
 }
@@ -118,10 +131,10 @@ p {
 }
 .infos-pratiques {
   margin-top: calc(var(--page-content-height, 177mm) * 0.21);
-  font-size: 9.5pt;
+  font-size: calc(var(--echelle-texte, 1) * 9.5pt);
 }
 .infos-pratiques p { margin: 1mm 0; }
-.remerciement-couverture { margin-top: 6mm; font-size: 9.5pt; }
+.remerciement-couverture { margin-top: 6mm; font-size: calc(var(--echelle-texte, 1) * 9.5pt); }
 .signature { margin-top: 3mm; }
 
 .derniere-page {
@@ -134,7 +147,7 @@ p {
 .remerciements-finaux {
   position: relative;
   z-index: 1;
-  font-size: 13pt;
+  font-size: calc(var(--echelle-texte, 1) * 13pt);
   font-weight: bold;
 }
 .signature-filigrane {
@@ -147,7 +160,7 @@ p {
   text-align: center;
   font-family: Georgia, "Times New Roman", serif;
   font-style: italic;
-  font-size: 15pt;
+  font-size: calc(var(--echelle-texte, 1) * 15pt);
   letter-spacing: 0.5pt;
   color: #9B9B90;
 }
@@ -155,7 +168,7 @@ p {
 /* ===== Pages de contenu ===== */
 .titre-partie {
   text-align: center;
-  font-size: 15pt;
+  font-size: calc(var(--echelle-texte, 1) * 15pt);
   margin: 0 0 6mm 0;
 }
 /* Chaque élément liturgique (dialogue, consentements, alliances, bénédiction
@@ -170,7 +183,7 @@ p {
 
 .titre-section {
   text-align: center;
-  font-size: 12pt;
+  font-size: calc(var(--echelle-texte, 1) * 12pt);
   margin: 7mm 0 3mm 0;
 }
 .texte-liturgique {
@@ -193,7 +206,7 @@ p {
 .chant-paroles {
   text-align: center;
   font-style: italic;
-  font-size: 9.5pt;
+  font-size: calc(var(--echelle-texte, 1) * 9.5pt);
   color: #333;
   margin: 0 0 4mm 0;
 }
