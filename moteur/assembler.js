@@ -73,8 +73,20 @@ function assembleLivret(reponse, base) {
   // Présentation de la couverture : plus de choix ici, toujours "classique"
   // (le professionnel personnalise la couverture lui-même après réception).
   const presentation = "classique";
-  const couleur = ["sauge", "rose", "bleu", "or", "bordeaux", "terracotta", "lavande", "emeraude", "gris", "noir"].includes(perso.couleur) ? perso.couleur : "sauge";
-  const policeChoisie = ["parisienne", "alexbrush", "greatvibes", "dancingscript", "sacramento", "allura", "tangerine", "pinyonscript", "playfairitalic", "cormorantitalic"].includes(perso.police) ? perso.police : "parisienne";
+  const couleur = ["sauge", "rose", "bleu", "or", "bordeaux", "terracotta", "lavande", "emeraude", "gris", "noir", "autre"].includes(perso.couleur) ? perso.couleur : "sauge";
+  // Une seule police élégante pour ce modèle (la couverture est de toute
+  // façon personnalisée à la main par le professionnel ensuite).
+  const policeChoisie = "parisienne";
+  // Couleur libre ("Autre") : valeur saisie par le client, validée par une
+  // liste blanche de caractères simple (mots, espaces, #, chiffres, virgules,
+  // points, %, parenthèses — assez pour un nom de couleur ou un code hex/rgb),
+  // injectée en style inline plutôt que via une classe CSS prédéfinie.
+  const couleurAutreTexte =
+    couleur === "autre" && typeof perso.couleurAutre === "string" && /^[#a-zA-ZÀ-ÿ0-9(),.%\s-]{1,40}$/.test(perso.couleurAutre.trim())
+      ? perso.couleurAutre.trim()
+      : null;
+  const classeCouleur = couleur === "autre" && couleurAutreTexte ? "" : `tint-${couleur}`;
+  const styleCouleurInline = couleur === "autre" && couleurAutreTexte ? ` style="--accent:${esc(couleurAutreTexte)};"` : "";
   const initEpoux = epoux ? epoux.trim()[0].toUpperCase() : "";
   const initEpouse = epouse ? epouse.trim()[0].toUpperCase() : "";
 
@@ -93,7 +105,7 @@ function assembleLivret(reponse, base) {
 <body>
 
 <!-- ===================== COUVERTURE ===================== -->
-<section class="page couverture tint-${couleur} font-${policeChoisie} layout-${presentation}">
+<section class="page couverture ${classeCouleur} font-${policeChoisie} layout-${presentation}"${styleCouleurInline}>
   <div class="frame-inset"></div>
   <div class="contenu-couverture">
     <div class="monogramme-cover">${esc(initEpoux)}&amp;${esc(initEpouse)}</div>
