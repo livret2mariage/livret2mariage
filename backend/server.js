@@ -158,11 +158,14 @@ function validateReponse(r) {
   const erreurs = [];
   if (!r || typeof r !== "object") return ["Corps de requête invalide."];
 
-  ["epoux", "epouse", "date", "heure", "lieu"].forEach((champ) => {
+  ["epoux", "epouse", "date", "heure", "lieu", "email", "telephone"].forEach((champ) => {
     if (!r[champ] || typeof r[champ] !== "string" || !r[champ].trim()) {
       erreurs.push(`Le champ "${champ}" est requis.`);
     }
   });
+  if (r.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(r.email)) {
+    erreurs.push('Le champ "email" doit être une adresse valide.');
+  }
 
   // Les choix liturgiques sont désormais facultatifs : tout champ non renseigné
   // retombe automatiquement sur le texte marqué "recommandé" dans data/textes.json.
@@ -258,7 +261,10 @@ async function genererEtEnvoyerLivret(reponse) {
       // sert uniquement de référence dans l'email (voir email.js).
       destinataire: process.env.OWNER_EMAIL,
       emailClientReference: reponse.email,
+      telephoneClient: reponse.telephone,
       notesPersonnalisation: reponse.notesPersonnalisation,
+      typeLivraison: reponse.typeLivraison,
+      typeDemande: reponse.typeDemande,
       epoux: reponse.epoux,
       epouse: reponse.epouse,
       pdfBuffer,
@@ -280,6 +286,11 @@ async function genererEtEnvoyerLivret(reponse) {
 // que via la confirmation de paiement Stripe (voir handleWebhookStripe).
 // Conservée pour pouvoir tester le moteur sans repasser par un paiement réel.
 // ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// POST /api/livrets — reçoit la demande du client, génère le livret et
+// l'envoie par email au professionnel (jamais directement au client, qui ne
+// reçoit qu'une confirmation JSON — pas de PDF téléchargé côté client).
+// ------------------------------------------------------------------
 async function handleGenerateLivret(req, res) {
   let reponse;
   try {
@@ -294,17 +305,12 @@ async function handleGenerateLivret(req, res) {
   }
 
   try {
-    const { pdfBuffer, nomFichier, resultatEmail } = await genererEtEnvoyerLivret(reponse);
-    res.writeHead(200, {
-      "Content-Type": "application/pdf",
-      "Content-Disposition": `attachment; filename="${nomFichier}.pdf"`,
-      "Content-Length": pdfBuffer.length,
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Expose-Headers": "X-Email-Envoye, X-Email-Raison",
-      "X-Email-Envoye": String(resultatEmail.envoye),
-      "X-Email-Raison": resultatEmail.raison || "",
+    const { resultatEmail } = await genererEtEnvoyerLivret(reponse);
+    sendJson(res, 200, {
+      succes: true,
+      emailEnvoye: resultatEmail.envoye,
+      emailRaison: resultatEmail.raison || null,
     });
-    res.end(pdfBuffer);
   } catch (err) {
     console.error("Erreur de génération du livret :", err);
     sendJson(res, 500, { erreur: "Échec de la génération du livret", details: err.message });

@@ -18,7 +18,7 @@ const https = require("https");
  * { envoye: false, raison: "non_configure" } — le reste du service continue
  * de fonctionner normalement (le PDF reste téléchargeable).
  */
-async function envoyerLivretParEmail({ destinataire, emailClientReference, notesPersonnalisation, epoux, epouse, pdfBuffer, nomFichier }) {
+async function envoyerLivretParEmail({ destinataire, emailClientReference, telephoneClient, notesPersonnalisation, typeLivraison, typeDemande, epoux, epouse, pdfBuffer, nomFichier }) {
   const apiKey = process.env.RESEND_API_KEY;
   const expediteur = process.env.RESEND_FROM_EMAIL;
 
@@ -29,18 +29,28 @@ async function envoyerLivretParEmail({ destinataire, emailClientReference, notes
     return { envoye: false, raison: "email_invalide" };
   }
 
-  const sujet = `Livret généré — ${epoux} & ${epouse}`;
+  const libellesDemande = { devis: "Demande de devis (informations de base uniquement)", conception: "Conception complète (avec choix liturgiques détaillés)" };
+  const sujet = `${typeDemande === "devis" ? "Demande de devis" : "Nouvelle demande de conception"} — ${epoux} & ${epouse}`;
+  const ligneTypeDemande = `<p><strong>Type de demande :</strong> ${libellesDemande[typeDemande] || "Non précisé"}</p>`;
   const ligneClient = emailClientReference
-    ? `<p><strong>Email du client (indiqué dans le formulaire) :</strong> ${emailClientReference}</p>`
+    ? `<p><strong>Email du client :</strong> ${emailClientReference}</p>`
     : `<p><em>Aucune adresse client renseignée dans le formulaire.</em></p>`;
+  const ligneTelephone = telephoneClient
+    ? `<p><strong>Téléphone du client :</strong> ${telephoneClient}</p>`
+    : "";
+  const libellesLivraison = { pdf: "PDF uniquement (impression par le client)", "pdf-impression": "PDF + impression (par vos soins)" };
+  const ligneLivraison = `<p><strong>Type de livraison souhaité :</strong> ${libellesLivraison[typeLivraison] || "Non précisé"}</p>`;
   const ligneNotes = notesPersonnalisation && notesPersonnalisation.trim()
     ? `<p><strong>Notes de personnalisation transmises par le client :</strong><br>${notesPersonnalisation.trim().replace(/\n/g, "<br>")}</p>`
     : "";
   const corpsHtml = `
-    <p>Le livret pour <strong>${epoux} &amp; ${epouse}</strong> vient d'être généré.</p>
+    <p>Une nouvelle demande pour <strong>${epoux} &amp; ${epouse}</strong> vient d'être reçue. Un aperçu (non final) a été généré automatiquement à partir des choix du client.</p>
+    ${ligneTypeDemande}
     ${ligneClient}
+    ${ligneTelephone}
+    ${ligneLivraison}
     ${ligneNotes}
-    <p>Vous le trouverez en pièce jointe, au format PDF, prêt à être relu et transmis au couple.</p>
+    <p>Vous trouverez cet aperçu en pièce jointe (PDF), à personnaliser avant l'envoi final au client.</p>
     <p><em>— Livret2Mariage</em></p>
   `;
 
