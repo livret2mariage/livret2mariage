@@ -193,8 +193,8 @@ document.querySelectorAll(".preview-tab").forEach((tab) => {
     document.getElementById("tab-inner").classList.toggle("active", tab.dataset.tab === "inner");
     previewCaption.textContent =
       tab.dataset.tab === "cover"
-        ? "Aperçu de la couverture de votre livret"
-        : "Aperçu d'une page intérieure, selon le dernier texte choisi";
+        ? "Aperçu indicatif de la couverture — la version finale sera personnalisée avant envoi."
+        : "Aperçu indicatif d'une page intérieure — la mise en page finale peut différer.";
   });
 });
 
@@ -266,17 +266,8 @@ document.querySelectorAll("select[data-cat]").forEach((select) => {
   });
 });
 
-// ---------- 2quater. Personnalisation de la couverture (présentation + couleur + police) ----------
+// ---------- 2quater. Personnalisation de la couverture (couleur + police) ----------
 const coverMock = document.getElementById("tab-cover");
-
-document.querySelectorAll("#layoutSwatches .layout-btn").forEach((btn) => {
-  btn.addEventListener("click", () => {
-    document.querySelectorAll("#layoutSwatches .layout-btn").forEach((b) => b.classList.remove("active"));
-    btn.classList.add("active");
-    coverMock.className = coverMock.className.replace(/layout-\S+/, "").trim();
-    coverMock.classList.add(`layout-${btn.dataset.value}`);
-  });
-});
 
 document.querySelectorAll("#formatSwatches .format-btn").forEach((btn) => {
   btn.addEventListener("click", () => {
@@ -305,7 +296,6 @@ document.querySelectorAll("#policeSwatches .font-btn").forEach((btn) => {
 
 function getPersonnalisation() {
   return {
-    presentation: document.querySelector("#layoutSwatches .layout-btn.active")?.dataset.value || "classique",
     couleur: document.querySelector("#couleurSwatches .swatch-btn.active")?.dataset.value || "sauge",
     police: document.querySelector("#policeSwatches .font-btn.active")?.dataset.value || "parisienne",
   };
@@ -387,6 +377,7 @@ function buildReponse() {
       sortieParoles: val('[name="chant_sortieParoles"]'),
     },
     motsRemerciements: val('[name="motsRemerciements"]') || undefined,
+    notesPersonnalisation: val("#notesPersonnalisation") || undefined,
     personnalisation: getPersonnalisation(),
   };
 }
@@ -425,9 +416,8 @@ form.addEventListener("submit", async (e) => {
     a.remove();
 
     const emailEnvoye = res.headers.get("X-Email-Envoye") === "true";
-    const emailAffiche = (reponse.email || "").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     const messageEmail = emailEnvoye
-      ? `Il vous a aussi été envoyé par email à ${emailAffiche}.`
+      ? `Il vous a aussi été envoyé par email (à votre adresse professionnelle).`
       : `L'envoi automatique par email n'est pas encore activé sur ce serveur — pensez à conserver le fichier téléchargé.`;
 
     statusBanner.innerHTML =
