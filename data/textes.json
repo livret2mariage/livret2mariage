@@ -1080,8 +1080,8 @@
     "id": "remise_alliances_standard",
     "titre": "Remise des alliances",
     "texte": [
-      "Pour {EPOUSE} : « {EPOUX}, reçois cette alliance, signe de mon amour et de ma fidélité. Au nom du Père, et du Fils, et du Saint-Esprit. »",
-      "Pour {EPOUX} : « {EPOUSE}, reçois cette alliance, signe de mon amour et de ma fidélité. Au nom du Père, et du Fils, et du Saint-Esprit. »"
+      "Pour {EPOUX} : « {EPOUSE}, reçois cette alliance, signe de mon amour et de ma fidélité. Au nom du Père, et du Fils, et du Saint-Esprit. »",
+      "Pour {EPOUSE} : « {EPOUX}, reçois cette alliance, signe de mon amour et de ma fidélité. Au nom du Père, et du Fils, et du Saint-Esprit. »"
     ]
   },
   "benedictionsNuptiales": [
