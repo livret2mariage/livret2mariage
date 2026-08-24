@@ -53,10 +53,6 @@ function appliquerTypeDemande(type) {
       // Un champ "required" dans une section display:none reste malgré tout
       // bloquant pour la validation HTML5 dans certains navigateurs : on
       // retire/remet l'attribut explicitement plutôt que de compter sur le
-      // simple masquage visuel.
-      // Un champ "required" dans une section display:none reste malgré tout
-      // bloquant pour la validation HTML5 dans certains navigateurs : on
-      // retire/remet l'attribut explicitement plutôt que de compter sur le
       // simple masquage visuel. On parcourt tous les champs (pas seulement
       // ceux actuellement [required]) pour pouvoir restaurer l'attribut une
       // fois qu'il a été retiré une première fois.
@@ -74,6 +70,16 @@ function appliquerTypeDemande(type) {
     if (lienNav) lienNav.style.display = estDevis ? "none" : "";
     if (itemProgres) itemProgres.style.display = estDevis ? "none" : "";
   });
+
+  // "Un mot pour vos invités" : on masque juste ce bloc précis (le bouton
+  // d'envoi, lui, reste toujours visible puisqu'il vit dans la même section).
+  const motBlock = document.getElementById("motInvitesBlock");
+  if (motBlock) motBlock.style.display = estDevis ? "none" : "";
+  const lienNavMot = document.querySelector('nav a[data-section="mot"]');
+  if (lienNavMot) lienNavMot.style.display = estDevis ? "none" : "";
+  const itemProgresMot = document.querySelector('li[data-section="mot"]');
+  if (itemProgresMot) itemProgresMot.style.display = estDevis ? "none" : "";
+
   const note = document.getElementById("typeDemandeNote");
   if (note) {
     note.textContent = estDevis
