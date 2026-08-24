@@ -556,6 +556,72 @@
         "texte": "Ce psaume rassemble toute la création — cieux, astres, peuples, jeunes et vieux — dans une même louange universelle à Dieu.",
         "lien": "Un psaume festif et joyeux qui convient bien à une célébration où toute l'assemblée, familles et amis réunis, est invitée à partager la joie du couple dans une même action de grâce."
       }
+    },
+    {
+      "id": "P8",
+      "reference": "Psaume de la création",
+      "titre": "Mon Dieu, tu es grand, tu es beau",
+      "refrains": [
+        "Mon Dieu, tu es grand, tu es beau, Dieu vivant, Dieu très-haut, Tu es le Dieu d'amour. Mon Dieu, tu es grand, tu es beau, Dieu vivant, Dieu très-haut, Dieu présent en toute création."
+      ],
+      "texte": [
+        "Par les cieux devant Toi, splendeur et majesté",
+        "Par l'infiniment grand, l'infiniment petit",
+        "Et par le firmament ton manteau étoilé",
+        "Et par frère soleil, je veux crier...",
+        "Par tous les océans et par toutes les mers",
+        "Par tous les continents et par l'eau des rivières",
+        "Par le feu qui te dit comme un buisson ardent",
+        "Et par l'aile du vent, je veux crier...",
+        "Par toutes les montagnes et toutes les vallées",
+        "Par l'ombre des forêts et par les fleurs des champs",
+        "Par les bourgeons des arbres et l'herbe des prairies",
+        "Par le blé en épis, je veux crier..."
+      ]
+    },
+    {
+      "id": "P9",
+      "reference": "Psaume 22 (23)",
+      "titre": "Le Seigneur est mon berger",
+      "refrains": [
+        "Alléluia, Alléluia, Alléluia."
+      ],
+      "texte": [
+        "Le Seigneur est mon berger, rien ne saurait me manquer,",
+        "sur des prés d'herbes fraîches Il me fait reposer.",
+        "Vers les eaux tranquilles Il me fait revivre,",
+        "Il me conduit par le juste chemin. Et je chante, je chante.",
+        "Même si je traversais tous les ravins de la mort,",
+        "je ne craindrais aucun mal,",
+        "car mon Dieu est avec moi, je marche au son de Sa voix,",
+        "son bâton me guide et me rassure. Et je chante, je chante.",
+        "Et Tu prépares ma table là devant mes adversaires,",
+        "Tu répands le parfum, ma coupe est débordante,",
+        "grâce et bonheur m'accompagnent pour tous les jours de ma vie,",
+        "j'habiterai la maison, la maison du Seigneur. Et je chante, je chante."
+      ]
+    },
+    {
+      "id": "P10",
+      "reference": "Psaume 27",
+      "titre": "Le Seigneur est ma lumière et mon salut",
+      "refrains": [
+        "Le Seigneur est ma lumière et mon salut, de qui aurais-je crainte ? Le Seigneur est le rempart de ma vie, devant qui tremblerais-je ?"
+      ],
+      "texte": [
+        "J'ai demandé une chose au Seigneur,",
+        "la seule que je cherche :",
+        "habiter la maison du Seigneur",
+        "tous les jours de ma vie,",
+        "habiter ta maison, Seigneur,",
+        "pour t'admirer en ta bonté",
+        "et m'attacher à ton église, Seigneur,",
+        "m'attacher à ton église, Seigneur.",
+        "J'en suis sûr, je vénère les bontés du Seigneur",
+        "sur la terre des vivants.",
+        "Espère, sois fort et prends courage,",
+        "espère, espère le Seigneur."
+      ]
     }
   ],
   "evangiles": [
