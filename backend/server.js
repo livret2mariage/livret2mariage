@@ -459,31 +459,34 @@ const server = http.createServer(async (req, res) => {
   if (req.method === "POST" && url === "/api/paiement/webhook") {
     return handleWebhookStripe(req, res);
   }
-  if (req.method === "GET" && url === "/paiement/succes") {
+  if ((req.method === "GET" || req.method === "HEAD") && url === "/paiement/succes") {
     return servePageConfirmation(res, {
       titre: "Merci !",
       message: "Votre paiement a bien été reçu. Votre livret est en cours de génération et vous sera envoyé par email dans quelques instants.",
     });
   }
-  if (req.method === "GET" && url === "/paiement/annule") {
+  if ((req.method === "GET" || req.method === "HEAD") && url === "/paiement/annule") {
     return servePageConfirmation(res, {
       titre: "Paiement annulé",
       message: "Aucun montant n'a été débité. Vous pouvez reprendre votre formulaire et réessayer quand vous le souhaitez.",
     });
   }
-  if (req.method === "GET" && (url === "/contact" || url === "/contact.html")) {
+  if ((req.method === "GET" || req.method === "HEAD") && (url === "/contact" || url === "/contact.html")) {
     return serveFichierFormulaire(res, "contact.html");
   }
-  if (req.method === "GET" && (url === "/tuto" || url === "/tuto.html")) {
+  if ((req.method === "GET" || req.method === "HEAD") && (url === "/tuto" || url === "/tuto.html")) {
     return serveFichierFormulaire(res, "tuto.html");
   }
-  if (req.method === "GET" && url === "/api/textes/choix") {
+  if ((req.method === "GET" || req.method === "HEAD") && url === "/api/textes/choix") {
     return handleChoix(req, res);
   }
-  if (req.method === "GET" && url === "/api/health") {
+  // GET et HEAD tous les deux acceptés : les outils de surveillance (comme
+  // UptimeRobot) envoient souvent des requêtes HEAD plutôt que GET pour
+  // vérifier qu'un site répond, sans avoir besoin du contenu.
+  if ((req.method === "GET" || req.method === "HEAD") && url === "/api/health") {
     return sendJson(res, 200, { status: "ok" });
   }
-  if (req.method === "GET") {
+  if ((req.method === "GET" || req.method === "HEAD")) {
     return serveStatic(req, res);
   }
 
