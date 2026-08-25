@@ -404,6 +404,10 @@ function normaliserRecherche(texte) {
     .toLowerCase();
 }
 
+// Désactivée pour le moment (à revoir plus tard) — le code reste en place,
+// il suffit de repasser ceci à true pour la réactiver.
+const RECHERCHE_LISTES_ACTIVEE = false;
+
 document.querySelectorAll("select[data-cat]").forEach((select) => {
   const cat = select.dataset.cat;
   const options = CHOIX[cat] || [];
@@ -445,7 +449,7 @@ document.querySelectorAll("select[data-cat]").forEach((select) => {
   // filtrer les <option> d'un <select> natif (invisible tant qu'on ne clique
   // pas dessus pour l'ouvrir), on affiche une vraie liste de résultats
   // cliquable directement sous le champ, comme un moteur de recherche.
-  if (optionsTriees.length > 4) {
+  if (RECHERCHE_LISTES_ACTIVEE && optionsTriees.length > 4) {
     const wrap = document.createElement("div");
     wrap.className = "select-search-wrap";
 
