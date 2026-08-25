@@ -233,6 +233,24 @@ section.step h2{font-size:28px; font-style:italic; margin-bottom:4px;}
   border-color:var(--sage);
   box-shadow:0 0 0 3px rgba(124,143,115,.18);
 }
+/* ---------- Validation en direct (coche verte discrète) ---------- */
+.field.is-valid label::after{
+  content:"✓";
+  display:inline-block;
+  margin-left:7px;
+  color:var(--sage-dark);
+  font-weight:700;
+  font-size:12px;
+}
+.field.is-valid input[type=text],
+.field.is-valid input[type=date],
+.field.is-valid input[type=time],
+.field.is-valid input[type=email],
+.field.is-valid input[type=tel],
+.field.is-valid select,
+.field.is-valid textarea{
+  border-color:var(--sage);
+}
 .row2{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
 @media (max-width:520px){.row2{grid-template-columns:1fr;}}
 

@@ -630,6 +630,26 @@ document.querySelectorAll(".form-col input, .form-col select").forEach((el) => {
   el.addEventListener("change", updateProgress);
 });
 
+// ---------- 3bis. Validation en direct (coche verte discrète) ----------
+// Dès qu'un champ est rempli correctement, son libellé affiche une petite
+// coche — sans attendre le clic sur "Suivant" pour le savoir.
+function updateFieldValidity(el) {
+  const field = el.closest(".field");
+  if (!field) return;
+  const valide = el.checkValidity() && !!el.value && el.value.trim() !== "";
+  field.classList.toggle("is-valid", valide);
+}
+
+function refreshAllFieldValidity() {
+  document.querySelectorAll(".field input, .field select, .field textarea").forEach(updateFieldValidity);
+}
+
+document.querySelectorAll(".field input, .field select, .field textarea").forEach((el) => {
+  el.addEventListener("input", () => updateFieldValidity(el));
+  el.addEventListener("change", () => updateFieldValidity(el));
+});
+refreshAllFieldValidity();
+
 // ---------- 4. Construction du JSON de réponse + envoi ----------
 const form = document.getElementById("livretForm");
 const statusBanner = document.getElementById("statusBanner");
@@ -738,6 +758,7 @@ if (restaurerBrouillon()) {
   updateProgress();
   updateDevisRecap();
   refreshAllApercus();
+  refreshAllFieldValidity();
 }
 
 function buildReponse() {
