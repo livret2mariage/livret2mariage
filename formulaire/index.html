@@ -257,6 +257,44 @@ section.step h2{font-size:28px; font-style:italic; margin-bottom:4px;}
   margin-bottom:6px;
 }
 .field .hint{font-size:12px; color:var(--ink-soft); font-weight:400; margin-left:6px;}
+
+/* ---------- Info-bulles "?" sur les termes techniques ---------- */
+.info-tip{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:16px;
+  height:16px;
+  border-radius:50%;
+  background:var(--sage-pale);
+  border:1px solid var(--sage);
+  color:var(--sage-dark);
+  font-family:'Inter',sans-serif;
+  font-size:10px;
+  font-weight:700;
+  line-height:1;
+  cursor:pointer;
+  vertical-align:middle;
+  margin-left:6px;
+  padding:0;
+}
+.info-tip:hover{background:var(--sage); color:#fff;}
+.info-tip-popover{
+  display:none;
+  position:absolute;
+  z-index:60;
+  max-width:260px;
+  background:var(--ink);
+  color:#fff;
+  font-family:'Inter',sans-serif;
+  font-weight:400;
+  font-size:12.5px;
+  line-height:1.5;
+  padding:10px 13px;
+  border-radius:8px;
+  box-shadow:0 10px 24px rgba(0,0,0,.18);
+}
+.info-tip-popover.show{display:block;}
 .field input[type=text], .field input[type=date], .field input[type=time], .field select{
   width:100%;
   padding:12px 14px;
@@ -1097,25 +1135,25 @@ section.step h2{font-size:28px; font-style:italic; margin-bottom:4px;}
         <p class="step-desc">Ces formules encadrent l'échange des consentements et des alliances.</p>
 
         <div class="field">
-          <label>Dialogue initial avec les futurs époux</label>
+          <label>Dialogue initial avec les futurs époux<button type="button" class="info-tip" data-tip="Juste avant l'échange des consentements, le prêtre ou le diacre interroge les mariés sur leur liberté d'engagement, leur promesse de fidélité pour toute la vie, et l'accueil des enfants.">?</button></label>
           <select data-choice="dialogueInitial" data-cat="dialoguesInitiaux" required></select>
           <div class="apercu" data-apercu="dialogueInitial"></div>
         </div>
 
         <div class="field">
-          <label>Échange des consentements</label>
+          <label>Échange des consentements<button type="button" class="info-tip" data-tip="Le moment central du mariage religieux : les mariés se disent 'oui' l'un à l'autre devant l'assemblée — l'équivalent du 'je le veux' des cérémonies civiles.">?</button></label>
           <select data-choice="consentements" data-cat="consentements" required></select>
           <div class="apercu" data-apercu="consentements"></div>
         </div>
 
         <div class="field">
-          <label>Bénédiction des alliances</label>
+          <label>Bénédiction des alliances<button type="button" class="info-tip" data-tip="Courte prière par laquelle le prêtre bénit les anneaux, juste avant que les mariés se les passent au doigt.">?</button></label>
           <select data-choice="benedictionAlliances" data-cat="benedictionsAlliances" required></select>
           <div class="apercu" data-apercu="benedictionAlliances"></div>
         </div>
 
         <div class="field">
-          <label>Bénédiction nuptiale</label>
+          <label>Bénédiction nuptiale<button type="button" class="info-tip" data-tip="Prière solennelle prononcée par le prêtre sur les mariés juste après l'échange des consentements, pour appeler la grâce de Dieu sur leur union.">?</button></label>
           <select data-choice="benedictionNuptiale" data-cat="benedictionsNuptiales" required></select>
           <div class="apercu" data-apercu="benedictionNuptiale"></div>
         </div>
@@ -1132,13 +1170,13 @@ section.step h2{font-size:28px; font-style:italic; margin-bottom:4px;}
         <h2>Prières &amp; bénédictions</h2>
 
         <div class="field">
-          <label>Prière des époux</label>
+          <label>Prière des époux<button type="button" class="info-tip" data-tip="Prière que les mariés adressent eux-mêmes à Dieu, en leur nom propre — un moment plus personnel dans la cérémonie.">?</button></label>
           <select data-choice="priereEpoux" data-cat="prieresEpoux" required></select>
           <div class="apercu" data-apercu="priereEpoux"></div>
         </div>
 
         <div class="field">
-          <label>Prière universelle</label>
+          <label>Prière universelle<button type="button" class="info-tip" data-tip="Suite de demandes pour l'Église et le monde, dites par un lecteur, auxquelles l'assemblée répond généralement 'Nous te prions'.">?</button></label>
           <select data-choice="priereUniverselle" data-cat="prieresUniverselles" required></select>
           <div class="apercu" data-apercu="priereUniverselle"></div>
         </div>
@@ -1148,7 +1186,7 @@ section.step h2{font-size:28px; font-style:italic; margin-bottom:4px;}
         </div>
 
         <div class="field">
-          <label>Bénédiction finale</label>
+          <label>Bénédiction finale<button type="button" class="info-tip" data-tip="Dernière prière du prêtre sur les mariés et l'assemblée, juste avant la sortie de l'église.">?</button></label>
           <select data-choice="benedictionFinale" data-cat="benedictionsFinales" required></select>
           <div class="apercu" data-apercu="benedictionFinale"></div>
         </div>
@@ -1198,7 +1236,7 @@ section.step h2{font-size:28px; font-style:italic; margin-bottom:4px;}
             <details class="paroles-toggle"><summary>+ Ajouter les paroles</summary><textarea name="chant_marieParoles" class="paroles-textarea" placeholder="Collez les paroles ici…"></textarea></details>
           </div>
           <div class="field">
-            <label>Chant pour la signature des registres <span class="hint">(facultatif)</span></label>
+            <label>Chant pour la signature des registres <span class="hint">(facultatif)</span><button type="button" class="info-tip" data-tip="Joué pendant que les mariés et les témoins signent l'acte de mariage — souvent un moment plus calme et musical de la cérémonie.">?</button></label>
             <input type="text" name="chant_signatureRegistres">
             <details class="paroles-toggle"><summary>+ Ajouter les paroles</summary><textarea name="chant_signatureRegistresParoles" class="paroles-textarea" placeholder="Collez les paroles ici…"></textarea></details>
           </div>

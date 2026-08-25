@@ -1019,3 +1019,43 @@ previewToggle?.addEventListener("click", () => {
     ? "Masquer l'aperçu de la couverture"
     : "Voir l'aperçu de la couverture";
 });
+
+// ---------- Info-bulles "?" sur les termes techniques ----------
+// Une seule bulle partagée par toute la page (plutôt qu'une par bouton) :
+// plus simple à positionner, et il n'y en a de toute façon jamais deux
+// ouvertes en même temps.
+const infoTipPopover = document.createElement("div");
+infoTipPopover.className = "info-tip-popover";
+document.body.appendChild(infoTipPopover);
+
+function fermerInfoTip() {
+  infoTipPopover.classList.remove("show");
+}
+
+document.querySelectorAll(".info-tip").forEach((btn) => {
+  btn.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const dejaOuvertePourCeBouton = infoTipPopover.classList.contains("show") && infoTipPopover.dataset.pour === btn.dataset.tip;
+    fermerInfoTip();
+    if (dejaOuvertePourCeBouton) return;
+
+    infoTipPopover.textContent = btn.dataset.tip;
+    infoTipPopover.dataset.pour = btn.dataset.tip;
+    infoTipPopover.classList.add("show");
+
+    // Positionnée juste sous le bouton "?", en évitant de déborder à droite
+    // de l'écran (utile sur mobile où la marge disponible est réduite).
+    const rect = btn.getBoundingClientRect();
+    const largeurBulle = infoTipPopover.offsetWidth;
+    let left = rect.left + window.scrollX;
+    const maxLeft = window.scrollX + document.documentElement.clientWidth - largeurBulle - 12;
+    if (left > maxLeft) left = Math.max(12, maxLeft);
+    infoTipPopover.style.top = `${rect.bottom + window.scrollY + 8}px`;
+    infoTipPopover.style.left = `${left}px`;
+  });
+});
+
+// Un clic n'importe où ailleurs (ou un défilement) referme la bulle ouverte.
+document.addEventListener("click", fermerInfoTip);
+document.addEventListener("scroll", fermerInfoTip, true);
