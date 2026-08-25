@@ -1,10 +1,15 @@
 const https = require("https");
 
 /**
- * Envoie le PDF du livret par email au professionnel (toi), via l'API Resend
+ * Envoie une notification par email au professionnel (toi), via l'API Resend
  * (https://resend.com — gratuit jusqu'à 100 emails/jour, sans carte bancaire).
  * Le livret n'est jamais envoyé automatiquement au client final : c'est toi
  * qui le reçois, le relis, le personnalises si besoin, puis le transmets.
+ *
+ * Le PDF n'est joint que si `pdfBuffer` est fourni (mode "conception
+ * complète" du formulaire) — en mode "devis", aucun choix liturgique n'a
+ * encore été fait, il n'y a donc rien à générer ni à joindre : seules les
+ * coordonnées et les infos du mariage sont transmises.
  *
  * Nécessite trois variables d'environnement pour fonctionner :
  *   RESEND_API_KEY   — la clé API de ton compte Resend
@@ -18,7 +23,7 @@ const https = require("https");
  * { envoye: false, raison: "non_configure" } — le reste du service continue
  * de fonctionner normalement (le PDF reste téléchargeable).
  */
-async function envoyerLivretParEmail({ destinataire, emailClientReference, telephoneClient, notesPersonnalisation, typeLivraison, typeDemande, couleur, couleurAutre, epoux, epouse, pdfBuffer, nomFichier }) {
+async function envoyerLivretParEmail({ destinataire, emailClientReference, telephoneClient, notesPersonnalisation, typeLivraison, typeDemande, couleur, couleurAutre, epoux, epouse, dateMariage, heureMariage, lieuMariage, pdfBuffer, nomFichier }) {
   const apiKey = process.env.RESEND_API_KEY;
   const expediteur = process.env.RESEND_FROM_EMAIL;
 
@@ -29,9 +34,12 @@ async function envoyerLivretParEmail({ destinataire, emailClientReference, telep
     return { envoye: false, raison: "email_invalide" };
   }
 
-  const libellesDemande = { devis: "Demande de devis (informations de base uniquement)", conception: "Conception complète (avec choix liturgiques détaillés)" };
-  const sujet = `${typeDemande === "devis" ? "Demande de devis" : "Nouvelle demande de conception"} — ${epoux} & ${epouse}`;
+  const libellesDemande = { devis: "Demande de tarif (coordonnées uniquement, aucun choix liturgique)", conception: "Conception complète (avec choix liturgiques détaillés)" };
+  const sujet = `${typeDemande === "devis" ? "Demande de tarif" : "Nouvelle demande de conception"} — ${epoux} & ${epouse}`;
   const ligneTypeDemande = `<p><strong>Type de demande :</strong> ${libellesDemande[typeDemande] || "Non précisé"}</p>`;
+  const ligneDate = dateMariage ? `<p><strong>Date du mariage :</strong> ${dateMariage}</p>` : "";
+  const ligneHeure = heureMariage ? `<p><strong>Heure :</strong> ${heureMariage}</p>` : "";
+  const ligneLieu = lieuMariage ? `<p><strong>Lieu :</strong> ${lieuMariage}</p>` : "";
   const ligneClient = emailClientReference
     ? `<p><strong>Email du client :</strong> ${emailClientReference}</p>`
     : `<p><em>Aucune adresse client renseignée dans le formulaire.</em></p>`;
@@ -39,23 +47,41 @@ async function envoyerLivretParEmail({ destinataire, emailClientReference, telep
     ? `<p><strong>Téléphone du client :</strong> ${telephoneClient}</p>`
     : "";
   const libellesLivraison = { pdf: "PDF uniquement (impression par le client)", "pdf-impression": "PDF + impression (par vos soins)" };
-  const ligneLivraison = `<p><strong>Type de livraison souhaité :</strong> ${libellesLivraison[typeLivraison] || "Non précisé"}</p>`;
+  const ligneLivraison = typeLivraison
+    ? `<p><strong>Type de livraison souhaité :</strong> ${libellesLivraison[typeLivraison] || "Non précisé"}</p>`
+    : "";
   const libellesCouleur = { sauge: "Sauge", rose: "Rose poudré", bleu: "Bleu layette", or: "Doré champagne", bordeaux: "Bordeaux", terracotta: "Terracotta", lavande: "Lavande", emeraude: "Émeraude", gris: "Gris perle", noir: "Noir intense" };
-  const ligneCouleur = couleur === "autre" && couleurAutre
-    ? `<p><strong>Teinte souhaitée :</strong> Autre — « ${couleurAutre} »</p>`
-    : `<p><strong>Teinte souhaitée :</strong> ${libellesCouleur[couleur] || "Non précisée"}</p>`;
+  const ligneCouleur = couleur
+    ? (couleur === "autre" && couleurAutre
+        ? `<p><strong>Teinte souhaitée :</strong> Autre — « ${couleurAutre} »</p>`
+        : `<p><strong>Teinte souhaitée :</strong> ${libellesCouleur[couleur] || "Non précisée"}</p>`)
+    : "";
   const ligneNotes = notesPersonnalisation && notesPersonnalisation.trim()
     ? `<p><strong>Notes de personnalisation transmises par le client :</strong><br>${notesPersonnalisation.trim().replace(/\n/g, "<br>")}</p>`
     : "";
-  const corpsHtml = `
+
+  // Corps de l'email : deux variantes selon qu'un PDF est joint ou non.
+  const corpsHtml = pdfBuffer
+    ? `
     <p>Une nouvelle demande pour <strong>${epoux} &amp; ${epouse}</strong> vient d'être reçue. Un aperçu (non final) a été généré automatiquement à partir des choix du client.</p>
     ${ligneTypeDemande}
+    ${ligneDate}${ligneHeure}${ligneLieu}
     ${ligneClient}
     ${ligneTelephone}
     ${ligneLivraison}
     ${ligneCouleur}
     ${ligneNotes}
     <p>Vous trouverez cet aperçu en pièce jointe (PDF), à personnaliser avant l'envoi final au client.</p>
+    <p><em>— Livret2Mariage</em></p>
+  `
+    : `
+    <p>Une nouvelle <strong>demande de tarif</strong> pour <strong>${epoux} &amp; ${epouse}</strong> vient d'être reçue. Le couple n'a pas encore fait de choix liturgique — aucun aperçu n'a donc été généré.</p>
+    ${ligneTypeDemande}
+    ${ligneDate}${ligneHeure}${ligneLieu}
+    ${ligneClient}
+    ${ligneTelephone}
+    ${ligneNotes}
+    <p>Recontactez le couple pour lui proposer un tarif adapté à son mariage.</p>
     <p><em>— Livret2Mariage</em></p>
   `;
 
@@ -64,12 +90,9 @@ async function envoyerLivretParEmail({ destinataire, emailClientReference, telep
     to: [destinataire],
     subject: sujet,
     html: corpsHtml,
-    attachments: [
-      {
-        filename: `${nomFichier}.pdf`,
-        content: pdfBuffer.toString("base64"),
-      },
-    ],
+    ...(pdfBuffer
+      ? { attachments: [{ filename: `${nomFichier}.pdf`, content: pdfBuffer.toString("base64") }] }
+      : {}),
   });
 
   return new Promise((resolve) => {

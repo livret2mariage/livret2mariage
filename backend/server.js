@@ -212,8 +212,32 @@ function handleChoix(req, res) {
  * la seule façon dont un livret est produit et envoyé dans le service.
  * Retourne le buffer du PDF (utile pour du débogage local) et le résultat
  * de l'envoi d'email.
+ *
+ * Mode "devis" : aucun PDF n'est généré ni joint — le couple n'a encore fait
+ * aucun choix liturgique à ce stade, un aperçu n'aurait donc aucun sens. On
+ * se contente de transmettre ses coordonnées par email pour qu'un tarif lui
+ * soit proposé ; c'est seulement en repassant par "Je compose mon livret
+ * maintenant" qu'un PDF est généré et joint.
  */
 async function genererEtEnvoyerLivret(reponse) {
+  if (reponse.typeDemande === "devis") {
+    const resultatEmail = await envoyerLivretParEmail({
+      destinataire: process.env.OWNER_EMAIL,
+      emailClientReference: reponse.email,
+      telephoneClient: reponse.telephone,
+      notesPersonnalisation: reponse.notesPersonnalisation,
+      typeDemande: reponse.typeDemande,
+      epoux: reponse.epoux,
+      epouse: reponse.epouse,
+      dateMariage: reponse.date,
+      heureMariage: reponse.heure,
+      lieuMariage: reponse.lieu,
+      // Pas de pdfBuffer/nomFichier : email.js n'ajoute aucune pièce jointe
+      // dans ce cas et adapte le corps du message en conséquence.
+    });
+    return { pdfBuffer: null, nomFichier: null, resultatEmail };
+  }
+
   let browser;
   let tmpDir;
   try {
@@ -269,6 +293,9 @@ async function genererEtEnvoyerLivret(reponse) {
       couleurAutre: reponse.personnalisation?.couleurAutre,
       epoux: reponse.epoux,
       epouse: reponse.epouse,
+      dateMariage: reponse.date,
+      heureMariage: reponse.heure,
+      lieuMariage: reponse.lieu,
       pdfBuffer,
       nomFichier,
     });
