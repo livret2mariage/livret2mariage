@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comment ça marche — Livret2Mariage</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#FBF8F2;--card:#FFFFFF;--ink:#2E3328;--ink-soft:#5B6455;--sage:#7C8F73;--sage-dark:#52604A;--sage-pale:#EEF1E9;--gold:#C9A227;--line:#E4DED0;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--cream);color:var(--ink);font-family:'Inter',sans-serif;line-height:1.6;}
+.wrap{max-width:680px;margin:0 auto;padding:56px 24px 80px;}
+.brand{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:600;font-size:20px;color:var(--sage-dark);margin-bottom:28px;}
+h1{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:600;font-size:34px;margin:0 0 14px;}
+p.lead{color:var(--ink-soft);font-size:15px;margin-bottom:40px;max-width:52ch;}
+
+.parcours{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:28px 26px 8px;
+  margin-bottom:28px;
+}
+.parcours-eyebrow{
+  text-transform:uppercase;
+  letter-spacing:.1em;
+  font-size:11.5px;
+  font-weight:700;
+  color:var(--gold);
+  margin-bottom:4px;
+}
+.parcours h2{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:600;font-size:23px;margin:0 0 6px;}
+.parcours .sous-titre{color:var(--ink-soft);font-size:13.5px;margin:0 0 24px;}
+
+.etape{display:flex;gap:16px;margin-bottom:22px;}
+.num{flex:none;width:32px;height:32px;border-radius:50%;background:var(--sage-pale);border:1px solid var(--sage);color:var(--sage-dark);font-weight:700;display:flex;align-items:center;justify-content:center;font-size:13.5px;}
+.etape h3{font-family:'Inter',sans-serif;font-size:15.5px;font-weight:600;margin:2px 0 5px;}
+.etape p{margin:0;color:var(--ink-soft);font-size:14px;}
+
+.retour{display:inline-block;margin-top:12px;color:var(--sage-dark);font-weight:600;text-decoration:none;border-bottom:1px solid var(--sage-dark);}
+
+.faq-title{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:600;font-size:26px;margin:12px 0 18px;}
+.faq-item{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:2px 20px;
+  margin-bottom:10px;
+}
+.faq-item summary{
+  cursor:pointer;
+  list-style:none;
+  padding:15px 24px 15px 0;
+  font-weight:600;
+  font-size:14.5px;
+  color:var(--ink);
+  position:relative;
+}
+.faq-item summary::-webkit-details-marker{display:none;}
+.faq-item summary::after{
+  content:"+";
+  position:absolute;
+  right:2px; top:13px;
+  color:var(--sage-dark);
+  font-weight:700;
+  font-size:17px;
+  line-height:1;
+}
+.faq-item[open] summary::after{content:"–";}
+.faq-item p{margin:0 0 16px;color:var(--ink-soft);font-size:13.5px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">Livret2Mariage</div>
+  <h1>Comment ça marche</h1>
+  <p class="lead">Deux façons de commencer, selon où vous en êtes dans votre préparation — vous choisissez au tout début du formulaire.</p>
+
+  <div class="parcours">
+    <div class="parcours-eyebrow">Option 1</div>
+    <h2>Je veux d'abord un tarif</h2>
+    <p class="sous-titre">Pour celles et ceux qui hésitent encore et veulent en savoir plus avant de se lancer — environ 2 minutes.</p>
+
+    <div class="etape">
+      <div class="num">1</div>
+      <div><h3>Renseignez vos informations</h3><p>Prénoms, date, heure, lieu de la célébration, et vos coordonnées (email et téléphone) pour être recontacté(e).</p></div>
+    </div>
+    <div class="etape">
+      <div class="num">2</div>
+      <div><h3>Nous vous recontactons sous 48h</h3><p>Avec un tarif adapté à votre mariage. Aucun choix de lectures ou de prières n'est nécessaire à ce stade.</p></div>
+    </div>
+  </div>
+
+  <div class="parcours">
+    <div class="parcours-eyebrow">Option 2</div>
+    <h2>Je compose mon livret maintenant</h2>
+    <p class="sous-titre">Pour celles et ceux qui connaissent déjà le tarif et veulent avancer directement — environ 15 à 20 minutes.</p>
+
+    <div class="etape">
+      <div class="num">1</div>
+      <div><h3>Composez votre livret étape par étape</h3><p>Infos du couple, lectures, liturgie du mariage, prières &amp; bénédictions, chants, puis un mot pour vos invités — chaque choix est accompagné d'un résumé et d'un conseil pour vous aider à décider, avec le texte complet disponible si vous voulez le lire en entier. Un aperçu de la couverture se met à jour en direct pendant que vous personnalisez teinte et présentation.</p></div>
+    </div>
+    <div class="etape">
+      <div class="num">2</div>
+      <div><h3>Votre demande nous est transmise</h3><p>Avec un aperçu (non final) de votre livret généré à partir de vos choix.</p></div>
+    </div>
+    <div class="etape">
+      <div class="num">3</div>
+      <div><h3>Nous vous recontactons pour le règlement</h3><p>Un tarif à partir de 39&nbsp;€, adapté à votre mariage.</p></div>
+    </div>
+    <div class="etape">
+      <div class="num">4</div>
+      <div><h3>Vous recevez votre livret final par email</h3><p>Une fois le paiement réglé, prêt à imprimer — y compris en façonnage "livret" (4 pages par feuille pliée).</p></div>
+    </div>
+  </div>
+
+  <h2 class="faq-title">Questions fréquentes</h2>
+
+  <details class="faq-item">
+    <summary>Combien de temps avant d'avoir une réponse ?</summary>
+    <p>Pour une demande de tarif : sous 48h. Pour une composition complète : votre demande (avec un aperçu de votre livret) est transmise immédiatement à notre équipe, qui vous recontacte pour convenir du règlement, puis vous envoie le livret final une fois le paiement effectué.</p>
+  </details>
+
+  <details class="faq-item">
+    <summary>Puis-je fermer le formulaire et le reprendre plus tard ?</summary>
+    <p>Oui. Vos réponses sont sauvegardées automatiquement dans votre navigateur au fur et à mesure. Vous pouvez fermer l'onglet et reprendre là où vous en étiez, même plusieurs jours après — à condition de revenir sur le même appareil et le même navigateur.</p>
+  </details>
+
+  <details class="faq-item">
+    <summary>Comment se passe le paiement pour "je compose mon livret maintenant" ?</summary>
+    <p>Après réception de votre demande, notre équipe vous recontacte pour convenir du règlement (tarif à partir de 39&nbsp;€, adapté à votre mariage). Le livret final vous est envoyé une fois le paiement effectué.</p>
+  </details>
+
+  <details class="faq-item">
+    <summary>Je ne sais pas quel texte choisir, que faire ?</summary>
+    <p>Chaque lecture, psaume, prière ou bénédiction est accompagné d'un résumé et d'un conseil pour vous aider à décider, avec le texte complet disponible si vous voulez le lire en entier. Si vous préférez qu'on choisisse pour vous, un bouton "Je ne sais pas, suggérez-moi un choix" pré-remplit le texte le plus couramment retenu pour ce moment de la cérémonie.</p>
+  </details>
+
+  <details class="faq-item">
+    <summary>Ce formulaire convient-il à tout type de mariage ?</summary>
+    <p>Il est conçu pour un mariage religieux catholique, en reprenant les textes et le déroulé propres à cette liturgie (lectures bibliques, consentements, bénédiction nuptiale...). Si votre cérémonie suit un autre rite, contactez-nous directement pour en discuter.</p>
+  </details>
+
+  <details class="faq-item">
+    <summary>Puis-je changer d'avis entre "tarif" et "composition complète" ?</summary>
+    <p>Oui, à tout moment avant l'envoi : revenez à la première étape ("Type de demande") et choisissez l'autre option. Les informations déjà saisies (prénoms, date, lieu...) restent conservées.</p>
+  </details>
+
+  <details class="faq-item">
+    <summary>Sous quel format vais-je recevoir mon livret ?</summary>
+    <p>En PDF, prêt à imprimer vous-même ou à faire imprimer, avec une mise en page pensée pour un façonnage "livret" classique (plié en 4 pages par feuille). Vous choisissez le format A5 (le plus courant) ou A4 lors de la composition.</p>
+  </details>
+
+  <details class="faq-item">
+    <summary>Mes coordonnées sont-elles partagées avec d'autres personnes ?</summary>
+    <p>Non. Elles servent uniquement à vous recontacter au sujet de votre demande.</p>
+  </details>
+
+  <a class="retour" href="/">← Commencer mon livret</a>
+</div>
+</body>
+</html>
