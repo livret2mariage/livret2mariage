@@ -39,14 +39,6 @@ h1,h2,h3{font-family:'Cormorant Garamond',serif;font-weight:600;color:var(--ink)
 @media (max-width:900px){
   .page-wrap{grid-template-columns:1fr; gap:0;}
   .preview-col{order:-1; position:static !important; margin-bottom:28px;}
-  /* Aperçu repliable : masqué par défaut sur mobile, pour laisser toute la
-     place au formulaire — un simple bouton permet de le déplier au besoin.
-     !important nécessaire ici : la règle de base ".preview-toggle{display:none}"
-     est définie plus bas dans le fichier (section aperçu), donc à priorité
-     égale elle l'emporterait sinon sur cette règle mobile malgré la media query. */
-  .preview-toggle{display:flex !important;}
-  .preview-body{display:none;}
-  .preview-body.expanded{display:block; margin-top:14px;}
 }
 
 /* ---------- Header ---------- */
@@ -277,6 +269,25 @@ section.step h2{font-size:28px; font-style:italic; margin-bottom:4px;}
   border-color:var(--sage);
   box-shadow:0 0 0 3px rgba(124,143,115,.18);
 }
+/* ---------- Champ de recherche au-dessus des longues listes ---------- */
+.select-search{
+  width:100%;
+  padding:9px 12px 9px 32px;
+  margin-bottom:6px;
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  background:var(--card) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%238A9480' stroke-width='1.6'><circle cx='8.5' cy='8.5' r='5.5'/><line x1='16' y1='16' x2='12.6' y2='12.6'/></svg>") no-repeat 10px center;
+  background-size:15px;
+  font-family:'Inter',sans-serif;
+  font-size:13px;
+  color:var(--ink);
+}
+.select-search:focus{
+  outline:none;
+  border-color:var(--sage);
+  box-shadow:0 0 0 3px rgba(124,143,115,.18);
+}
+.select-search::placeholder{color:var(--ink-soft);}
 /* ---------- Validation en direct (coche verte discrète) ---------- */
 .field.is-valid label::after{
   content:"✓";
@@ -813,6 +824,17 @@ section.step h2{font-size:28px; font-style:italic; margin-bottom:4px;}
 }
 .progress-list li.done{color:var(--sage-dark); font-weight:600;}
 .progress-list li.done::before{background:var(--sage); border-color:var(--sage);}
+
+/* ---------- Aperçu couverture repliable (mobile) ----------
+   Placé volontairement en tout dernier dans la feuille de style : à
+   spécificité égale (une seule classe), c'est la dernière règle du fichier
+   qui l'emporte dans le navigateur — la mettre ici évite tout conflit avec
+   la règle de base ".preview-toggle{display:none}" définie plus haut. */
+@media (max-width:900px){
+  .preview-toggle{display:flex;}
+  .preview-body{display:none;}
+  .preview-body.expanded{display:block; margin-top:14px;}
+}
 </style>
 </head>
 <body>

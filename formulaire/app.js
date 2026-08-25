@@ -394,21 +394,38 @@ function rendreApercu(chosen) {
   return `${ref}${badge}${apercuAvecPrenoms(chosen.apercu) || ""}`;
 }
 
-document.querySelectorAll("select[data-cat]").forEach((select) => {
-  const cat = select.dataset.cat;
-  const options = CHOIX[cat] || [];
+// Retire les accents pour une recherche insensible à la casse et aux accents
+// (ex. "epouse" doit aussi trouver "épouse").
+function normaliserRecherche(texte) {
+  return (texte || "")
+    .toString()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+}
+
+// (Re)construit les <option> d'un select à partir d'une requête de recherche.
+// La sélection déjà faite est toujours conservée dans la liste, même si elle
+// ne correspond plus au texte tapé — pour ne jamais perdre un choix déjà fait
+// simplement parce qu'on affine sa recherche ensuite.
+function peuplerSelectOptions(select, optionsTriees, requete) {
+  const valeurActuelle = select.value;
+  select.innerHTML = "";
+
   const placeholder = document.createElement("option");
   placeholder.value = "";
   placeholder.textContent = "— Choisir —";
   placeholder.disabled = true;
-  placeholder.selected = true;
   select.appendChild(placeholder);
 
-  // Le choix recommandé est mis en avant visuellement : placé en tête de liste
-  // (pas besoin de faire défiler pour le trouver), avec une étoile et en gras,
-  // du texte simple restant possible avec les <option> HTML natives.
-  const optionsTriees = [...options].sort((a, b) => (b.recommande ? 1 : 0) - (a.recommande ? 1 : 0));
-  optionsTriees.forEach((opt) => {
+  const q = normaliserRecherche(requete);
+  const filtrees = q
+    ? optionsTriees.filter((opt) => opt.id === valeurActuelle
+        || normaliserRecherche(opt.label).includes(q)
+        || normaliserRecherche(opt.ref).includes(q))
+    : optionsTriees;
+
+  filtrees.forEach((opt) => {
     const el = document.createElement("option");
     el.value = opt.id;
     if (opt.recommande) {
@@ -420,6 +437,34 @@ document.querySelectorAll("select[data-cat]").forEach((select) => {
     }
     select.appendChild(el);
   });
+
+  select.value = valeurActuelle;
+  if (!valeurActuelle) placeholder.selected = true;
+}
+
+document.querySelectorAll("select[data-cat]").forEach((select) => {
+  const cat = select.dataset.cat;
+  const options = CHOIX[cat] || [];
+
+  // Le choix recommandé est mis en avant visuellement : placé en tête de liste
+  // (pas besoin de faire défiler pour le trouver), avec une étoile et en gras,
+  // du texte simple restant possible avec les <option> HTML natives.
+  const optionsTriees = [...options].sort((a, b) => (b.recommande ? 1 : 0) - (a.recommande ? 1 : 0));
+
+  // Un champ de recherche n'a d'intérêt que sur les listes un peu longues —
+  // inutile de l'ajouter au-dessus d'un choix à 2 ou 3 options.
+  if (optionsTriees.length > 4) {
+    const recherche = document.createElement("input");
+    recherche.type = "text";
+    recherche.className = "select-search";
+    recherche.placeholder = "Rechercher un mot-clé…";
+    select.insertAdjacentElement("beforebegin", recherche);
+    recherche.addEventListener("input", () => {
+      peuplerSelectOptions(select, optionsTriees, recherche.value);
+    });
+  }
+
+  peuplerSelectOptions(select, optionsTriees, "");
 
   // Le champ démarre volontairement vide (rien de pré-sélectionné) : même si
   // un choix est recommandé, le couple doit le choisir lui-même en connaissance
