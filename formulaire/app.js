@@ -90,6 +90,19 @@ function appliquerTypeDemande(type) {
   if (devisRecapBlock) devisRecapBlock.style.display = estDevis ? "" : "none";
   if (estDevis) updateDevisRecap();
 
+  // Le libellé de la dernière étape (pastille de nav + liste de progression)
+  // doit refléter son contenu réel, qui change selon le mode.
+  const navPillMot = document.getElementById("navPillMot");
+  if (navPillMot) navPillMot.textContent = estDevis ? "Ma demande de tarif" : "Un mot pour vos invités";
+  const progressItemMot = document.getElementById("progressItemMot");
+  if (progressItemMot) progressItemMot.textContent = estDevis ? "Ma demande de tarif" : "Un mot pour vos invités";
+  const submitNote = document.getElementById("submitNote");
+  if (submitNote) {
+    submitNote.textContent = estDevis
+      ? "Votre demande sera transmise à notre équipe, qui vous recontactera sous 48h avec un devis adapté à votre mariage."
+      : "Votre demande sera transmise à notre équipe d'édition, qui vous recontactera pour finaliser votre livret.";
+  }
+
   const note = document.getElementById("typeDemandeNote");
   if (note) {
     note.textContent = estDevis
@@ -658,10 +671,15 @@ form.addEventListener("submit", async (e) => {
     }
 
     // Pas de PDF renvoyé au demandeur : la demande part à l'équipe d'édition,
-    // qui personnalise le livret avant de le transmettre elle-même.
+    // qui personnalise le livret avant de le transmettre elle-même. Le
+    // message final diffère selon le mode : une simple demande de tarif
+    // n'a pas encore de "livret à finaliser" à ce stade.
+    const messageSuite = reponse.typeDemande === "devis"
+      ? "Nous vous recontacterons sous 48h avec un devis adapté à votre mariage."
+      : "Nous vous recontacterons prochainement pour finaliser votre livret.";
     statusBanner.innerHTML =
-      `Merci ${reponse.epoux || ""} &amp; ${reponse.epouse || ""} ! Votre demande a bien été transmise à notre équipe d'édition. ` +
-      `Nous vous recontacterons prochainement pour finaliser votre livret.`;
+      `Merci ${reponse.epoux || ""} &amp; ${reponse.epouse || ""} ! Votre demande a bien été transmise à notre équipe. ` +
+      messageSuite;
     statusBanner.classList.add("show");
   } catch (err) {
     // Repli : si l'API n'est pas disponible (ex. fichier ouvert directement sans
