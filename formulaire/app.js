@@ -895,3 +895,16 @@ form.addEventListener("submit", async (e) => {
 
 updatePreview();
 updateProgress();
+
+// ---------- Aperçu couverture repliable (mobile) ----------
+// Replié par défaut sur petit écran pour laisser toute la place au
+// formulaire — n'affecte pas le desktop, où l'aperçu reste toujours visible.
+const previewToggle = document.getElementById("previewToggle");
+const previewBody = document.getElementById("previewBody");
+previewToggle?.addEventListener("click", () => {
+  const ouvert = previewBody.classList.toggle("expanded");
+  previewToggle.setAttribute("aria-expanded", String(ouvert));
+  previewToggle.querySelector("span").textContent = ouvert
+    ? "Masquer l'aperçu de la couverture"
+    : "Voir l'aperçu de la couverture";
+});
