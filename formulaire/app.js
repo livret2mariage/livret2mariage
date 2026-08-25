@@ -634,6 +634,112 @@ document.querySelectorAll(".form-col input, .form-col select").forEach((el) => {
 const form = document.getElementById("livretForm");
 const statusBanner = document.getElementById("statusBanner");
 
+// ---------- 4bis. Sauvegarde automatique du brouillon (localStorage) ----------
+// Si le couple ferme l'onglet ou remplit le formulaire sur plusieurs soirs,
+// il retrouve ses réponses en revenant — sans compte ni connexion nécessaire.
+const DRAFT_KEY = "livret2mariage_brouillon_v1";
+
+function collecterBrouillon() {
+  const brouillon = { champs: {}, choix: {}, lecteurs: {}, groupes: {} };
+
+  form.querySelectorAll("[name]").forEach((el) => {
+    if (el.name) brouillon.champs[el.name] = el.value;
+  });
+  form.querySelectorAll("select[data-choice]").forEach((el) => {
+    brouillon.choix[el.dataset.choice] = el.value;
+  });
+  form.querySelectorAll("[data-lecteur]").forEach((el) => {
+    brouillon.lecteurs[el.dataset.lecteur] = el.value;
+  });
+  // Groupes de boutons (type de demande, format, teinte, livraison...) :
+  // chacun porte un data-name sur son conteneur et un data-value sur le
+  // bouton actif — on ne retient que le choix sélectionné.
+  form.querySelectorAll("[data-name]").forEach((groupe) => {
+    const actif = groupe.querySelector(".active");
+    if (actif?.dataset.value) brouillon.groupes[groupe.dataset.name] = actif.dataset.value;
+  });
+
+  return brouillon;
+}
+
+function sauvegarderBrouillon() {
+  try {
+    localStorage.setItem(DRAFT_KEY, JSON.stringify(collecterBrouillon()));
+  } catch (e) {
+    // Stockage indisponible (navigation privée, quota dépassé...) : on continue
+    // sans bloquer le remplissage, la sauvegarde est un confort, pas un prérequis.
+  }
+}
+
+function effacerBrouillon() {
+  try {
+    localStorage.removeItem(DRAFT_KEY);
+  } catch (e) {
+    /* rien à faire */
+  }
+}
+
+function restaurerBrouillon() {
+  let brouillon;
+  try {
+    const brut = localStorage.getItem(DRAFT_KEY);
+    if (!brut) return false;
+    brouillon = JSON.parse(brut);
+  } catch (e) {
+    return false;
+  }
+  if (!brouillon) return false;
+
+  Object.entries(brouillon.champs || {}).forEach(([nom, val]) => {
+    const el = form.querySelector(`[name="${nom}"]`);
+    if (el && val) el.value = val;
+  });
+  Object.entries(brouillon.lecteurs || {}).forEach(([cle, val]) => {
+    const el = form.querySelector(`[data-lecteur="${cle}"]`);
+    if (el && val) el.value = val;
+  });
+  Object.entries(brouillon.choix || {}).forEach(([cle, val]) => {
+    const el = form.querySelector(`select[data-choice="${cle}"]`);
+    if (el && val) {
+      el.value = val;
+      el.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+  });
+  // On simule un clic sur le bouton déjà actif dans le brouillon plutôt que de
+  // recopier la classe "active" à la main : ça réutilise directement toute la
+  // logique déjà branchée sur ces boutons (masquage des sections en mode
+  // devis, aperçu couverture, etc.) sans la dupliquer ici.
+  Object.entries(brouillon.groupes || {}).forEach(([nom, val]) => {
+    const groupe = form.querySelector(`[data-name="${nom}"]`);
+    const bouton = groupe?.querySelector(`[data-value="${val}"]`);
+    if (bouton) bouton.click();
+  });
+
+  return true;
+}
+
+// Sauvegarde à chaque frappe/changement, légèrement différée pour ne pas
+// écrire dans localStorage à chaque caractère tapé.
+let brouillonTimeout = null;
+function planifierSauvegardeBrouillon() {
+  clearTimeout(brouillonTimeout);
+  brouillonTimeout = setTimeout(sauvegarderBrouillon, 400);
+}
+form.addEventListener("input", planifierSauvegardeBrouillon);
+form.addEventListener("change", planifierSauvegardeBrouillon);
+form.querySelectorAll("[data-name] button").forEach((btn) => {
+  btn.addEventListener("click", planifierSauvegardeBrouillon);
+});
+
+// Restauration silencieuse au chargement (pas de bandeau intrusif — comme le
+// ferait un traitement de texte classique en rouvrant un fichier).
+if (restaurerBrouillon()) {
+  updatePreview();
+  updateProgress();
+  updateDevisRecap();
+  refreshAllApercus();
+}
+
 function buildReponse() {
   const val = (sel) => document.querySelector(sel)?.value?.trim() || "";
   const choiceVal = (key) => document.querySelector(`[data-choice="${key}"]`)?.value || "";
@@ -718,6 +824,8 @@ form.addEventListener("submit", async (e) => {
       `Merci ${reponse.epoux || ""} &amp; ${reponse.epouse || ""} ! Votre demande a bien été transmise à notre équipe. ` +
       messageSuite;
     statusBanner.classList.add("show");
+    // La demande est partie avec succès : plus besoin du brouillon local.
+    effacerBrouillon();
   } catch (err) {
     // Repli : si l'API n'est pas disponible (ex. fichier ouvert directement sans
     // serveur), on permet quand même de récupérer les réponses au format JSON.
