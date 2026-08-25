@@ -49,8 +49,11 @@ function appliquerTypeDemande(type) {
     const lienNav = document.querySelector(`nav a[data-section="${nom}"]`);
     const itemProgres = document.querySelector(`li[data-section="${nom}"]`);
     if (section) {
-      section.style.display = estDevis ? "none" : "";
-      // Un champ "required" dans une section display:none reste malgré tout
+      // On utilise une classe plutôt que style.display : le mode assistant
+      // (une section à la fois) gère lui aussi la visibilité des .step, et
+      // "hidden-devis" a la priorité (!important) sur l'étape active.
+      section.classList.toggle("hidden-devis", estDevis);
+      // Un champ "required" dans une section masquée reste malgré tout
       // bloquant pour la validation HTML5 dans certains navigateurs : on
       // retire/remet l'attribut explicitement plutôt que de compter sur le
       // simple masquage visuel. On parcourt tous les champs (pas seulement
@@ -99,6 +102,115 @@ document.querySelectorAll("#typeDemandeSwatches .format-btn").forEach((btn) => {
 
 // Mode "devis" actif par défaut au chargement de la page.
 appliquerTypeDemande("devis");
+
+// ---------- 0ter. Mode assistant : une section à la fois, navigation
+// Suivant / Précédent (+ pastilles cliquables dans la nav du haut). ----------
+const WIZARD_STEPS = Array.from(document.querySelectorAll('#livretForm > section.step'));
+
+function wizardVisibleSteps() {
+  return WIZARD_STEPS.filter((s) => !s.classList.contains("hidden-devis"));
+}
+
+function wizardNextVisible(fromSection) {
+  let el = fromSection.nextElementSibling;
+  while (el) {
+    if (el.matches("section.step") && !el.classList.contains("hidden-devis")) return el;
+    el = el.nextElementSibling;
+  }
+  return null;
+}
+
+function wizardPrevVisible(fromSection) {
+  let el = fromSection.previousElementSibling;
+  while (el) {
+    if (el.matches("section.step") && !el.classList.contains("hidden-devis")) return el;
+    el = el.previousElementSibling;
+  }
+  return null;
+}
+
+// Valide les champs obligatoires de la section affichée avant de laisser
+// passer au "Suivant" — la validation HTML5 native (bulle + focus) suffit,
+// pas besoin de réinventer un système de messages d'erreur.
+function wizardValidateSection(section) {
+  const requiredEls = section.querySelectorAll("[required]");
+  for (const el of requiredEls) {
+    if (!el.checkValidity()) {
+      el.reportValidity();
+      return false;
+    }
+  }
+  return true;
+}
+
+function wizardGoTo(targetSection) {
+  if (!targetSection || targetSection.classList.contains("hidden-devis")) return;
+  WIZARD_STEPS.forEach((s) => s.classList.remove("active"));
+  targetSection.classList.add("active");
+  wizardUpdateChrome(targetSection);
+  // Remonte en haut du formulaire à chaque changement d'étape (utile en
+  // particulier sur mobile, où la section précédente peut être plus longue
+  // que la nouvelle).
+  document.querySelector(".form-col")?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function wizardUpdateChrome(activeSection) {
+  const visible = wizardVisibleSteps();
+  const index = visible.indexOf(activeSection);
+
+  document.querySelectorAll(".section-nav a").forEach((a) => {
+    const section = document.querySelector(`section[data-section="${a.dataset.section}"]`);
+    const isHidden = !section || section.classList.contains("hidden-devis");
+    a.style.display = isHidden ? "none" : "";
+    a.classList.toggle("current", section === activeSection);
+  });
+
+  const counter = document.getElementById("stepCounter");
+  if (counter && index >= 0) counter.textContent = `Étape ${index + 1} sur ${visible.length}`;
+
+  const fill = document.getElementById("stepProgressBarFill");
+  if (fill && visible.length > 0) fill.style.width = `${((index + 1) / visible.length) * 100}%`;
+}
+
+document.querySelectorAll(".step-next").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const current = btn.closest("section.step");
+    if (!wizardValidateSection(current)) return;
+    wizardGoTo(wizardNextVisible(current));
+  });
+});
+
+document.querySelectorAll(".step-prev").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const current = btn.closest("section.step");
+    wizardGoTo(wizardPrevVisible(current));
+  });
+});
+
+// Pastilles de la nav du haut : accès direct à n'importe quelle étape déjà
+// atteignable (elle doit exister et ne pas être masquée par le mode devis).
+document.querySelectorAll(".section-nav a").forEach((a) => {
+  a.addEventListener("click", (e) => {
+    e.preventDefault();
+    const target = document.querySelector(`section[data-section="${a.dataset.section}"]`);
+    wizardGoTo(target);
+  });
+});
+
+// Si le passage en mode "devis rapide" masque l'étape actuellement affichée,
+// on bascule automatiquement sur la première étape encore visible.
+const wizardObserver = new MutationObserver(() => {
+  const active = WIZARD_STEPS.find((s) => s.classList.contains("active"));
+  if (!active || active.classList.contains("hidden-devis")) {
+    wizardGoTo(wizardVisibleSteps()[0]);
+  } else {
+    wizardUpdateChrome(active);
+  }
+});
+WIZARD_STEPS.forEach((s) => wizardObserver.observe(s, { attributes: true, attributeFilter: ["class"] }));
+
+// Première étape affichée au chargement.
+wizardGoTo(WIZARD_STEPS[0]);
 
 // ---------- 1. Remplissage des menus déroulants ----------
 

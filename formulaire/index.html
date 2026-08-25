@@ -104,15 +104,68 @@ h1,h2,h3{font-family:'Cormorant Garamond',serif;font-weight:600;color:var(--ink)
 .section-nav a.done{color:var(--sage-dark); border-color:var(--sage);}
 .section-nav a.done::before{content:"✓ "; color:var(--sage);}
 .section-nav a:hover{border-color:var(--sage);}
+.section-nav a.current{background:var(--sage-dark); border-color:var(--sage-dark); color:#fff;}
+.section-nav a.current::before{color:#fff;}
 
-/* ---------- Sections du formulaire ---------- */
+/* ---------- Sections du formulaire (mode assistant, une section à la fois) ---------- */
 .form-col{padding-bottom:80px;}
 section.step{
+  display:none;
   padding:38px 0;
-  border-bottom:1px solid var(--line);
+  border-bottom:none;
   scroll-margin-top:70px;
 }
-section.step:last-of-type{border-bottom:none;}
+section.step.active{display:block;}
+/* Sections désactivées par le mode "devis rapide" : toujours masquées,
+   qu'elles soient l'étape active ou non. */
+section.step.hidden-devis{display:none !important;}
+
+.step-counter{
+  font-size:12px;
+  font-weight:600;
+  letter-spacing:.04em;
+  color:var(--ink-soft);
+  margin-bottom:10px;
+}
+.step-progress-bar{
+  height:4px;
+  background:var(--line);
+  border-radius:100px;
+  overflow:hidden;
+  margin-bottom:20px;
+}
+.step-progress-bar-fill{
+  height:100%;
+  background:var(--sage);
+  border-radius:100px;
+  transition:width .25s ease;
+  width:0%;
+}
+
+/* ---------- Navigation Suivant / Précédent ---------- */
+.step-nav{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  margin-top:34px;
+  padding-top:24px;
+  border-top:1px dashed var(--line);
+}
+.step-nav.step-nav-first{justify-content:flex-end;}
+.btn-secondary{
+  background:var(--card);
+  color:var(--ink);
+  border:1px solid var(--line);
+  padding:14px 26px;
+  border-radius:100px;
+  font-size:14.5px;
+  font-weight:600;
+  font-family:'Inter',sans-serif;
+  cursor:pointer;
+  transition:.15s;
+}
+.btn-secondary:hover{border-color:var(--sage); color:var(--sage-dark);}
 .step-eyebrow{
   font-size:12px;
   letter-spacing:.1em;
@@ -566,7 +619,11 @@ section.step h2{font-size:28px; font-style:italic; margin-bottom:4px;}
 <div class="page-wrap">
   <div class="form-col">
 
+    <div class="step-counter" id="stepCounter">Étape 1</div>
+    <div class="step-progress-bar"><div class="step-progress-bar-fill" id="stepProgressBarFill"></div></div>
+
     <nav class="section-nav" id="sectionNav">
+      <a href="#s-type-demande" data-section="type-demande">Type de demande</a>
       <a href="#s-couple" data-section="couple">Le couple</a>
       <a href="#s-parole" data-section="parole">Dieu nous parle</a>
       <a href="#s-liturgie" data-section="liturgie">La liturgie du mariage</a>
@@ -578,7 +635,7 @@ section.step h2{font-size:28px; font-style:italic; margin-bottom:4px;}
     <form id="livretForm">
 
       <!-- ================= TYPE DE DEMANDE ================= -->
-      <section class="step" id="s-type-demande">
+      <section class="step" id="s-type-demande" data-section="type-demande">
         <div class="step-eyebrow">Avant de commencer</div>
         <h2>Quel type de demande ?</h2>
         <p class="step-desc">Un devis rapide (juste vos informations de base), ou la conception complète de votre livret (avec vos choix de lectures, prières, personnalisation...) ?</p>
@@ -591,6 +648,10 @@ section.step h2{font-size:28px; font-style:italic; margin-bottom:4px;}
           </button>
         </div>
         <p class="format-note" id="typeDemandeNote" style="margin-top:8px;">Avec un simple devis, seules vos informations de couple sont nécessaires — les autres sections deviennent facultatives.</p>
+
+        <div class="step-nav step-nav-first">
+          <button type="button" class="btn-primary step-next">Suivant →</button>
+        </div>
       </section>
 
       <!-- ================= LE COUPLE ================= -->
@@ -708,6 +769,11 @@ section.step h2{font-size:28px; font-style:italic; margin-bottom:4px;}
           <textarea id="notesPersonnalisation" name="notesPersonnalisation" class="paroles-textarea" style="min-height:80px;" placeholder="Une ambiance particulière, une inspiration, une demande spéciale... écrivez-le ici, ce sera pris en compte lors de la personnalisation finale."></textarea>
           <p class="format-note" style="margin-top:6px;">Ceci sert de base de départ — la version finale sera personnalisée à la main avant envoi.</p>
         </div>
+
+        <div class="step-nav">
+          <button type="button" class="btn-secondary step-prev">← Précédent</button>
+          <button type="button" class="btn-primary step-next">Suivant →</button>
+        </div>
       </section>
 
       <!-- ================= DIEU NOUS PARLE ================= -->
@@ -741,6 +807,11 @@ section.step h2{font-size:28px; font-style:italic; margin-bottom:4px;}
           <select data-choice="evangile" data-cat="evangiles" required></select>
           <div class="apercu" data-apercu="evangile"></div>
         </div>
+
+        <div class="step-nav">
+          <button type="button" class="btn-secondary step-prev">← Précédent</button>
+          <button type="button" class="btn-primary step-next">Suivant →</button>
+        </div>
       </section>
 
       <!-- ================= LITURGIE DU MARIAGE ================= -->
@@ -772,6 +843,11 @@ section.step h2{font-size:28px; font-style:italic; margin-bottom:4px;}
           <select data-choice="benedictionNuptiale" data-cat="benedictionsNuptiales" required></select>
           <div class="apercu" data-apercu="benedictionNuptiale"></div>
         </div>
+
+        <div class="step-nav">
+          <button type="button" class="btn-secondary step-prev">← Précédent</button>
+          <button type="button" class="btn-primary step-next">Suivant →</button>
+        </div>
       </section>
 
       <!-- ================= PRIÈRES & BÉNÉDICTIONS ================= -->
@@ -799,6 +875,11 @@ section.step h2{font-size:28px; font-style:italic; margin-bottom:4px;}
           <label>Bénédiction finale</label>
           <select data-choice="benedictionFinale" data-cat="benedictionsFinales" required></select>
           <div class="apercu" data-apercu="benedictionFinale"></div>
+        </div>
+
+        <div class="step-nav">
+          <button type="button" class="btn-secondary step-prev">← Précédent</button>
+          <button type="button" class="btn-primary step-next">Suivant →</button>
         </div>
       </section>
 
@@ -851,6 +932,11 @@ section.step h2{font-size:28px; font-style:italic; margin-bottom:4px;}
             <details class="paroles-toggle"><summary>+ Ajouter les paroles</summary><textarea name="chant_sortieParoles" class="paroles-textarea" placeholder="Collez les paroles ici…"></textarea></details>
           </div>
         </div>
+
+        <div class="step-nav">
+          <button type="button" class="btn-secondary step-prev">← Précédent</button>
+          <button type="button" class="btn-primary step-next">Suivant →</button>
+        </div>
       </section>
 
       <!-- ================= MOT POUR LES INVITÉS ================= -->
@@ -862,6 +948,10 @@ section.step h2{font-size:28px; font-style:italic; margin-bottom:4px;}
             <label>Mots de remerciements</label>
             <input type="text" name="motsRemerciements" placeholder="ex. Merci à tous d'être présents à nos côtés !">
           </div>
+        </div>
+
+        <div class="step-nav step-nav-final">
+          <button type="button" class="btn-secondary step-prev">← Précédent</button>
         </div>
 
         <div class="submit-zone">
