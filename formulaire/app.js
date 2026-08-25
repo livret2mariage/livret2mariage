@@ -474,6 +474,23 @@ document.querySelectorAll("select[data-cat]").forEach((select) => {
   const key = select.dataset.choice;
   const apercuEl = document.querySelector(`[data-apercu="${key}"]`);
 
+  // ---------- Mode "on choisit pour vous" ----------
+  // Pré-sélectionne le choix marqué "recommandé" dans les données — pour
+  // débloquer les couples hésitants sans jamais présélectionner un choix à
+  // leur place par défaut (voir plus haut : le champ démarre volontairement vide).
+  const optionRecommandee = optionsTriees.find((opt) => opt.recommande);
+  if (optionRecommandee) {
+    const suggestBtn = document.createElement("button");
+    suggestBtn.type = "button";
+    suggestBtn.className = "suggest-btn";
+    suggestBtn.textContent = "✨ Je ne sais pas, suggérez-moi un choix";
+    select.insertAdjacentElement("afterend", suggestBtn);
+    suggestBtn.addEventListener("click", () => {
+      select.value = optionRecommandee.id;
+      select.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+  }
+
   // Un champ de recherche n'a d'intérêt que sur les listes un peu longues —
   // inutile de l'ajouter au-dessus d'un choix à 2 ou 3 options. Plutôt que de
   // filtrer les <option> d'un <select> natif (invisible tant qu'on ne clique
