@@ -226,8 +226,7 @@ function wizardUpdateChrome(activeSection) {
   const counter = document.getElementById("stepCounter");
   if (counter && index >= 0) counter.textContent = `Étape ${index + 1} sur ${visible.length}`;
 
-  const fill = document.getElementById("stepProgressBarFill");
-  if (fill && visible.length > 0) fill.style.width = `${((index + 1) / visible.length) * 100}%`;
+  renderStepper(activeSection, visible, index);
 
   // Le badge de mode est redondant sur l'étape "Type de demande" elle-même
   // (le choix y est déjà affiché en grand) — on ne l'affiche qu'ensuite.
@@ -235,6 +234,36 @@ function wizardUpdateChrome(activeSection) {
   if (modeBadge) modeBadge.classList.toggle("show", activeSection?.dataset.section !== "type-demande");
 
   updateMobileStepBar(activeSection);
+}
+
+// ---------- Stepper visuel (pastilles numérotées reliées par des traits) ----------
+// Reconstruit à chaque changement d'étape ou de mode (le nombre d'étapes
+// visibles change entre "tarif" et "composition du livret"). Le libellé de
+// chaque pastille (info-bulle) reprend le texte déjà tenu à jour dans la nav
+// du haut, plutôt que de le déduire à nouveau ici.
+function renderStepper(activeSection, visible, activeIndex) {
+  const stepper = document.getElementById("stepper");
+  if (!stepper) return;
+
+  let html = "";
+  visible.forEach((step, i) => {
+    const etat = i < activeIndex ? "done" : i === activeIndex ? "current" : "upcoming";
+    const pill = document.querySelector(`.section-nav a[data-section="${step.dataset.section}"]`);
+    const label = pill ? pill.textContent : `Étape ${i + 1}`;
+    html += `<div class="stepper-item ${etat}" data-section="${step.dataset.section}" title="${label}">` +
+      `<span class="stepper-circle">${etat === "done" ? "✓" : i + 1}</span></div>`;
+    if (i < visible.length - 1) {
+      html += `<div class="stepper-line ${i < activeIndex ? "done" : ""}"></div>`;
+    }
+  });
+  stepper.innerHTML = html;
+
+  stepper.querySelectorAll(".stepper-item").forEach((item) => {
+    item.addEventListener("click", () => {
+      const target = document.querySelector(`section[data-section="${item.dataset.section}"]`);
+      wizardGoTo(target);
+    });
+  });
 }
 
 // ---------- Barre flottante Suivant / Précédent (mobile uniquement) ----------
