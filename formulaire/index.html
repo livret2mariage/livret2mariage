@@ -90,6 +90,12 @@ h1,h2,h3{font-family:'Cormorant Garamond',serif;font-weight:600;color:var(--ink)
   background:var(--cream);
   z-index:5;
 }
+@media (max-width:900px){
+  /* Sur mobile, cette nav (7 pastilles texte, sur 2 lignes) restait collée en
+     haut d'écran et mangeait une bonne partie de l'espace visible. Le stepper
+     numéroté au-dessus assure déjà la même navigation de façon compacte. */
+  .section-nav{display:none;}
+}
 .section-nav a{
   font-size:13px;
   text-decoration:none;
