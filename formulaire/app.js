@@ -263,7 +263,44 @@ function wizardUpdateChrome(activeSection) {
   const modeBadge = document.getElementById("modeBadge");
   if (modeBadge) modeBadge.classList.toggle("show", activeSection?.dataset.section !== "type-demande");
 
+  updateCeremonyFrieze(activeSection);
   updateMobileStepBar(activeSection);
+}
+
+// ---------- Mini-frise de la cérémonie ----------
+// Montre où se situe l'étape en cours dans le déroulé réel de la messe —
+// utile pour des couples peu familiers avec l'ordre de la liturgie. N'a de
+// sens que pour les étapes qui correspondent à un moment précis ; masquée
+// sur "Type de demande", "Le couple" et "Les chants" (qui accompagnent toute
+// la cérémonie plutôt qu'un seul moment).
+const CEREMONY_STAGES = ["accueil", "parole", "consentement", "alliances", "prieres", "envoi"];
+const CEREMONY_MAPPING = {
+  parole: ["parole"],
+  liturgie: ["consentement", "alliances"],
+  prieres: ["prieres"],
+  mot: ["envoi"],
+};
+
+function updateCeremonyFrieze(activeSection) {
+  const frieze = document.getElementById("ceremonyFrieze");
+  if (!frieze) return;
+
+  const stagesActuelles = CEREMONY_MAPPING[activeSection?.dataset.section];
+  frieze.classList.toggle("show", !!stagesActuelles);
+  if (!stagesActuelles) return;
+
+  const indexMin = Math.min(...stagesActuelles.map((s) => CEREMONY_STAGES.indexOf(s)));
+  const indexMax = Math.max(...stagesActuelles.map((s) => CEREMONY_STAGES.indexOf(s)));
+
+  frieze.querySelectorAll(".cf-item").forEach((item) => {
+    const i = CEREMONY_STAGES.indexOf(item.dataset.stage);
+    item.classList.toggle("current", i >= indexMin && i <= indexMax);
+    item.classList.toggle("done", i < indexMin);
+  });
+  frieze.querySelectorAll(".cf-line").forEach((line) => {
+    const i = CEREMONY_STAGES.indexOf(line.dataset.after);
+    line.classList.toggle("done", i < indexMin);
+  });
 }
 
 // ---------- Stepper visuel (pastilles numérotées reliées par des traits) ----------

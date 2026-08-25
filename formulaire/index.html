@@ -554,6 +554,62 @@ section.step h2{font-size:28px; font-style:italic; margin-bottom:4px;}
 }
 .mode-badge-change:hover{background:var(--ink);}
 
+/* ---------- Mini-frise de la cérémonie ---------- */
+.ceremony-frieze{
+  display:none;
+  align-items:flex-start;
+  margin-bottom:24px;
+  padding:4px 2px 0;
+}
+.ceremony-frieze.show{display:flex;}
+.cf-item{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:6px;
+  flex:0 0 auto;
+  width:62px;
+}
+.cf-dot{
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:var(--card);
+  border:2px solid var(--line);
+  transition:.2s;
+}
+.cf-label{
+  font-family:'Inter',sans-serif;
+  font-size:10px;
+  font-weight:600;
+  color:var(--ink-soft);
+  text-align:center;
+  line-height:1.2;
+  transition:.2s;
+}
+.cf-line{
+  flex:1 1 auto;
+  height:2px;
+  background:var(--line);
+  margin-top:5px;
+  transition:background .2s;
+}
+.cf-item.done .cf-dot{background:var(--sage); border-color:var(--sage);}
+.cf-item.done .cf-label{color:var(--sage-dark);}
+.cf-item.current .cf-dot{
+  background:var(--sage-dark);
+  border-color:var(--sage-dark);
+  box-shadow:0 0 0 4px rgba(124,143,115,.22);
+  width:12px; height:12px;
+  margin:-1px;
+}
+.cf-item.current .cf-label{color:var(--sage-dark); font-weight:700;}
+.cf-line.done{background:var(--sage);}
+@media (max-width:900px){
+  .cf-item{width:44px;}
+  .cf-label{font-size:8.5px;}
+}
+
 /* ---------- Récapitulatif (dernière étape, mode devis) ---------- */
 .devis-recap{
   background:var(--sage-pale);
@@ -946,6 +1002,20 @@ section.step h2{font-size:28px; font-style:italic; margin-bottom:4px;}
     <div class="mode-badge" id="modeBadge">
       <span id="modeBadgeLabel">Mode : Demande de tarif</span>
       <a href="#s-type-demande" data-section="type-demande" class="mode-badge-change" id="modeBadgeChange">Changer</a>
+    </div>
+
+    <div class="ceremony-frieze" id="ceremonyFrieze">
+      <div class="cf-item" data-stage="accueil"><span class="cf-dot"></span><span class="cf-label">Accueil</span></div>
+      <div class="cf-line" data-after="accueil"></div>
+      <div class="cf-item" data-stage="parole"><span class="cf-dot"></span><span class="cf-label">Parole</span></div>
+      <div class="cf-line" data-after="parole"></div>
+      <div class="cf-item" data-stage="consentement"><span class="cf-dot"></span><span class="cf-label">Consentement</span></div>
+      <div class="cf-line" data-after="consentement"></div>
+      <div class="cf-item" data-stage="alliances"><span class="cf-dot"></span><span class="cf-label">Alliances</span></div>
+      <div class="cf-line" data-after="alliances"></div>
+      <div class="cf-item" data-stage="prieres"><span class="cf-dot"></span><span class="cf-label">Prières</span></div>
+      <div class="cf-line" data-after="prieres"></div>
+      <div class="cf-item" data-stage="envoi"><span class="cf-dot"></span><span class="cf-label">Envoi</span></div>
     </div>
 
     <nav class="section-nav" id="sectionNav">
