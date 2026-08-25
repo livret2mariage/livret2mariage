@@ -233,7 +233,44 @@ function wizardUpdateChrome(activeSection) {
   // (le choix y est déjà affiché en grand) — on ne l'affiche qu'ensuite.
   const modeBadge = document.getElementById("modeBadge");
   if (modeBadge) modeBadge.classList.toggle("show", activeSection?.dataset.section !== "type-demande");
+
+  updateMobileStepBar(activeSection);
 }
+
+// ---------- Barre flottante Suivant / Précédent (mobile uniquement) ----------
+// Reflète toujours l'étape active, pour ne pas avoir à scroller jusqu'en bas
+// d'une longue section (Prières & bénédictions, Chants...) juste pour avancer.
+function updateMobileStepBar(activeSection) {
+  const prevBtn = document.getElementById("mobileStepPrev");
+  const nextBtn = document.getElementById("mobileStepNext");
+  if (!prevBtn || !nextBtn) return;
+
+  prevBtn.classList.toggle("is-hidden", !wizardPrevVisible(activeSection));
+
+  if (wizardNextVisible(activeSection)) {
+    nextBtn.textContent = "Suivant →";
+    nextBtn.dataset.mode = "next";
+  } else {
+    // Dernière étape visible : la barre flottante déclenche directement l'envoi.
+    nextBtn.textContent = "Envoyer ma demande";
+    nextBtn.dataset.mode = "submit";
+  }
+}
+
+document.getElementById("mobileStepPrev")?.addEventListener("click", () => {
+  const current = WIZARD_STEPS.find((s) => s.classList.contains("active"));
+  wizardGoTo(wizardPrevVisible(current));
+});
+
+document.getElementById("mobileStepNext")?.addEventListener("click", () => {
+  const current = WIZARD_STEPS.find((s) => s.classList.contains("active"));
+  if (!wizardValidateSection(current)) return;
+  if (document.getElementById("mobileStepNext").dataset.mode === "submit") {
+    form.requestSubmit ? form.requestSubmit() : form.dispatchEvent(new Event("submit", { cancelable: true }));
+  } else {
+    wizardGoTo(wizardNextVisible(current));
+  }
+});
 
 document.querySelectorAll(".step-next").forEach((btn) => {
   btn.addEventListener("click", () => {
