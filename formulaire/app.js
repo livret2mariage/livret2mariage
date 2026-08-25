@@ -201,15 +201,45 @@ function wizardValidateSection(section) {
   return true;
 }
 
+// Durée de la transition entre étapes, doit correspondre à celle définie en
+// CSS pour section.step (transition-duration).
+const WIZARD_TRANSITION_MS = 180;
+let wizardEnTransition = false;
+
 function wizardGoTo(targetSection) {
   if (!targetSection || targetSection.classList.contains("hidden-devis")) return;
-  WIZARD_STEPS.forEach((s) => s.classList.remove("active"));
-  targetSection.classList.add("active");
-  wizardUpdateChrome(targetSection);
-  // Remonte en haut du formulaire à chaque changement d'étape (utile en
-  // particulier sur mobile, où la section précédente peut être plus longue
-  // que la nouvelle).
-  document.querySelector(".form-col")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  const actuelle = WIZARD_STEPS.find((s) => s.classList.contains("active"));
+  if (actuelle === targetSection) return;
+
+  // Premier affichage (aucune étape encore active) ou transition déjà en
+  // cours : on bascule directement, sans animation, pour rester réactif.
+  if (!actuelle || wizardEnTransition) {
+    WIZARD_STEPS.forEach((s) => s.classList.remove("active", "step-leaving", "step-entering"));
+    targetSection.classList.add("active");
+    wizardUpdateChrome(targetSection);
+    document.querySelector(".form-col")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    return;
+  }
+
+  wizardEnTransition = true;
+  actuelle.classList.add("step-leaving");
+
+  setTimeout(() => {
+    actuelle.classList.remove("active", "step-leaving");
+    targetSection.classList.add("active", "step-entering");
+    wizardUpdateChrome(targetSection);
+    document.querySelector(".form-col")?.scrollIntoView({ behavior: "smooth", block: "start" });
+
+    // Force un rendu avec step-entering déjà appliqué avant de le retirer,
+    // pour que le navigateur anime bien la transition d'entrée plutôt que de
+    // sauter directement à l'état final.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        targetSection.classList.remove("step-entering");
+        wizardEnTransition = false;
+      });
+    });
+  }, WIZARD_TRANSITION_MS);
 }
 
 function wizardUpdateChrome(activeSection) {

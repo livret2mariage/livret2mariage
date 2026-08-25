@@ -120,8 +120,18 @@ section.step{
   padding:38px 0;
   border-bottom:none;
   scroll-margin-top:70px;
+  opacity:1;
+  transform:translateY(0);
+  transition:opacity .18s ease, transform .18s ease;
 }
 section.step.active{display:block;}
+/* Transition douce entre étapes : l'étape qui part s'estompe légèrement vers
+   le haut, la suivante apparaît en glissant depuis le bas. */
+section.step.step-leaving{opacity:0; transform:translateY(-8px);}
+section.step.step-entering{opacity:0; transform:translateY(10px);}
+@media (prefers-reduced-motion:reduce){
+  section.step{transition:none;}
+}
 /* Sections désactivées par le mode "devis rapide" : toujours masquées,
    qu'elles soient l'étape active ou non. */
 section.step.hidden-devis{display:none !important;}
