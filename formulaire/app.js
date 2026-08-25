@@ -83,17 +83,62 @@ function appliquerTypeDemande(type) {
   const itemProgresMot = document.querySelector('li[data-section="mot"]');
   if (itemProgresMot) itemProgresMot.style.display = estDevis ? "none" : "";
 
+  // En mode devis, la dernière étape affichait un bloc "Un mot pour vos
+  // invités" masqué (donc quasi vide) — on montre à la place un petit
+  // récapitulatif des coordonnées avant l'envoi.
+  const devisRecapBlock = document.getElementById("devisRecapBlock");
+  if (devisRecapBlock) devisRecapBlock.style.display = estDevis ? "" : "none";
+  if (estDevis) updateDevisRecap();
+
   const note = document.getElementById("typeDemandeNote");
   if (note) {
     note.textContent = estDevis
       ? "Avec un simple devis, seules vos informations de couple sont nécessaires — les autres sections deviennent facultatives."
       : "Vous allez pouvoir choisir vos lectures, prières, bénédictions et personnaliser votre livret en détail.";
   }
+
+  // Badge de mode persistant (masqué sur l'étape 1 elle-même, voir wizardUpdateChrome).
+  const modeBadgeLabel = document.getElementById("modeBadgeLabel");
+  if (modeBadgeLabel) {
+    modeBadgeLabel.textContent = estDevis ? "Mode : Demande de tarif" : "Mode : Composition du livret";
+  }
 }
 
-document.querySelectorAll("#typeDemandeSwatches .format-btn").forEach((btn) => {
+// ---------- 0bis-bis. Récapitulatif affiché en dernière étape (mode devis) ----------
+// Reprend les coordonnées déjà saisies dans "Le couple" pour que la dernière
+// étape ne semble jamais vide avant l'envoi.
+function updateDevisRecap() {
+  const box = document.getElementById("devisRecap");
+  if (!box) return;
+
+  const champs = [
+    ["Époux", capitaliseNom(document.getElementById("epoux")?.value.trim())],
+    ["Épouse", capitaliseNom(document.getElementById("epouse")?.value.trim())],
+    ["Date", formatDateFR(document.getElementById("date")?.value)],
+    ["Heure", document.getElementById("heure")?.value],
+    ["Lieu", document.getElementById("lieu")?.value.trim()],
+    ["Email", document.getElementById("email")?.value.trim()],
+    ["Téléphone", document.getElementById("telephone")?.value.trim()],
+  ].filter(([, val]) => val);
+
+  if (champs.length === 0) {
+    box.innerHTML = `<p class="devis-recap-empty">Complétez vos informations à l'étape « Le couple » pour les retrouver ici avant l'envoi.</p>`;
+    return;
+  }
+
+  box.innerHTML = champs
+    .map(([label, val]) => `<div class="devis-recap-row"><span class="label">${label}</span><span class="value">${val}</span></div>`)
+    .join("");
+}
+
+document.querySelectorAll(".form-col input, .form-col select").forEach((el) => {
+  el.addEventListener("input", updateDevisRecap);
+  el.addEventListener("change", updateDevisRecap);
+});
+
+document.querySelectorAll("#typeDemandeSwatches .choice-card").forEach((btn) => {
   btn.addEventListener("click", () => {
-    document.querySelectorAll("#typeDemandeSwatches .format-btn").forEach((b) => b.classList.remove("active"));
+    document.querySelectorAll("#typeDemandeSwatches .choice-card").forEach((b) => b.classList.remove("active"));
     btn.classList.add("active");
     appliquerTypeDemande(btn.dataset.value);
     updateProgress();
@@ -170,6 +215,11 @@ function wizardUpdateChrome(activeSection) {
 
   const fill = document.getElementById("stepProgressBarFill");
   if (fill && visible.length > 0) fill.style.width = `${((index + 1) / visible.length) * 100}%`;
+
+  // Le badge de mode est redondant sur l'étape "Type de demande" elle-même
+  // (le choix y est déjà affiché en grand) — on ne l'affiche qu'ensuite.
+  const modeBadge = document.getElementById("modeBadge");
+  if (modeBadge) modeBadge.classList.toggle("show", activeSection?.dataset.section !== "type-demande");
 }
 
 document.querySelectorAll(".step-next").forEach((btn) => {
@@ -195,6 +245,13 @@ document.querySelectorAll(".section-nav a").forEach((a) => {
     const target = document.querySelector(`section[data-section="${a.dataset.section}"]`);
     wizardGoTo(target);
   });
+});
+
+// Lien "Changer" du badge de mode : ramène directement à l'étape 1 pour
+// basculer devis ↔ conception sans perdre les champs déjà remplis.
+document.getElementById("modeBadgeChange")?.addEventListener("click", (e) => {
+  e.preventDefault();
+  wizardGoTo(document.querySelector('section[data-section="type-demande"]'));
 });
 
 // Si le passage en mode "devis rapide" masque l'étape actuellement affichée,
@@ -574,7 +631,7 @@ function buildReponse() {
     motsRemerciements: val('[name="motsRemerciements"]') || undefined,
     notesPersonnalisation: val("#notesPersonnalisation") || undefined,
     typeLivraison: document.querySelector("#livraisonSwatches .format-btn.active")?.dataset.value || "pdf",
-    typeDemande: document.querySelector("#typeDemandeSwatches .format-btn.active")?.dataset.value || "devis",
+    typeDemande: document.querySelector("#typeDemandeSwatches .choice-card.active")?.dataset.value || "devis",
     personnalisation: getPersonnalisation(),
   };
 }
