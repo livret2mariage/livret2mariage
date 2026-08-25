@@ -40,8 +40,11 @@ h1,h2,h3{font-family:'Cormorant Garamond',serif;font-weight:600;color:var(--ink)
   .page-wrap{grid-template-columns:1fr; gap:0;}
   .preview-col{order:-1; position:static !important; margin-bottom:28px;}
   /* Aperçu repliable : masqué par défaut sur mobile, pour laisser toute la
-     place au formulaire — un simple bouton permet de le déplier au besoin. */
-  .preview-toggle{display:flex;}
+     place au formulaire — un simple bouton permet de le déplier au besoin.
+     !important nécessaire ici : la règle de base ".preview-toggle{display:none}"
+     est définie plus bas dans le fichier (section aperçu), donc à priorité
+     égale elle l'emporterait sinon sur cette règle mobile malgré la media query. */
+  .preview-toggle{display:flex !important;}
   .preview-body{display:none;}
   .preview-body.expanded{display:block; margin-top:14px;}
 }
