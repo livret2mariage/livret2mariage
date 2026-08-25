@@ -404,28 +404,23 @@ function normaliserRecherche(texte) {
     .toLowerCase();
 }
 
-// (Re)construit les <option> d'un select à partir d'une requête de recherche.
-// La sélection déjà faite est toujours conservée dans la liste, même si elle
-// ne correspond plus au texte tapé — pour ne jamais perdre un choix déjà fait
-// simplement parce qu'on affine sa recherche ensuite.
-function peuplerSelectOptions(select, optionsTriees, requete) {
-  const valeurActuelle = select.value;
-  select.innerHTML = "";
+document.querySelectorAll("select[data-cat]").forEach((select) => {
+  const cat = select.dataset.cat;
+  const options = CHOIX[cat] || [];
+
+  // Le choix recommandé est mis en avant visuellement : placé en tête de liste
+  // (pas besoin de faire défiler pour le trouver), avec une étoile et en gras,
+  // du texte simple restant possible avec les <option> HTML natives.
+  const optionsTriees = [...options].sort((a, b) => (b.recommande ? 1 : 0) - (a.recommande ? 1 : 0));
 
   const placeholder = document.createElement("option");
   placeholder.value = "";
   placeholder.textContent = "— Choisir —";
   placeholder.disabled = true;
+  placeholder.selected = true;
   select.appendChild(placeholder);
 
-  const q = normaliserRecherche(requete);
-  const filtrees = q
-    ? optionsTriees.filter((opt) => opt.id === valeurActuelle
-        || normaliserRecherche(opt.label).includes(q)
-        || normaliserRecherche(opt.ref).includes(q))
-    : optionsTriees;
-
-  filtrees.forEach((opt) => {
+  optionsTriees.forEach((opt) => {
     const el = document.createElement("option");
     el.value = opt.id;
     if (opt.recommande) {
@@ -438,40 +433,77 @@ function peuplerSelectOptions(select, optionsTriees, requete) {
     select.appendChild(el);
   });
 
-  select.value = valeurActuelle;
-  if (!valeurActuelle) placeholder.selected = true;
-}
-
-document.querySelectorAll("select[data-cat]").forEach((select) => {
-  const cat = select.dataset.cat;
-  const options = CHOIX[cat] || [];
-
-  // Le choix recommandé est mis en avant visuellement : placé en tête de liste
-  // (pas besoin de faire défiler pour le trouver), avec une étoile et en gras,
-  // du texte simple restant possible avec les <option> HTML natives.
-  const optionsTriees = [...options].sort((a, b) => (b.recommande ? 1 : 0) - (a.recommande ? 1 : 0));
-
-  // Un champ de recherche n'a d'intérêt que sur les listes un peu longues —
-  // inutile de l'ajouter au-dessus d'un choix à 2 ou 3 options.
-  if (optionsTriees.length > 4) {
-    const recherche = document.createElement("input");
-    recherche.type = "text";
-    recherche.className = "select-search";
-    recherche.placeholder = "Rechercher un mot-clé…";
-    select.insertAdjacentElement("beforebegin", recherche);
-    recherche.addEventListener("input", () => {
-      peuplerSelectOptions(select, optionsTriees, recherche.value);
-    });
-  }
-
-  peuplerSelectOptions(select, optionsTriees, "");
-
   // Le champ démarre volontairement vide (rien de pré-sélectionné) : même si
   // un choix est recommandé, le couple doit le choisir lui-même en connaissance
   // de cause plutôt que de valider sans s'en rendre compte un choix déjà fait
   // à sa place — surtout pour des textes aussi personnels que ceux-ci.
   const key = select.dataset.choice;
   const apercuEl = document.querySelector(`[data-apercu="${key}"]`);
+
+  // Un champ de recherche n'a d'intérêt que sur les listes un peu longues —
+  // inutile de l'ajouter au-dessus d'un choix à 2 ou 3 options. Plutôt que de
+  // filtrer les <option> d'un <select> natif (invisible tant qu'on ne clique
+  // pas dessus pour l'ouvrir), on affiche une vraie liste de résultats
+  // cliquable directement sous le champ, comme un moteur de recherche.
+  if (optionsTriees.length > 4) {
+    const wrap = document.createElement("div");
+    wrap.className = "select-search-wrap";
+
+    const recherche = document.createElement("input");
+    recherche.type = "text";
+    recherche.className = "select-search";
+    recherche.placeholder = "Rechercher un mot-clé…";
+    recherche.setAttribute("autocomplete", "off");
+
+    const resultats = document.createElement("div");
+    resultats.className = "select-search-results";
+
+    wrap.appendChild(recherche);
+    wrap.appendChild(resultats);
+    select.insertAdjacentElement("beforebegin", wrap);
+
+    const afficherResultats = (requete) => {
+      const q = normaliserRecherche(requete);
+      if (!q) {
+        resultats.style.display = "none";
+        resultats.innerHTML = "";
+        return;
+      }
+      const trouves = optionsTriees.filter((opt) =>
+        normaliserRecherche(opt.label).includes(q) || normaliserRecherche(opt.ref).includes(q)
+      );
+      resultats.innerHTML = trouves.length
+        ? trouves.map((opt) => `
+            <div class="select-search-result" data-id="${opt.id}">
+              ${opt.recommande ? `<span class="badge-recommande-inline">Recommandé</span> ` : ""}${opt.label}
+              ${opt.ref ? `<span class="ssr-ref">${opt.ref}</span>` : ""}
+            </div>
+          `).join("")
+        : `<div class="select-search-empty">Aucun résultat pour « ${requete} ».</div>`;
+      resultats.style.display = "block";
+    };
+
+    recherche.addEventListener("input", () => afficherResultats(recherche.value));
+    recherche.addEventListener("focus", () => {
+      if (recherche.value) afficherResultats(recherche.value);
+    });
+    // mousedown (pas click) : se déclenche avant le blur du champ de recherche,
+    // pour que le clic sur un résultat soit bien pris en compte avant que la
+    // liste ne se referme.
+    resultats.addEventListener("mousedown", (e) => {
+      const item = e.target.closest(".select-search-result[data-id]");
+      if (!item) return;
+      e.preventDefault();
+      select.value = item.dataset.id;
+      select.dispatchEvent(new Event("change", { bubbles: true }));
+      const chosen = optionsTriees.find((o) => o.id === item.dataset.id);
+      recherche.value = chosen ? chosen.label : "";
+      resultats.style.display = "none";
+    });
+    recherche.addEventListener("blur", () => {
+      setTimeout(() => { resultats.style.display = "none"; }, 150);
+    });
+  }
 
   select.addEventListener("change", () => {
     const chosen = options.find((o) => o.id === select.value);
