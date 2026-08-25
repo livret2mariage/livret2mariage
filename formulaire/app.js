@@ -273,6 +273,10 @@ function wizardUpdateChrome(activeSection) {
 // sens que pour les étapes qui correspondent à un moment précis ; masquée
 // sur "Type de demande", "Le couple" et "Les chants" (qui accompagnent toute
 // la cérémonie plutôt qu'un seul moment).
+// Désactivée pour le moment (à revoir plus tard) — le code reste en place,
+// il suffit de repasser ceci à true pour la réactiver.
+const FRISE_CEREMONIE_ACTIVEE = false;
+
 const CEREMONY_STAGES = ["accueil", "parole", "consentement", "alliances", "prieres", "envoi"];
 const CEREMONY_MAPPING = {
   parole: ["parole"],
@@ -284,6 +288,11 @@ const CEREMONY_MAPPING = {
 function updateCeremonyFrieze(activeSection) {
   const frieze = document.getElementById("ceremonyFrieze");
   if (!frieze) return;
+
+  if (!FRISE_CEREMONIE_ACTIVEE) {
+    frieze.classList.remove("show");
+    return;
+  }
 
   const stagesActuelles = CEREMONY_MAPPING[activeSection?.dataset.section];
   frieze.classList.toggle("show", !!stagesActuelles);
