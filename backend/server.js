@@ -130,8 +130,8 @@ function serveFichierFormulaire(res, nomFichier) {
 }
 
 function serveStatic(req, res) {
-  let reqPath = req.url === "/" ? "/index.html" : req.url;
-  reqPath = reqPath.split("?")[0];
+  let reqPath = req.url.split("?")[0];
+  if (reqPath === "/") reqPath = "/index.html";
   const filePath = path.join(FORMULAIRE_DIR, reqPath);
 
   // Empêche de sortir du dossier formulaire/ (sécurité basique)
