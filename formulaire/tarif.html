@@ -107,7 +107,7 @@ h1,h2,h3{font-family:'Cormorant Garamond',serif;font-weight:600;color:var(--ink)
 .formule-details[open] summary::before{content:"– ";}
 .formule-details .sous-liste{margin-top:10px; padding-top:10px; border-top:1px dashed var(--line);}
 .formule-details .sous-liste li{font-size:13.5px; color:var(--ink-soft); padding:4px 0;}
-.formule-details .sous-liste li::before{color:var(--sage);}
+.formule-details .sous-liste li .ck{color:var(--sage);}
 .formule-details .sous-liste li strong{color:var(--ink-soft); font-weight:700;}
 .formule-head{
   display:flex;
@@ -129,7 +129,8 @@ h1,h2,h3{font-family:'Cormorant Garamond',serif;font-weight:600;color:var(--ink)
   color:var(--ink);
   padding:6px 0;
 }
-.formule li::before{content:"✓"; color:var(--sage-dark); font-weight:700; flex-shrink:0;}
+.formule li .ck{color:var(--sage-dark); font-weight:700; flex-shrink:0; line-height:1.5;}
+.formule li .txt{flex:1; min-width:0;}
 .formule li strong{color:var(--ink); font-weight:700;}
 .formule-note{font-size:12.5px; color:var(--ink-soft); font-style:italic; margin-top:12px;}
 .formule-supplement{
@@ -223,11 +224,11 @@ h1,h2,h3{font-family:'Cormorant Garamond',serif;font-weight:600;color:var(--ink)
         <span class="formule-prix">39 €</span>
       </div>
       <ul>
-        <li>Document PDF <strong>haute résolution</strong> prêt à l'impression</li>
-        <li>Génération automatique respectant les <strong>règles liturgiques</strong></li>
-        <li><strong>Sélection sur mesure</strong> des textes, lectures, psaumes et prières</li>
-        <li><strong>Personnalisation visuelle</strong> (thèmes, couleurs, polices, prénoms, date)</li>
-        <li><strong>Une correction</strong> avant validation finale</li>
+        <li><span class="ck">✓</span><span class="txt">Document PDF <strong>haute résolution</strong> prêt à l'impression</span></li>
+        <li><span class="ck">✓</span><span class="txt">Génération automatique respectant les <strong>règles liturgiques</strong></span></li>
+        <li><span class="ck">✓</span><span class="txt"><strong>Sélection sur mesure</strong> des textes, lectures, psaumes et prières</span></li>
+        <li><span class="ck">✓</span><span class="txt"><strong>Personnalisation visuelle</strong> (thèmes, couleurs, polices, prénoms, date)</span></li>
+        <li><span class="ck">✓</span><span class="txt"><strong>Une correction</strong> avant validation finale</span></li>
       </ul>
       <p class="formule-note">Disponible en A5 ou A4, sans supplément.</p>
     </div>
@@ -240,19 +241,19 @@ h1,h2,h3{font-family:'Cormorant Garamond',serif;font-weight:600;color:var(--ink)
       <span class="badge-populaire">★ Choix préféré des couples</span>
       <p class="formule-heritage">Tout ce qui est inclus dans <strong>Essentielle</strong>, plus :</p>
       <ul>
-        <li><strong>Deux corrections</strong> avant validation</li>
-        <li>Impression physique de <strong>10 livrets</strong> de mariage</li>
-        <li>Jet d'encre <strong>couleur/noir</strong> sur papier standard 80g</li>
-        <li>Façonnage et agrafage <strong>inclus</strong></li>
+        <li><span class="ck">✓</span><span class="txt"><strong>Deux corrections</strong> avant validation</span></li>
+        <li><span class="ck">✓</span><span class="txt">Impression physique de <strong>10 livrets</strong> de mariage</span></li>
+        <li><span class="ck">✓</span><span class="txt">Jet d'encre <strong>couleur/noir</strong> sur papier standard 80g</span></li>
+        <li><span class="ck">✓</span><span class="txt">Façonnage et agrafage <strong>inclus</strong></span></li>
       </ul>
       <details class="formule-details">
         <summary>Voir le détail de la formule Essentielle incluse</summary>
         <ul class="sous-liste">
-          <li>Document PDF <strong>haute résolution</strong> prêt à l'impression</li>
-          <li>Génération automatique respectant les <strong>règles liturgiques</strong></li>
-          <li><strong>Sélection sur mesure</strong> des textes, lectures, psaumes et prières</li>
-          <li><strong>Personnalisation visuelle</strong> (thèmes, couleurs, polices, prénoms, date)</li>
-          <li><strong>Une correction</strong> avant validation finale</li>
+          <li><span class="ck">✓</span><span class="txt">Document PDF <strong>haute résolution</strong> prêt à l'impression</span></li>
+          <li><span class="ck">✓</span><span class="txt">Génération automatique respectant les <strong>règles liturgiques</strong></span></li>
+          <li><span class="ck">✓</span><span class="txt"><strong>Sélection sur mesure</strong> des textes, lectures, psaumes et prières</span></li>
+          <li><span class="ck">✓</span><span class="txt"><strong>Personnalisation visuelle</strong> (thèmes, couleurs, polices, prénoms, date)</span></li>
+          <li><span class="ck">✓</span><span class="txt"><strong>Une correction</strong> avant validation finale</span></li>
         </ul>
       </details>
       <span class="formule-supplement">+5 € format A4</span>
@@ -265,19 +266,19 @@ h1,h2,h3{font-family:'Cormorant Garamond',serif;font-weight:600;color:var(--ink)
       </div>
       <p class="formule-heritage">Tout ce qui est inclus dans <strong>Essentielle</strong>, plus :</p>
       <ul>
-        <li><strong>Trois corrections</strong>, réponse sous 24-48h</li>
-        <li>Impression physique de <strong>20 livrets</strong> de mariage</li>
-        <li>Couverture <strong>laser HD</strong>, intérieur jet d'encre 120g</li>
-        <li><strong>Marque-page</strong> et livraison Colissimo offerts</li>
+        <li><span class="ck">✓</span><span class="txt"><strong>Trois corrections</strong>, réponse sous 24-48h</span></li>
+        <li><span class="ck">✓</span><span class="txt">Impression physique de <strong>20 livrets</strong> de mariage</span></li>
+        <li><span class="ck">✓</span><span class="txt">Couverture <strong>laser HD</strong>, intérieur jet d'encre 120g</span></li>
+        <li><span class="ck">✓</span><span class="txt"><strong>Marque-page</strong> et livraison Colissimo offerts</span></li>
       </ul>
       <details class="formule-details">
         <summary>Voir le détail de la formule Essentielle incluse</summary>
         <ul class="sous-liste">
-          <li>Document PDF <strong>haute résolution</strong> prêt à l'impression</li>
-          <li>Génération automatique respectant les <strong>règles liturgiques</strong></li>
-          <li><strong>Sélection sur mesure</strong> des textes, lectures, psaumes et prières</li>
-          <li><strong>Personnalisation visuelle</strong> (thèmes, couleurs, polices, prénoms, date)</li>
-          <li><strong>Une correction</strong> avant validation finale</li>
+          <li><span class="ck">✓</span><span class="txt">Document PDF <strong>haute résolution</strong> prêt à l'impression</span></li>
+          <li><span class="ck">✓</span><span class="txt">Génération automatique respectant les <strong>règles liturgiques</strong></span></li>
+          <li><span class="ck">✓</span><span class="txt"><strong>Sélection sur mesure</strong> des textes, lectures, psaumes et prières</span></li>
+          <li><span class="ck">✓</span><span class="txt"><strong>Personnalisation visuelle</strong> (thèmes, couleurs, polices, prénoms, date)</span></li>
+          <li><span class="ck">✓</span><span class="txt"><strong>Une correction</strong> avant validation finale</span></li>
         </ul>
       </details>
       <span class="formule-supplement">+10 € format A4</span>
