@@ -424,6 +424,31 @@ WIZARD_STEPS.forEach((s) => wizardObserver.observe(s, { attributes: true, attrib
 // Première étape affichée au chargement.
 wizardGoTo(WIZARD_STEPS[0]);
 
+// ---------- Présélection du mode via l'URL (?mode=devis|conception) ----------
+// Permet aux onglets "Composer mon livret seul" / "Demande de devis" du
+// header d'arriver directement à l'étape suivante, sans repasser par le
+// choix explicite de l'étape 1 (qui reste malgré tout modifiable ensuite via
+// le badge "Changer").
+(function appliquerModeDepuisUrl() {
+  const modeUrl = new URLSearchParams(window.location.search).get("mode");
+  if (modeUrl === "devis" || modeUrl === "conception") {
+    const carte = document.querySelector(`#typeDemandeSwatches .choice-card[data-value="${modeUrl}"]`);
+    if (carte) {
+      document.querySelectorAll("#typeDemandeSwatches .choice-card").forEach((b) => b.classList.remove("active"));
+      carte.classList.add("active");
+      appliquerTypeDemande(modeUrl);
+      wizardGoTo(wizardNextVisible(document.querySelector('section[data-section="type-demande"]')));
+    }
+  }
+
+  // Surbrillance de l'onglet correspondant dans la barre de nav du header
+  // (mode "devis" par défaut, comme le reste du formulaire).
+  const modeActif = (modeUrl === "conception") ? "conception" : "devis";
+  document.querySelectorAll("#mainTabs a[data-tab]").forEach((a) => {
+    a.classList.toggle("active", a.dataset.tab === modeActif);
+  });
+})();
+
 // ---------- 1. Remplissage des menus déroulants ----------
 
 // Construit le contenu HTML de l'aperçu : résumé + lien avec le mariage (quand

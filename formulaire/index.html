@@ -67,6 +67,26 @@ h1,h2,h3{font-family:'Cormorant Garamond',serif;font-weight:600;color:var(--ink)
 }
 .header-links a{color:var(--ink-soft); text-decoration:none;}
 .header-links a:hover{color:var(--sage-dark);}
+.main-tabs{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin:4px 0 20px;
+}
+.main-tabs a{
+  font-family:'Inter',sans-serif;
+  font-size:13px;
+  font-weight:600;
+  color:var(--ink-soft);
+  text-decoration:none;
+  padding:9px 16px;
+  border-radius:999px;
+  border:1px solid var(--line);
+  background:var(--card);
+  transition:border-color .15s, background .15s, color .15s;
+}
+.main-tabs a:hover{border-color:var(--sage);}
+.main-tabs a.active{background:var(--sage-dark); border-color:var(--sage-dark); color:#fff;}
 .top-header .eyebrow{
   text-transform:uppercase;
   letter-spacing:.14em;
@@ -988,6 +1008,11 @@ section.step h2{font-size:28px; font-style:italic; margin-bottom:4px;}
 
 <header class="top-header">
   <div class="brand-mark">Livret2Mariage <span class="header-links"><a href="/tuto">Comment ça marche</a> · <a href="/contact">Contact</a></span></div>
+  <nav class="main-tabs" id="mainTabs">
+    <a href="/tarif">Tarif</a>
+    <a href="/?mode=conception" data-tab="conception">Composer mon livret seul</a>
+    <a href="/?mode=devis" data-tab="devis">Demande de devis</a>
+  </nav>
   <div class="eyebrow">Demande de devis — Conception de livret de mariage</div>
   <h1>Composez votre livret de mariage</h1>
   <p>Choisissez vos lectures, prières et bénédictions parmi les textes proposés. Votre livret sera confectionné et mis en page par notre équipe, sans rien faire de plus — nous vous recontactons pour finaliser votre demande.</p>

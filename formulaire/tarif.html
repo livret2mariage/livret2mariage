@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tarifs — Livret2Mariage</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,400&family=Parisienne&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#FBF8F2;
+  --card:#FFFFFF;
+  --ink:#2E3328;
+  --ink-soft:#5B6455;
+  --sage:#7C8F73;
+  --sage-dark:#52604A;
+  --sage-pale:#EEF1E9;
+  --gold:#C9A227;
+  --line:#E4DED0;
+  --radius:10px;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--cream);color:var(--ink);font-family:'Inter',sans-serif;line-height:1.6;}
+h1,h2,h3{font-family:'Cormorant Garamond',serif;font-weight:600;color:var(--ink);margin:0;}
+.script{font-family:'Parisienne',cursive;font-weight:400;}
+
+.top-header{padding:48px 24px 8px; max-width:900px; margin:0 auto;}
+.top-header .brand-mark{
+  font-family:'Cormorant Garamond',serif;
+  font-style:italic;
+  font-weight:600;
+  font-size:22px;
+  color:var(--sage-dark);
+  margin-bottom:16px;
+  display:flex;
+  align-items:baseline;
+  gap:16px;
+  flex-wrap:wrap;
+}
+.header-links{font-family:'Inter',sans-serif; font-style:normal; font-weight:500; font-size:12.5px;}
+.header-links a{color:var(--ink-soft); text-decoration:none;}
+.header-links a:hover{color:var(--sage-dark);}
+.main-tabs{display:flex; flex-wrap:wrap; gap:8px; margin:4px 0 20px;}
+.main-tabs a{
+  font-family:'Inter',sans-serif;
+  font-size:13px;
+  font-weight:600;
+  color:var(--ink-soft);
+  text-decoration:none;
+  padding:9px 16px;
+  border-radius:999px;
+  border:1px solid var(--line);
+  background:var(--card);
+  transition:border-color .15s, background .15s, color .15s;
+}
+.main-tabs a:hover{border-color:var(--sage);}
+.main-tabs a.active{background:var(--sage-dark); border-color:var(--sage-dark); color:#fff;}
+
+.wrap{max-width:900px; margin:0 auto; padding:8px 24px 80px;}
+
+.intro{text-align:center; margin:36px 0 44px;}
+.eyebrow{text-transform:uppercase; letter-spacing:.14em; font-size:12px; color:var(--sage-dark); font-weight:600;}
+.intro h1{font-size:38px; font-style:italic; margin-top:8px;}
+.intro p{color:var(--ink-soft); font-size:15px; margin:14px 0 0;}
+
+.section-title{text-align:center; margin:56px 0 28px;}
+.section-title .eyebrow{display:block; margin-bottom:8px;}
+.section-title h2{font-size:28px; font-style:italic;}
+
+.formule-grid{display:grid; gap:22px;}
+.formule{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:28px 26px;
+}
+.formule.prestige{border-color:var(--gold);}
+.formule-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:baseline;
+  gap:16px;
+  border-bottom:1px solid var(--line);
+  padding-bottom:14px;
+  margin-bottom:16px;
+}
+.formule-head h3{font-size:24px;}
+.formule-prix{font-family:'Cormorant Garamond',serif; font-size:26px; font-weight:600; color:var(--gold); white-space:nowrap;}
+.formule ul{list-style:none; margin:0; padding:0;}
+.formule li{
+  display:flex;
+  gap:10px;
+  align-items:flex-start;
+  font-size:14.5px;
+  color:var(--ink);
+  padding:6px 0;
+}
+.formule li::before{content:"✓"; color:var(--sage-dark); font-weight:700; flex-shrink:0;}
+.formule-note{font-size:12.5px; color:var(--ink-soft); font-style:italic; margin-top:12px;}
+.formule-supplement{
+  display:inline-block;
+  margin-top:14px;
+  padding:6px 14px;
+  border-radius:999px;
+  font-size:12.5px;
+  font-weight:600;
+}
+.formule.confort .formule-supplement{background:var(--sage-pale); color:var(--sage-dark);}
+.formule.prestige .formule-supplement{background:#FBEAE6; color:#8A3B2B;}
+
+.options-grid{display:grid; gap:18px;}
+.option-carte{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:22px 26px;}
+.option-tete{display:flex; align-items:center; gap:10px; border-bottom:1px solid var(--line); padding-bottom:12px; margin-bottom:12px;}
+.option-dot{width:10px; height:10px; border-radius:50%; background:var(--sage); flex-shrink:0;}
+.option-carte.dot-sage .option-dot{background:var(--sage);}
+.option-carte.dot-gold .option-dot{background:var(--gold);}
+.option-carte.dot-rose .option-dot{background:#D9A79A;}
+.option-tete h3{font-size:18px;}
+.option-ligne{display:flex; justify-content:space-between; font-size:14.5px; padding:6px 0;}
+.option-ligne .label{color:var(--ink-soft);}
+.option-ligne .val{font-weight:600; color:var(--gold);}
+.option-table{width:100%; border-collapse:collapse; font-size:14px;}
+.option-table th{text-align:left; font-size:11.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-soft); font-weight:600; padding-bottom:8px;}
+.option-table th:not(:first-child), .option-table td:not(:first-child){text-align:right;}
+.option-table td{padding:6px 0; border-top:1px solid var(--line);}
+.option-table td.val{color:var(--gold); font-weight:600;}
+.option-note{font-size:12.5px; color:var(--ink-soft); font-style:italic; margin-top:10px;}
+
+.cta{
+  margin:56px auto 0;
+  max-width:640px;
+  text-align:center;
+  background:var(--sage-pale);
+  border-radius:16px;
+  padding:32px 28px;
+}
+.cta h2{font-size:24px; font-style:italic; margin-bottom:10px;}
+.cta p{color:var(--ink-soft); font-size:14.5px; margin:0 0 22px;}
+.cta-boutons{display:flex; gap:12px; justify-content:center; flex-wrap:wrap;}
+.btn{
+  display:inline-block;
+  text-decoration:none;
+  padding:13px 24px;
+  border-radius:100px;
+  font-size:14.5px;
+  font-weight:600;
+  font-family:'Inter',sans-serif;
+}
+.btn-primary{background:var(--sage-dark); color:#fff;}
+.btn-primary:hover{background:var(--ink);}
+.btn-secondary{background:#fff; color:var(--sage-dark); border:1px solid var(--sage-dark);}
+.btn-secondary:hover{background:var(--sage-pale);}
+
+.footer-signature{text-align:center; margin-top:56px;}
+.footer-signature .script{font-size:26px; color:var(--gold);}
+.footer-signature p{color:var(--ink-soft); font-size:13px; margin-top:4px;}
+
+@media (min-width:720px){
+  .formule-grid{grid-template-columns:repeat(3,1fr);}
+  .options-grid{grid-template-columns:repeat(2,1fr);}
+  .options-grid .option-carte:last-child{grid-column:1 / -1;}
+}
+</style>
+</head>
+<body>
+
+<header class="top-header">
+  <div class="brand-mark">Livret2Mariage <span class="header-links"><a href="/tuto">Comment ça marche</a> · <a href="/contact">Contact</a></span></div>
+  <nav class="main-tabs" id="mainTabs">
+    <a href="/tarif" class="active">Tarif</a>
+    <a href="/?mode=conception">Composer mon livret seul</a>
+    <a href="/?mode=devis">Demande de devis</a>
+  </nav>
+</header>
+
+<div class="wrap">
+
+  <div class="intro">
+    <span class="eyebrow">Tarifs · Livret de cérémonie</span>
+    <h1>Livret de Cérémonie</h1>
+    <p>Format A5 inclus dans chaque formule — supplément disponible pour un format A4.</p>
+  </div>
+
+  <div class="formule-grid">
+    <div class="formule essentielle">
+      <div class="formule-head">
+        <h3>Essentielle</h3>
+        <span class="formule-prix">39 €</span>
+      </div>
+      <ul>
+        <li>Document PDF haute résolution prêt à l'impression</li>
+        <li>Génération automatique respectant les règles liturgiques</li>
+        <li>Sélection sur mesure des textes, lectures, psaumes et prières</li>
+        <li>Personnalisation visuelle (thèmes, couleurs, polices, prénoms, date)</li>
+        <li>Une correction avant validation finale</li>
+      </ul>
+      <p class="formule-note">Disponible en A5 ou A4, sans supplément.</p>
+    </div>
+
+    <div class="formule confort">
+      <div class="formule-head">
+        <h3>Confort</h3>
+        <span class="formule-prix">79 €</span>
+      </div>
+      <ul>
+        <li>Toute la formule Essentielle incluse (PDF)</li>
+        <li>Deux corrections avant validation</li>
+        <li>Impression physique de 10 livrets de mariage</li>
+        <li>Jet d'encre couleur/noir sur papier standard 80g</li>
+        <li>Façonnage et agrafage inclus</li>
+      </ul>
+      <span class="formule-supplement">+5 € format A4</span>
+    </div>
+
+    <div class="formule prestige">
+      <div class="formule-head">
+        <h3>Prestige</h3>
+        <span class="formule-prix">169 €</span>
+      </div>
+      <ul>
+        <li>Toute la formule Essentielle incluse (PDF)</li>
+        <li>Trois corrections, réponse sous 24-48h</li>
+        <li>Impression physique de 20 livrets de mariage</li>
+        <li>Couverture laser HD, intérieur jet d'encre 120g</li>
+        <li>Marque-page et livraison Colissimo offerts</li>
+      </ul>
+      <span class="formule-supplement">+10 € format A4</span>
+    </div>
+  </div>
+
+  <div class="section-title">
+    <span class="eyebrow">Suppléments &amp; options</span>
+    <h2>Personnalisez votre livret</h2>
+  </div>
+  <p style="text-align:center; color:var(--ink-soft); font-size:14px; margin-top:-16px;">À ajouter à n'importe quelle formule — prix indiqués par unité et par lot.</p>
+
+  <div class="options-grid" style="margin-top:24px;">
+    <div class="option-carte dot-gold">
+      <div class="option-tete"><span class="option-dot"></span><h3>Marque-page thématique</h3></div>
+      <div class="option-ligne"><span class="label">À l'unité</span><span class="val">1,50 €</span></div>
+      <div class="option-ligne"><span class="label">Lot de 10</span><span class="val">12 €</span></div>
+      <div class="option-ligne"><span class="label">Lot de 20</span><span class="val">20 €</span></div>
+    </div>
+
+    <div class="option-carte dot-sage">
+      <div class="option-tete"><span class="option-dot"></span><h3>Feuille de chant A4 recto-verso</h3></div>
+      <div class="option-ligne"><span class="label">Lot de 20</span><span class="val">12 €</span></div>
+      <div class="option-ligne"><span class="label">Lot de 50</span><span class="val">25 €</span></div>
+      <div class="option-ligne"><span class="label">Lot de 100</span><span class="val">40 €</span></div>
+    </div>
+
+    <div class="option-carte dot-rose">
+      <div class="option-tete"><span class="option-dot"></span><h3>Ruban décoratif collé (couverture)</h3></div>
+      <div class="option-ligne"><span class="label">À l'unité</span><span class="val">1 €</span></div>
+      <div class="option-ligne"><span class="label">Lot de 10</span><span class="val">8 €</span></div>
+      <div class="option-ligne"><span class="label">Lot de 20</span><span class="val">14 €</span></div>
+    </div>
+
+    <div class="option-carte dot-gold">
+      <div class="option-tete"><span class="option-dot"></span><h3>Envoi postal Colissimo suivi</h3></div>
+      <div class="option-ligne"><span class="label">Vers La Réunion, suivi complet</span><span class="val">9 €</span></div>
+      <p class="option-note">Formule Confort uniquement — la Prestige l'inclut déjà.</p>
+    </div>
+
+    <div class="option-carte dot-sage">
+      <div class="option-tete"><span class="option-dot"></span><h3>Livrets supplémentaires (par lot)</h3></div>
+      <table class="option-table">
+        <thead><tr><th>Lot</th><th>Confort</th><th>Prestige</th></tr></thead>
+        <tbody>
+          <tr><td>+5 livrets</td><td class="val">15 €</td><td class="val">22 €</td></tr>
+          <tr><td>+10 livrets</td><td class="val">25 €</td><td class="val">40 €</td></tr>
+          <tr><td>+20 livrets</td><td class="val">45 €</td><td class="val">70 €</td></tr>
+        </tbody>
+      </table>
+      <p class="option-note">Le format A4 choisi à la commande s'applique à tous les livrets.</p>
+    </div>
+  </div>
+
+  <div class="cta">
+    <h2>Prêt·e à commencer ?</h2>
+    <p>Composez votre livret dès maintenant, ou laissez-nous simplement vos coordonnées pour un devis personnalisé.</p>
+    <div class="cta-boutons">
+      <a class="btn btn-primary" href="/?mode=conception">Composer mon livret</a>
+      <a class="btn btn-secondary" href="/?mode=devis">Demander un devis</a>
+    </div>
+  </div>
+
+  <div class="footer-signature">
+    <div class="script">Créer pour Aimer</div>
+    <p>Une identité qui vous ressemble</p>
+  </div>
+
+</div>
+</body>
+</html>
