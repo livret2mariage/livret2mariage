@@ -76,6 +76,39 @@ h1,h2,h3{font-family:'Cormorant Garamond',serif;font-weight:600;color:var(--ink)
   padding:28px 26px;
 }
 .formule.prestige{border-color:var(--gold);}
+.formule.confort{border-color:var(--sage-dark); box-shadow:0 4px 18px rgba(82,96,74,.10);}
+.badge-populaire{
+  display:inline-block;
+  font-size:11.5px;
+  font-weight:700;
+  letter-spacing:.02em;
+  color:#fff;
+  background:var(--sage-dark);
+  padding:5px 12px;
+  border-radius:999px;
+  margin:-6px 0 14px;
+}
+.formule-heritage{
+  font-size:13.5px;
+  color:var(--ink-soft);
+  margin:0 0 10px;
+}
+.formule-heritage strong{color:var(--ink);}
+.formule-details{margin-top:10px;}
+.formule-details summary{
+  font-size:12.5px;
+  font-weight:600;
+  color:var(--sage-dark);
+  cursor:pointer;
+  list-style:none;
+}
+.formule-details summary::-webkit-details-marker{display:none;}
+.formule-details summary::before{content:"+ "; font-weight:700;}
+.formule-details[open] summary::before{content:"– ";}
+.formule-details .sous-liste{margin-top:10px; padding-top:10px; border-top:1px dashed var(--line);}
+.formule-details .sous-liste li{font-size:13.5px; color:var(--ink-soft); padding:4px 0;}
+.formule-details .sous-liste li::before{color:var(--sage);}
+.formule-details .sous-liste li strong{color:var(--ink-soft); font-weight:700;}
 .formule-head{
   display:flex;
   justify-content:space-between;
@@ -97,6 +130,7 @@ h1,h2,h3{font-family:'Cormorant Garamond',serif;font-weight:600;color:var(--ink)
   padding:6px 0;
 }
 .formule li::before{content:"✓"; color:var(--sage-dark); font-weight:700; flex-shrink:0;}
+.formule li strong{color:var(--ink); font-weight:700;}
 .formule-note{font-size:12.5px; color:var(--ink-soft); font-style:italic; margin-top:12px;}
 .formule-supplement{
   display:inline-block;
@@ -189,11 +223,11 @@ h1,h2,h3{font-family:'Cormorant Garamond',serif;font-weight:600;color:var(--ink)
         <span class="formule-prix">39 €</span>
       </div>
       <ul>
-        <li>Document PDF haute résolution prêt à l'impression</li>
-        <li>Génération automatique respectant les règles liturgiques</li>
-        <li>Sélection sur mesure des textes, lectures, psaumes et prières</li>
-        <li>Personnalisation visuelle (thèmes, couleurs, polices, prénoms, date)</li>
-        <li>Une correction avant validation finale</li>
+        <li>Document PDF <strong>haute résolution</strong> prêt à l'impression</li>
+        <li>Génération automatique respectant les <strong>règles liturgiques</strong></li>
+        <li><strong>Sélection sur mesure</strong> des textes, lectures, psaumes et prières</li>
+        <li><strong>Personnalisation visuelle</strong> (thèmes, couleurs, polices, prénoms, date)</li>
+        <li><strong>Une correction</strong> avant validation finale</li>
       </ul>
       <p class="formule-note">Disponible en A5 ou A4, sans supplément.</p>
     </div>
@@ -203,13 +237,24 @@ h1,h2,h3{font-family:'Cormorant Garamond',serif;font-weight:600;color:var(--ink)
         <h3>Confort</h3>
         <span class="formule-prix">79 €</span>
       </div>
+      <span class="badge-populaire">★ Choix préféré des couples</span>
+      <p class="formule-heritage">Tout ce qui est inclus dans <strong>Essentielle</strong>, plus :</p>
       <ul>
-        <li>Toute la formule Essentielle incluse (PDF)</li>
-        <li>Deux corrections avant validation</li>
-        <li>Impression physique de 10 livrets de mariage</li>
-        <li>Jet d'encre couleur/noir sur papier standard 80g</li>
-        <li>Façonnage et agrafage inclus</li>
+        <li><strong>Deux corrections</strong> avant validation</li>
+        <li>Impression physique de <strong>10 livrets</strong> de mariage</li>
+        <li>Jet d'encre <strong>couleur/noir</strong> sur papier standard 80g</li>
+        <li>Façonnage et agrafage <strong>inclus</strong></li>
       </ul>
+      <details class="formule-details">
+        <summary>Voir le détail de la formule Essentielle incluse</summary>
+        <ul class="sous-liste">
+          <li>Document PDF <strong>haute résolution</strong> prêt à l'impression</li>
+          <li>Génération automatique respectant les <strong>règles liturgiques</strong></li>
+          <li><strong>Sélection sur mesure</strong> des textes, lectures, psaumes et prières</li>
+          <li><strong>Personnalisation visuelle</strong> (thèmes, couleurs, polices, prénoms, date)</li>
+          <li><strong>Une correction</strong> avant validation finale</li>
+        </ul>
+      </details>
       <span class="formule-supplement">+5 € format A4</span>
     </div>
 
@@ -218,13 +263,23 @@ h1,h2,h3{font-family:'Cormorant Garamond',serif;font-weight:600;color:var(--ink)
         <h3>Prestige</h3>
         <span class="formule-prix">169 €</span>
       </div>
+      <p class="formule-heritage">Tout ce qui est inclus dans <strong>Essentielle</strong>, plus :</p>
       <ul>
-        <li>Toute la formule Essentielle incluse (PDF)</li>
-        <li>Trois corrections, réponse sous 24-48h</li>
-        <li>Impression physique de 20 livrets de mariage</li>
-        <li>Couverture laser HD, intérieur jet d'encre 120g</li>
-        <li>Marque-page et livraison Colissimo offerts</li>
+        <li><strong>Trois corrections</strong>, réponse sous 24-48h</li>
+        <li>Impression physique de <strong>20 livrets</strong> de mariage</li>
+        <li>Couverture <strong>laser HD</strong>, intérieur jet d'encre 120g</li>
+        <li><strong>Marque-page</strong> et livraison Colissimo offerts</li>
       </ul>
+      <details class="formule-details">
+        <summary>Voir le détail de la formule Essentielle incluse</summary>
+        <ul class="sous-liste">
+          <li>Document PDF <strong>haute résolution</strong> prêt à l'impression</li>
+          <li>Génération automatique respectant les <strong>règles liturgiques</strong></li>
+          <li><strong>Sélection sur mesure</strong> des textes, lectures, psaumes et prières</li>
+          <li><strong>Personnalisation visuelle</strong> (thèmes, couleurs, polices, prénoms, date)</li>
+          <li><strong>Une correction</strong> avant validation finale</li>
+        </ul>
+      </details>
       <span class="formule-supplement">+10 € format A4</span>
     </div>
   </div>
