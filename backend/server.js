@@ -555,6 +555,9 @@ const server = http.createServer(async (req, res) => {
   if ((req.method === "GET" || req.method === "HEAD") && (url === "/tuto" || url === "/tuto.html")) {
     return serveFichierFormulaire(res, "tuto.html");
   }
+  if ((req.method === "GET" || req.method === "HEAD") && (url === "/tarif" || url === "/tarif.html")) {
+    return serveFichierFormulaire(res, "tarif.html");
+  }
   if ((req.method === "GET" || req.method === "HEAD") && url === "/api/textes/choix") {
     return handleChoix(req, res);
   }
