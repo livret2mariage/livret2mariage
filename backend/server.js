@@ -5,7 +5,7 @@ const os = require("os");
 const { chromium } = require("playwright");
 const { assembleLivret, formatChoisi } = require("../moteur/assembler");
 const { completerPourImpressionLivret } = require("../moteur/pagination");
-const { envoyerLivretParEmail } = require("./email");
+const { envoyerLivretParEmail, envoyerMessageContact } = require("./email");
 const { creerSessionPaiement, verifierSignatureWebhook } = require("./paiement");
 const crypto = require("crypto");
 
@@ -84,8 +84,6 @@ const MIME = {
   ".css": "text/css; charset=utf-8",
   ".png": "image/png",
   ".json": "application/json; charset=utf-8",
-  ".jpg": "image/jpeg",
-  ".jpeg": "image/jpeg",
 };
 
 /** Page HTML minimale de confirmation après paiement (succès ou annulation),
@@ -132,8 +130,8 @@ function serveFichierFormulaire(res, nomFichier) {
 }
 
 function serveStatic(req, res) {
-  let reqPath = req.url.split("?")[0];
-  if (reqPath === "/") reqPath = "/index.html";
+  let reqPath = req.url === "/" ? "/index.html" : req.url;
+  reqPath = reqPath.split("?")[0];
   const filePath = path.join(FORMULAIRE_DIR, reqPath);
 
   // Empêche de sortir du dossier formulaire/ (sécurité basique)
@@ -179,6 +177,54 @@ function validateReponse(r) {
   }
 
   return erreurs;
+}
+
+// ------------------------------------------------------------------
+// POST /api/contact — message simple envoyé depuis la page "Contact"
+// (nom, email, téléphone facultatif, message) — transmis par email au
+// professionnel via la même API Resend que les demandes de livret.
+// ------------------------------------------------------------------
+function validateContact(r) {
+  const erreurs = [];
+  if (!r || typeof r !== "object") return ["Corps de requête invalide."];
+
+  if (!r.email || typeof r.email !== "string" || !r.email.trim()) {
+    erreurs.push('Le champ "email" est requis.');
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(r.email)) {
+    erreurs.push('Le champ "email" doit être une adresse valide.');
+  }
+  if (!r.message || typeof r.message !== "string" || !r.message.trim()) {
+    erreurs.push('Le champ "message" est requis.');
+  }
+
+  return erreurs;
+}
+
+async function handleContact(req, res) {
+  let reponse;
+  try {
+    reponse = await readJsonBody(req);
+  } catch (e) {
+    return sendJson(res, 400, { erreur: e.message });
+  }
+
+  const erreurs = validateContact(reponse);
+  if (erreurs.length > 0) {
+    return sendJson(res, 400, { erreur: "Message incomplet", details: erreurs });
+  }
+
+  try {
+    const resultat = await envoyerMessageContact({
+      nom: reponse.nom,
+      email: reponse.email,
+      telephone: reponse.telephone,
+      message: reponse.message,
+    });
+    sendJson(res, 200, { succes: true, emailEnvoye: resultat.envoye, emailRaison: resultat.raison || null });
+  } catch (err) {
+    console.error("Erreur d'envoi du message de contact :", err);
+    sendJson(res, 500, { erreur: "Échec de l'envoi du message", details: err.message });
+  }
 }
 
 // ------------------------------------------------------------------
@@ -487,6 +533,9 @@ const server = http.createServer(async (req, res) => {
   }
   if (req.method === "POST" && url === "/api/paiement/webhook") {
     return handleWebhookStripe(req, res);
+  }
+  if (req.method === "POST" && url === "/api/contact") {
+    return handleContact(req, res);
   }
   if ((req.method === "GET" || req.method === "HEAD") && url === "/paiement/succes") {
     return servePageConfirmation(res, {
