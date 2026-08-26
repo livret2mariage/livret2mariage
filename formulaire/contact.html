@@ -10,7 +10,23 @@
 *{box-sizing:border-box;}
 body{margin:0;background:var(--cream);color:var(--ink);font-family:'Inter',sans-serif;line-height:1.6;}
 .wrap{max-width:560px;margin:0 auto;padding:56px 24px;}
-.brand{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:600;font-size:20px;color:var(--sage-dark);margin-bottom:28px;}
+.brand{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:600;font-size:20px;color:var(--sage-dark);margin-bottom:16px;}
+.main-tabs{display:flex; flex-wrap:wrap; gap:8px; margin:0 0 28px;}
+.main-tabs a{
+  font-family:'Inter',sans-serif;
+  font-size:13px;
+  font-weight:600;
+  color:var(--ink-soft);
+  text-decoration:none;
+  padding:9px 16px;
+  border-radius:999px;
+  border:1px solid var(--line);
+  background:var(--card);
+}
+.main-tabs a:hover{border-color:var(--sage);}
+.main-tabs a.active{background:var(--sage-dark); border-color:var(--sage-dark); color:#fff;}
+.main-tabs a.tab-secondaire{color:var(--ink-soft); font-weight:500; background:transparent;}
+.main-tabs a.tab-secondaire:hover{border-color:var(--sage); color:var(--sage-dark);}
 h1{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:600;font-size:34px;margin:0 0 14px;}
 p{color:var(--ink-soft);font-size:15px;}
 .carte{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:26px;margin-top:24px;}
@@ -59,6 +75,13 @@ p{color:var(--ink-soft);font-size:15px;}
 <body>
 <div class="wrap">
   <div class="brand">Livret2Mariage</div>
+  <nav class="main-tabs">
+    <a href="/tarif">Tarif</a>
+    <a href="/?mode=conception">Composer mon livret seul</a>
+    <a href="/?mode=devis">Demande de devis</a>
+    <a href="/tuto" class="tab-secondaire">Comment ça marche</a>
+    <a href="/contact" class="active">Contact</a>
+  </nav>
   <h1>Une question ?</h1>
   <p>Laissez-nous un message ci-dessous, on vous recontacte — ou écrivez-nous directement par email. Nous répondons généralement sous 24 à 48h.</p>
 
