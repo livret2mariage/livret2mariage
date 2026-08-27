@@ -151,10 +151,20 @@ document.querySelectorAll(".form-col input, .form-col select").forEach((el) => {
 
 document.querySelectorAll("#typeDemandeSwatches .choice-card").forEach((btn) => {
   btn.addEventListener("click", () => {
+    const etaitDejaActif = btn.classList.contains("active");
     document.querySelectorAll("#typeDemandeSwatches .choice-card").forEach((b) => b.classList.remove("active"));
     btn.classList.add("active");
     appliquerTypeDemande(btn.dataset.value);
     updateProgress();
+
+    // Suivi Meta Pixel : intention de départ vers le parcours "devis"
+    // (clic explicite sur "Je veux d'abord un tarif" à l'étape 1). On ne
+    // déclenche que sur un vrai changement de sélection, pas si la carte
+    // était déjà active (évite un déclenchement au chargement par défaut
+    // ou un doublon si l'utilisateur reclique sans rien changer).
+    if (btn.dataset.value === "devis" && !etaitDejaActif && typeof fbq === "function") {
+      fbq("track", "InitiateCheckout");
+    }
   });
 });
 
@@ -1075,6 +1085,13 @@ form.addEventListener("submit", async (e) => {
     statusBanner.classList.add("show");
     // La demande est partie avec succès : plus besoin du brouillon local.
     effacerBrouillon();
+
+    // Suivi Meta Pixel : "Lead" uniquement pour une demande de devis
+    // effectivement transmise à l'équipe (pas pour la composition complète
+    // du livret, pour l'instant).
+    if (reponse.typeDemande === "devis" && typeof fbq === "function") {
+      fbq("track", "Lead");
+    }
   } catch (err) {
     // Repli : si l'API n'est pas disponible (ex. fichier ouvert directement sans
     // serveur), on permet quand même de récupérer les réponses au format JSON.
