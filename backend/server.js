@@ -529,6 +529,11 @@ async function genererEtEnvoyerLivret(reponse) {
       .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
       .replace(/[^a-z0-9_]/g, "");
 
+    // La formule est désormais choisie dès le départ, dans les deux modes —
+    // on inclut donc son prix ici aussi, pour que tu saches ce qu'il faut
+    // facturer avant d'envoyer le lien de paiement.
+    const { total, detail, formuleLabel } = calculerPrixDevis(reponse);
+
     const resultatEmail = await envoyerLivretParEmail({
       // Le livret part toujours vers l'adresse du professionnel (toi), jamais
       // directement au client — c'est toi qui reçois, ajustes si besoin, puis
@@ -547,6 +552,9 @@ async function genererEtEnvoyerLivret(reponse) {
       dateMariage: reponse.date,
       heureMariage: reponse.heure,
       lieuMariage: reponse.lieu,
+      formuleLabel,
+      prixTotal: total,
+      detailPrix: detail,
       pdfBuffer,
       nomFichier,
     });

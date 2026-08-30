@@ -142,13 +142,16 @@ async function envoyerLivretParEmail({ destinataire, emailClientReference, telep
     ? `
     <p>Une nouvelle demande pour <strong>${epoux} &amp; ${epouse}</strong> vient d'être reçue. Un aperçu (non final) a été généré automatiquement à partir des choix du client.</p>
     ${ligneTypeDemande}
+    ${ligneFormule}
     ${ligneDate}${ligneHeure}${ligneLieu}
     ${ligneClient}
     ${ligneTelephone}
     ${ligneLivraison}
     ${ligneCouleur}
+    ${ligneTotal}
+    ${ligneDetailPrix}
     ${ligneNotes}
-    <p>Vous trouverez cet aperçu en pièce jointe (PDF), à personnaliser avant l'envoi final au client.</p>
+    <p>Vous trouverez cet aperçu en pièce jointe (PDF), à personnaliser avant l'envoi final au client. N'oubliez pas de lui envoyer le lien de paiement une fois le montant confirmé.</p>
     <p><em>— Livret2Mariage</em></p>
   `
     : `
