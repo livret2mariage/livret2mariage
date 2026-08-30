@@ -74,6 +74,26 @@ function appliquerTypeDemande(type) {
     if (itemProgres) itemProgres.style.display = estDevis ? "none" : "";
   });
 
+  // Étape "Formule" : logique inversée par rapport aux sections liturgiques
+  // ci-dessus — elle n'existe que pour le mode devis (le mode composition
+  // choisira sa formule dans une étape à venir, pas encore implémentée).
+  const formuleSection = document.querySelector('section[data-section="formule"]');
+  const lienNavFormule = document.querySelector('nav a[data-section="formule"]');
+  const itemProgresFormule = document.querySelector('li[data-section="formule"]');
+  if (formuleSection) formuleSection.classList.toggle("hidden-devis", !estDevis);
+  if (lienNavFormule) lienNavFormule.style.display = estDevis ? "" : "none";
+  if (itemProgresFormule) itemProgresFormule.style.display = estDevis ? "" : "none";
+  if (estDevis) recalculerTotalDevis();
+
+  // Dans "Le couple" : le format du livret et le type de livraison sont
+  // désormais décidés dans l'étape "Formule" en mode devis (ils y
+  // conditionnent le prix) — on les masque ici pour éviter un doublon, sans
+  // toucher au mode composition.
+  const formatBlockCouple = document.getElementById("formatBlockCouple");
+  const livraisonBlockCouple = document.getElementById("livraisonBlockCouple");
+  if (formatBlockCouple) formatBlockCouple.style.display = estDevis ? "none" : "";
+  if (livraisonBlockCouple) livraisonBlockCouple.style.display = estDevis ? "none" : "";
+
   // "Un mot pour vos invités" : on masque juste ce bloc précis (le bouton
   // d'envoi, lui, reste toujours visible puisqu'il vit dans la même section).
   const motBlock = document.getElementById("motInvitesBlock");
@@ -116,6 +136,104 @@ function appliquerTypeDemande(type) {
     modeBadgeLabel.textContent = estDevis ? "Mode : Demande de tarif" : "Mode : Composition du livret";
   }
 }
+
+// ---------- 0bis-ter. Tarification en direct de l'étape "Formule" (mode devis) ----------
+// Reprend exactement les prix affichés sur /tarif. Recalculé côté serveur à
+// l'envoi (jamais fait confiance à ce total côté client) — cet affichage est
+// purement indicatif pour le couple pendant qu'il remplit le formulaire.
+const FORMULES_DEVIS = {
+  essentielle: { prix: 39, supplementA4: 0 },
+  confort: { prix: 79, supplementA4: 5 },
+  prestige: { prix: 169, supplementA4: 10 },
+};
+
+function formuleActive() {
+  return document.querySelector("#formuleSwatches .choice-card.active")?.dataset.value || "essentielle";
+}
+
+// Les 5 options d'impression (marque-page, feuille de chant, ruban, livrets
+// supplémentaires, Colissimo) supposent toutes un objet physique — aucune
+// n'a de sens pour la formule Essentielle, qui est 100% numérique (PDF).
+// "Livrets supplémentaires" et "Colissimo" ont en plus leurs propres
+// conditions (Colissimo uniquement pour Confort, Prestige l'incluant déjà).
+function ajusterOptionsSelonFormule() {
+  const formule = formuleActive();
+  const estEssentielle = formule === "essentielle";
+
+  ["optionMarquePageCard", "optionFeuilleChantCard", "optionRubanCard", "optionLivretsSupplementairesCard"].forEach((id) => {
+    const carte = document.getElementById(id);
+    if (carte) carte.style.display = estEssentielle ? "none" : "";
+  });
+  const carteColissimo = document.getElementById("optionColissimoCard");
+  if (carteColissimo) carteColissimo.style.display = formule === "confort" ? "" : "none";
+
+  const noteIndisponible = document.getElementById("optionsIndisponiblesNote");
+  if (noteIndisponible) noteIndisponible.style.display = estEssentielle ? "" : "none";
+
+  // Supplément A4 affiché sur le bouton, propre à la formule choisie.
+  const supplementLabel = document.getElementById("formuleSupplementA4Label");
+  const supplement = FORMULES_DEVIS[formule]?.supplementA4 || 0;
+  if (supplementLabel) supplementLabel.textContent = supplement > 0 ? `(+${supplement} €)` : "(inclus)";
+}
+
+function recalculerTotalDevis() {
+  const formule = formuleActive();
+  const infoFormule = FORMULES_DEVIS[formule] || FORMULES_DEVIS.essentielle;
+  let total = infoFormule.prix;
+
+  const format = document.querySelector("#formuleFormatSwatches .format-btn.active")?.dataset.value || "A5";
+  if (format === "A4") total += infoFormule.supplementA4;
+
+  // Options à palier simple (prix fixe par bouton, via data-prix) —
+  // non proposées pour Essentielle (100% numérique, voir ajusterOptionsSelonFormule).
+  if (formule !== "essentielle") {
+    ["option_marquePage", "option_feuilleChant", "option_ruban"].forEach((nom) => {
+      const btn = document.querySelector(`[data-name="${nom}"] .format-btn.active`);
+      if (btn) total += parseFloat(btn.dataset.prix || "0");
+    });
+  }
+
+  // "Livrets supplémentaires" : prix différent selon la formule (Confort /
+  // Prestige), non proposé pour Essentielle.
+  if (formule !== "essentielle") {
+    const btnLivrets = document.querySelector('[data-name="option_livretsSupplementaires"] .format-btn.active');
+    if (btnLivrets) total += parseFloat(btnLivrets.dataset[formule === "prestige" ? "prixPrestige" : "prixConfort"] || "0");
+  }
+
+  // "Colissimo" : uniquement pertinent pour Confort (déjà inclus en Prestige).
+  if (formule === "confort") {
+    const btnColissimo = document.querySelector('[data-name="option_colissimo"] .format-btn.active');
+    if (btnColissimo) total += parseFloat(btnColissimo.dataset.prix || "0");
+  }
+
+  const valeur = document.getElementById("formuleTotalValeur");
+  if (valeur) valeur.textContent = `${total} €`;
+
+  ajusterOptionsSelonFormule();
+}
+
+// Clic sur une carte de formule.
+document.querySelectorAll("#formuleSwatches .choice-card").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll("#formuleSwatches .choice-card").forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+    recalculerTotalDevis();
+  });
+});
+
+// Clic sur n'importe quel bouton de palier (format, marque-page, feuille de
+// chant, ruban, livrets supplémentaires, Colissimo) : un seul gestionnaire
+// suffit, chaque groupe est isolé par son propre conteneur [data-name].
+document.querySelectorAll(
+  "#formuleFormatSwatches .format-btn, .option-devis-card .format-btn"
+).forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const groupe = btn.closest("[data-name]");
+    groupe?.querySelectorAll(".format-btn").forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+    recalculerTotalDevis();
+  });
+});
 
 // ---------- 0bis-bis. Récapitulatif affiché en dernière étape (mode devis) ----------
 // Reprend les coordonnées déjà saisies dans "Le couple" pour que la dernière
@@ -1003,11 +1121,25 @@ function buildReponse() {
   const val = (sel) => document.querySelector(sel)?.value?.trim() || "";
   const choiceVal = (key) => document.querySelector(`[data-choice="${key}"]`)?.value || "";
   const lecteurVal = (key) => capitaliseNom(document.querySelector(`[data-lecteur="${key}"]`)?.value?.trim()) || undefined;
+  const estDevisActuel = document.querySelector("#typeDemandeSwatches .choice-card.active")?.dataset.value === "devis";
+  const optionTier = (nom) => document.querySelector(`[data-name="${nom}"] .format-btn.active`)?.dataset.value || "aucun";
 
   return {
     epoux: capitaliseNom(val("#epoux")),
     epouse: capitaliseNom(val("#epouse")),
-    format: document.querySelector("#formatSwatches .format-btn.active")?.dataset.value || "A5",
+    // En mode devis, le format est choisi dans l'étape "Formule" (il y
+    // conditionne le prix) plutôt que dans "Le couple".
+    format: estDevisActuel
+      ? (document.querySelector("#formuleFormatSwatches .format-btn.active")?.dataset.value || "A5")
+      : (document.querySelector("#formatSwatches .format-btn.active")?.dataset.value || "A5"),
+    formule: formuleActive(),
+    optionsDevis: {
+      marquePage: optionTier("option_marquePage"),
+      feuilleChant: optionTier("option_feuilleChant"),
+      ruban: optionTier("option_ruban"),
+      livretsSupplementaires: optionTier("option_livretsSupplementaires"),
+      colissimo: optionTier("option_colissimo"),
+    },
     date: formatDateFR(val("#date")),
     heure: val("#heure"),
     lieu: val("#lieu"),

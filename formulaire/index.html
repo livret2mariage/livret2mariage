@@ -554,6 +554,40 @@ section.step h2{font-size:28px; font-style:italic; margin-bottom:4px;}
   padding:3px 11px;
   margin-top:2px;
 }
+.choice-card-badge-recommande{
+  display:inline-block;
+  align-self:flex-start;
+  font-family:'Inter',sans-serif;
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.02em;
+  color:#fff;
+  background:var(--sage-dark);
+  border-radius:100px;
+  padding:3px 11px;
+}
+
+/* ---------- Étape "Formule" (mode devis) ---------- */
+.option-devis-card{
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:14px 16px 16px;
+  margin-bottom:14px;
+  background:var(--card);
+}
+.option-devis-card .custo-label{margin-bottom:8px; display:block;}
+.formule-total-box{
+  display:flex;
+  justify-content:space-between;
+  align-items:baseline;
+  background:var(--sage-pale);
+  border-radius:var(--radius);
+  padding:16px 18px;
+  margin:22px 0 6px;
+}
+.formule-total-box .label{font-family:'Inter',sans-serif; font-size:13.5px; color:var(--ink-soft); font-weight:600;}
+.formule-total-box .valeur{font-family:'Cormorant Garamond',serif; font-size:26px; font-weight:600; color:var(--gold);}
+.formule-total-note{font-size:12px; color:var(--ink-soft); font-style:italic; margin:0 0 4px;}
 
 /* ---------- Badge de mode (visible pendant tout le parcours) ---------- */
 .mode-badge{
@@ -1057,6 +1091,7 @@ section.step h2{font-size:28px; font-style:italic; margin-bottom:4px;}
 
     <nav class="section-nav" id="sectionNav">
       <a href="#s-type-demande" data-section="type-demande">Type de demande</a>
+      <a href="#s-formule" data-section="formule">Formule</a>
       <a href="#s-couple" data-section="couple">Le couple</a>
       <a href="#s-parole" data-section="parole">Dieu nous parle</a>
       <a href="#s-liturgie" data-section="liturgie">La liturgie du mariage</a>
@@ -1088,6 +1123,103 @@ section.step h2{font-size:28px; font-style:italic; margin-bottom:4px;}
         <p class="format-note" id="typeDemandeNote" style="margin-top:14px;">Avec un simple devis, seules vos informations de couple sont nécessaires — les autres sections deviennent facultatives.</p>
 
         <div class="step-nav step-nav-first">
+          <button type="button" class="btn-primary step-next">Suivant →</button>
+        </div>
+      </section>
+
+      <!-- ================= FORMULE (mode devis uniquement) ================= -->
+      <section class="step" id="s-formule" data-section="formule">
+        <div class="step-eyebrow">Votre formule</div>
+        <h2>Choisissez votre formule</h2>
+        <p class="step-desc">Sélectionnez la formule qui vous correspond — le montant se met à jour en direct. Ce total est indicatif, il sera confirmé avec le devis que nous vous enverrons.</p>
+
+        <div class="choice-card-row" id="formuleSwatches" data-name="formule">
+          <button type="button" class="choice-card active" data-value="essentielle" data-prix="39" data-supplement-a4="0">
+            <span class="choice-card-title">Essentielle</span>
+            <span class="choice-card-price">39 €</span>
+            <span class="choice-card-desc">PDF haute résolution, personnalisé, prêt à l'impression. Une correction avant validation.</span>
+          </button>
+          <button type="button" class="choice-card" data-value="confort" data-prix="79" data-supplement-a4="5">
+            <span class="choice-card-badge-recommande">★ Choix préféré des couples</span>
+            <span class="choice-card-title">Confort</span>
+            <span class="choice-card-price">79 €</span>
+            <span class="choice-card-desc">Tout Essentielle, plus 10 livrets imprimés et façonnés, 2 corrections.</span>
+          </button>
+          <button type="button" class="choice-card" data-value="prestige" data-prix="169" data-supplement-a4="10">
+            <span class="choice-card-title">Prestige</span>
+            <span class="choice-card-price">169 €</span>
+            <span class="choice-card-desc">Tout Essentielle, plus 20 livrets couverture laser HD, envoi Colissimo offert.</span>
+          </button>
+        </div>
+
+        <div class="custo-block">
+          <label class="custo-label">Format du livret</label>
+          <div class="format-row" id="formuleFormatSwatches" data-name="formule_format">
+            <button type="button" class="format-btn active" data-value="A5">A5 (inclus)</button>
+            <button type="button" class="format-btn" data-value="A4">A4 <span id="formuleSupplementA4Label"></span></button>
+          </div>
+        </div>
+
+        <div class="option-devis-card" id="optionMarquePageCard">
+          <label class="custo-label">Marque-page thématique</label>
+          <div class="format-row" data-name="option_marquePage">
+            <button type="button" class="format-btn active" data-value="aucun" data-prix="0">Aucun</button>
+            <button type="button" class="format-btn" data-value="unite" data-prix="1.5">À l'unité — 1,50 €</button>
+            <button type="button" class="format-btn" data-value="lot10" data-prix="12">Lot de 10 — 12 €</button>
+            <button type="button" class="format-btn" data-value="lot20" data-prix="20">Lot de 20 — 20 €</button>
+          </div>
+        </div>
+
+        <div class="option-devis-card" id="optionFeuilleChantCard">
+          <label class="custo-label">Feuille de chant A4 recto-verso</label>
+          <div class="format-row" data-name="option_feuilleChant">
+            <button type="button" class="format-btn active" data-value="aucun" data-prix="0">Aucune</button>
+            <button type="button" class="format-btn" data-value="lot20" data-prix="12">Lot de 20 — 12 €</button>
+            <button type="button" class="format-btn" data-value="lot50" data-prix="25">Lot de 50 — 25 €</button>
+            <button type="button" class="format-btn" data-value="lot100" data-prix="40">Lot de 100 — 40 €</button>
+          </div>
+        </div>
+
+        <div class="option-devis-card" id="optionRubanCard">
+          <label class="custo-label">Ruban décoratif collé (couverture)</label>
+          <div class="format-row" data-name="option_ruban">
+            <button type="button" class="format-btn active" data-value="aucun" data-prix="0">Aucun</button>
+            <button type="button" class="format-btn" data-value="unite" data-prix="1">À l'unité — 1 €</button>
+            <button type="button" class="format-btn" data-value="lot10" data-prix="8">Lot de 10 — 8 €</button>
+            <button type="button" class="format-btn" data-value="lot20" data-prix="14">Lot de 20 — 14 €</button>
+          </div>
+        </div>
+
+        <p class="format-note" id="optionsIndisponiblesNote" style="display:none; margin:4px 0 14px;">La formule Essentielle est 100 % numérique (PDF) — aucune option d'impression n'est proposée avec elle. Passez à Confort ou Prestige pour en profiter.</p>
+
+        <div class="option-devis-card" id="optionLivretsSupplementairesCard">
+          <label class="custo-label">Livrets supplémentaires</label>
+          <div class="format-row" data-name="option_livretsSupplementaires">
+            <button type="button" class="format-btn active" data-value="aucun" data-prix-confort="0" data-prix-prestige="0">Aucun</button>
+            <button type="button" class="format-btn" data-value="plus5" data-prix-confort="15" data-prix-prestige="22">+5 livrets</button>
+            <button type="button" class="format-btn" data-value="plus10" data-prix-confort="25" data-prix-prestige="40">+10 livrets</button>
+            <button type="button" class="format-btn" data-value="plus20" data-prix-confort="45" data-prix-prestige="70">+20 livrets</button>
+          </div>
+          <p class="format-note" style="margin-top:6px;">Non proposé avec la formule Essentielle (sans impression physique).</p>
+        </div>
+
+        <div class="option-devis-card" id="optionColissimoCard">
+          <label class="custo-label">Envoi postal Colissimo suivi</label>
+          <div class="format-row" data-name="option_colissimo">
+            <button type="button" class="format-btn active" data-value="aucun" data-prix="0">Non</button>
+            <button type="button" class="format-btn" data-value="oui" data-prix="9">Oui — 9 €</button>
+          </div>
+          <p class="format-note" style="margin-top:6px;">Déjà inclus dans la formule Prestige.</p>
+        </div>
+
+        <div class="formule-total-box">
+          <span class="label">Total estimé</span>
+          <span class="valeur" id="formuleTotalValeur">39 €</span>
+        </div>
+        <p class="formule-total-note">Ce montant sera confirmé dans le devis que nous vous enverrons par email.</p>
+
+        <div class="step-nav">
+          <button type="button" class="btn-secondary step-prev">← Précédent</button>
           <button type="button" class="btn-primary step-next">Suivant →</button>
         </div>
       </section>
@@ -1132,7 +1264,7 @@ section.step h2{font-size:28px; font-style:italic; margin-bottom:4px;}
           <input type="tel" id="telephone" name="telephone" placeholder="ex. 06 12 34 56 78" autocomplete="tel" required>
         </div>
 
-        <div class="custo-block">
+        <div class="custo-block" id="formatBlockCouple">
           <label class="custo-label">Format du livret</label>
           <div class="format-row" id="formatSwatches" data-name="format">
             <button type="button" class="format-btn active" data-value="A5">
@@ -1189,7 +1321,7 @@ section.step h2{font-size:28px; font-style:italic; margin-bottom:4px;}
           </div>
         </div>
 
-        <div class="custo-block">
+        <div class="custo-block" id="livraisonBlockCouple">
           <label class="custo-label">Type de livraison souhaité</label>
           <div class="format-row" id="livraisonSwatches" data-name="livraison">
             <button type="button" class="format-btn active" data-value="pdf">
@@ -1446,6 +1578,7 @@ section.step h2{font-size:28px; font-style:italic; margin-bottom:4px;}
       <p class="preview-caption" id="previewCaption">Aperçu indicatif de la couverture — la version finale sera personnalisée avant envoi.</p>
 
       <ul class="progress-list" id="progressList">
+        <li data-section="formule">Formule</li>
         <li data-section="couple">Le couple</li>
         <li data-section="parole">Dieu nous parle</li>
         <li data-section="liturgie">La liturgie du mariage</li>
