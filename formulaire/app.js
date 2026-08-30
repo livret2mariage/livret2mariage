@@ -74,25 +74,42 @@ function appliquerTypeDemande(type) {
     if (itemProgres) itemProgres.style.display = estDevis ? "none" : "";
   });
 
-  // Étape "Formule" : logique inversée par rapport aux sections liturgiques
-  // ci-dessus — elle n'existe que pour le mode devis (le mode composition
-  // choisira sa formule dans une étape à venir, pas encore implémentée).
+  // Étape "Formule" : commune aux deux modes désormais — le couple choisit
+  // sa formule (et les options qui en dépendent) dès le départ, que ce soit
+  // pour une demande de devis ou pour composer son livret directement.
   const formuleSection = document.querySelector('section[data-section="formule"]');
   const lienNavFormule = document.querySelector('nav a[data-section="formule"]');
   const itemProgresFormule = document.querySelector('li[data-section="formule"]');
-  if (formuleSection) formuleSection.classList.toggle("hidden-devis", !estDevis);
-  if (lienNavFormule) lienNavFormule.style.display = estDevis ? "" : "none";
-  if (itemProgresFormule) itemProgresFormule.style.display = estDevis ? "" : "none";
-  if (estDevis) recalculerTotalDevis();
+  if (formuleSection) formuleSection.classList.remove("hidden-devis");
+  if (lienNavFormule) lienNavFormule.style.display = "";
+  if (itemProgresFormule) itemProgresFormule.style.display = "";
+  recalculerTotalDevis();
+
+  // Le texte sous le total change selon le mode : en devis, on parle du
+  // devis à venir ; en composition, le couple ira jusqu'au bout du parcours,
+  // donc on parle plutôt de la confirmation avant le lien de paiement.
+  const formuleTotalNote = document.querySelector(".formule-total-note");
+  if (formuleTotalNote) {
+    formuleTotalNote.textContent = estDevis
+      ? "Ce montant sera confirmé dans le devis que nous vous enverrons par email."
+      : "Ce montant est indicatif — il sera confirmé avant l'envoi du lien de paiement, une fois votre livret finalisé.";
+  }
+  const formuleStepDesc = document.getElementById("formuleStepDesc");
+  if (formuleStepDesc) {
+    formuleStepDesc.textContent = estDevis
+      ? "Sélectionnez la formule qui vous correspond — le montant se met à jour en direct. Ce total est indicatif, il sera confirmé avec le devis que nous vous enverrons."
+      : "Sélectionnez la formule qui vous correspond avant de composer votre livret — le montant se met à jour en direct et sera confirmé avant l'envoi du lien de paiement.";
+  }
 
   // Dans "Le couple" : le format du livret et le type de livraison sont
-  // désormais décidés dans l'étape "Formule" en mode devis (ils y
-  // conditionnent le prix) — on les masque ici pour éviter un doublon, sans
-  // toucher au mode composition.
+  // désormais toujours décidés dans l'étape "Formule" (elle conditionne le
+  // prix) — ces deux champs y sont donc masqués en permanence, dans les deux
+  // modes, pour éviter un doublon.
   const formatBlockCouple = document.getElementById("formatBlockCouple");
   const livraisonBlockCouple = document.getElementById("livraisonBlockCouple");
-  if (formatBlockCouple) formatBlockCouple.style.display = estDevis ? "none" : "";
-  if (livraisonBlockCouple) livraisonBlockCouple.style.display = estDevis ? "none" : "";
+  if (formatBlockCouple) formatBlockCouple.style.display = "none";
+  if (livraisonBlockCouple) livraisonBlockCouple.style.display = "none";
+
 
   // "Un mot pour vos invités" : on masque juste ce bloc précis (le bouton
   // d'envoi, lui, reste toujours visible puisqu'il vit dans la même section).
@@ -1138,17 +1155,14 @@ function buildReponse() {
   const val = (sel) => document.querySelector(sel)?.value?.trim() || "";
   const choiceVal = (key) => document.querySelector(`[data-choice="${key}"]`)?.value || "";
   const lecteurVal = (key) => capitaliseNom(document.querySelector(`[data-lecteur="${key}"]`)?.value?.trim()) || undefined;
-  const estDevisActuel = document.querySelector("#typeDemandeSwatches .choice-card.active")?.dataset.value === "devis";
   const optionTier = (nom) => document.querySelector(`[data-name="${nom}"] .format-btn.active`)?.dataset.value || "aucun";
 
   return {
     epoux: capitaliseNom(val("#epoux")),
     epouse: capitaliseNom(val("#epouse")),
-    // En mode devis, le format est choisi dans l'étape "Formule" (il y
-    // conditionne le prix) plutôt que dans "Le couple".
-    format: estDevisActuel
-      ? (document.querySelector("#formuleFormatSwatches .format-btn.active")?.dataset.value || "A5")
-      : (document.querySelector("#formatSwatches .format-btn.active")?.dataset.value || "A5"),
+    // Le format est désormais toujours choisi dans l'étape "Formule" (elle
+    // conditionne le prix), dans les deux modes.
+    format: document.querySelector("#formuleFormatSwatches .format-btn.active")?.dataset.value || "A5",
     formule: formuleActive(),
     optionsDevis: {
       marquePage: optionTier("option_marquePage"),
@@ -1194,7 +1208,10 @@ function buildReponse() {
     },
     motsRemerciements: val('[name="motsRemerciements"]') || undefined,
     notesPersonnalisation: val("#notesPersonnalisation") || undefined,
-    typeLivraison: document.querySelector("#livraisonSwatches .format-btn.active")?.dataset.value || "pdf",
+    // Le champ "Type de livraison" a été retiré de l'étape "Le couple" — la
+    // formule l'implique désormais directement (Essentielle = PDF seul,
+    // Confort/Prestige = PDF + impression).
+    typeLivraison: formuleActive() === "essentielle" ? "pdf" : "pdf-impression",
     typeDemande: document.querySelector("#typeDemandeSwatches .choice-card.active")?.dataset.value || "devis",
     personnalisation: getPersonnalisation(),
   };
