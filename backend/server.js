@@ -284,10 +284,16 @@ const OPTIONS_PRIX = {
       prestige: { aucun: null, plus5: { label: "+5 livrets", prix: 22 }, plus10: { label: "+10 livrets", prix: 40 }, plus20: { label: "+20 livrets", prix: 70 } },
     },
   },
-  // Uniquement pertinent pour Confort — déjà inclus dans la formule Prestige.
+  // Livraison des livrets imprimés — concerne Confort et Prestige (pas
+  // Essentielle, sans impression physique). "Récupération sur place" est
+  // gratuite dans les deux cas ; Colissimo est un supplément pour Confort,
+  // déjà inclus (0 €) pour Prestige.
   colissimo: {
-    label: "Envoi postal Colissimo suivi",
-    tiers: { aucun: null, oui: { label: "avec suivi", prix: 9 } },
+    label: "Livraison des livrets",
+    tiersParFormule: {
+      confort: { surplace: { label: "récupération sur place", prix: 0 }, colissimo: { label: "Colissimo suivi", prix: 9 } },
+      prestige: { surplace: { label: "récupération sur place", prix: 0 }, colissimo: { label: "Colissimo suivi — déjà inclus", prix: 0 } },
+    },
   },
 };
 
@@ -325,11 +331,15 @@ function calculerPrixDevis(reponse) {
     }
   }
 
-  if (formuleId === "confort") {
-    const tier = OPTIONS_PRIX.colissimo.tiers[opts.colissimo];
-    if (tier) {
-      total += tier.prix;
-      detail.push({ label: OPTIONS_PRIX.colissimo.label, prix: tier.prix });
+  // Livraison des livrets : toujours indiquée dans le détail (même à 0 €)
+  // pour que le choix du couple (récupération ou envoi) soit visible sur le
+  // devis, pas seulement son impact sur le prix.
+  if (formuleId !== "essentielle") {
+    const tableLivraison = OPTIONS_PRIX.colissimo.tiersParFormule[formuleId];
+    const tierLivraison = tableLivraison?.[opts.colissimo] || tableLivraison?.surplace;
+    if (tierLivraison) {
+      total += tierLivraison.prix;
+      detail.push({ label: `${OPTIONS_PRIX.colissimo.label} — ${tierLivraison.label}`, prix: tierLivraison.prix });
     }
   }
 
