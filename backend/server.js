@@ -252,23 +252,213 @@ function handleChoix(req, res) {
 }
 
 // ------------------------------------------------------------------
+// Tarification du devis (mode "devis" uniquement) — mêmes montants que la
+// page /tarif et que l'étape "Formule" du formulaire. Recalculé ici à
+// partir des seuls identifiants reçus (jamais du total envoyé par le
+// navigateur), pour ne jamais faire confiance à un prix côté client.
+// ------------------------------------------------------------------
+const FORMULES_PRIX = {
+  essentielle: { label: "Essentielle", prix: 39, supplementA4: 0 },
+  confort: { label: "Confort", prix: 79, supplementA4: 5 },
+  prestige: { label: "Prestige", prix: 169, supplementA4: 10 },
+};
+
+const OPTIONS_PRIX = {
+  marquePage: {
+    label: "Marque-page thématique",
+    tiers: { aucun: null, unite: { label: "à l'unité", prix: 1.5 }, lot10: { label: "lot de 10", prix: 12 }, lot20: { label: "lot de 20", prix: 20 } },
+  },
+  feuilleChant: {
+    label: "Feuille de chant A4 recto-verso",
+    tiers: { aucun: null, lot20: { label: "lot de 20", prix: 12 }, lot50: { label: "lot de 50", prix: 25 }, lot100: { label: "lot de 100", prix: 40 } },
+  },
+  ruban: {
+    label: "Ruban décoratif collé",
+    tiers: { aucun: null, unite: { label: "à l'unité", prix: 1 }, lot10: { label: "lot de 10", prix: 8 }, lot20: { label: "lot de 20", prix: 14 } },
+  },
+  // Prix dépendant de la formule (Confort / Prestige) — non proposé pour Essentielle.
+  livretsSupplementaires: {
+    label: "Livrets supplémentaires",
+    tiersParFormule: {
+      confort: { aucun: null, plus5: { label: "+5 livrets", prix: 15 }, plus10: { label: "+10 livrets", prix: 25 }, plus20: { label: "+20 livrets", prix: 45 } },
+      prestige: { aucun: null, plus5: { label: "+5 livrets", prix: 22 }, plus10: { label: "+10 livrets", prix: 40 }, plus20: { label: "+20 livrets", prix: 70 } },
+    },
+  },
+  // Uniquement pertinent pour Confort — déjà inclus dans la formule Prestige.
+  colissimo: {
+    label: "Envoi postal Colissimo suivi",
+    tiers: { aucun: null, oui: { label: "avec suivi", prix: 9 } },
+  },
+};
+
+function calculerPrixDevis(reponse) {
+  const formuleId = FORMULES_PRIX[reponse.formule] ? reponse.formule : "essentielle";
+  const formuleInfo = FORMULES_PRIX[formuleId];
+  const detail = [{ label: formuleInfo.label, prix: formuleInfo.prix }];
+  let total = formuleInfo.prix;
+
+  if (reponse.format === "A4" && formuleInfo.supplementA4 > 0) {
+    total += formuleInfo.supplementA4;
+    detail.push({ label: "Format A4", prix: formuleInfo.supplementA4 });
+  }
+
+  const opts = reponse.optionsDevis || {};
+
+  // Les options d'impression n'ont pas de sens pour Essentielle (100%
+  // numérique) — ignorées ici même si le client en envoie une malgré tout.
+  if (formuleId !== "essentielle") {
+    ["marquePage", "feuilleChant", "ruban"].forEach((cle) => {
+      const tier = OPTIONS_PRIX[cle].tiers[opts[cle]];
+      if (tier) {
+        total += tier.prix;
+        detail.push({ label: `${OPTIONS_PRIX[cle].label} (${tier.label})`, prix: tier.prix });
+      }
+    });
+  }
+
+  if (formuleId !== "essentielle") {
+    const table = OPTIONS_PRIX.livretsSupplementaires.tiersParFormule[formuleId];
+    const tier = table?.[opts.livretsSupplementaires];
+    if (tier) {
+      total += tier.prix;
+      detail.push({ label: `${OPTIONS_PRIX.livretsSupplementaires.label} (${tier.label})`, prix: tier.prix });
+    }
+  }
+
+  if (formuleId === "confort") {
+    const tier = OPTIONS_PRIX.colissimo.tiers[opts.colissimo];
+    if (tier) {
+      total += tier.prix;
+      detail.push({ label: OPTIONS_PRIX.colissimo.label, prix: tier.prix });
+    }
+  }
+
+  return { total, detail, formuleLabel: formuleInfo.label };
+}
+
+/** Document PDF simple (une page) présentant le devis — distinct du livret
+ * de cérémonie complet, qui n'a pas lieu d'être avant validation. Rendu via
+ * le même Playwright déjà utilisé pour le livret, mais avec un template
+ * autonome (pas de dépendance à assembler.js/style.css). */
+function genererDevisHTML(reponse, { total, detail, formuleLabel }) {
+  const dateGeneration = new Date().toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+  const lignesDetail = detail
+    .map((d) => `<tr><td>${d.label}</td><td>${d.prix} €</td></tr>`)
+    .join("");
+  const ligneNotes = reponse.notesPersonnalisation && reponse.notesPersonnalisation.trim()
+    ? `<div class="bloc"><h2>Notes du couple</h2><p class="notes">${reponse.notesPersonnalisation.trim().replace(/\n/g, "<br>")}</p></div>`
+    : "";
+
+  return `<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,400&family=Inter:wght@400;500;600;700&display=swap');
+  *{box-sizing:border-box;}
+  body{font-family:'Inter',sans-serif; color:#2E3328; margin:0; padding:52px 58px;}
+  .entete{display:flex; justify-content:space-between; align-items:flex-start; border-bottom:2px solid #C9A227; padding-bottom:18px; margin-bottom:30px;}
+  .marque{font-family:'Cormorant Garamond',serif; font-style:italic; font-weight:600; font-size:26px; color:#52604A;}
+  .sous-marque{font-size:11.5px; color:#5B6455; margin-top:4px;}
+  .devis-titre{text-align:right;}
+  .devis-titre h1{font-family:'Cormorant Garamond',serif; font-size:30px; font-style:italic; margin:0; color:#2E3328;}
+  .devis-titre p{font-size:12px; color:#5B6455; margin:4px 0 0;}
+  .bloc{margin-bottom:26px;}
+  .bloc h2{font-family:'Cormorant Garamond',serif; font-size:16px; font-style:italic; color:#52604A; border-bottom:1px solid #E4DED0; padding-bottom:6px; margin:0 0 10px;}
+  .ligne{display:flex; justify-content:space-between; font-size:13.5px; padding:3px 0;}
+  .ligne span:first-child{color:#5B6455;}
+  table.detail{width:100%; border-collapse:collapse; margin-top:4px;}
+  table.detail td{padding:9px 0; border-bottom:1px solid #E4DED0; font-size:13.5px;}
+  table.detail td:last-child{text-align:right; font-weight:600; color:#C9A227; white-space:nowrap;}
+  .total-row td{font-family:'Cormorant Garamond',serif; font-size:21px; font-weight:600; color:#2E3328; border-bottom:none; padding-top:16px;}
+  .total-row td:last-child{color:#C9A227;}
+  .notes{font-size:13px; line-height:1.6;}
+  .pied{margin-top:44px; font-size:11px; color:#5B6455; text-align:center;}
+</style>
+</head>
+<body>
+  <div class="entete">
+    <div>
+      <div class="marque">Livret2Mariage</div>
+      <div class="sous-marque">Devis généré le ${dateGeneration}</div>
+    </div>
+    <div class="devis-titre">
+      <h1>Devis</h1>
+      <p>${reponse.epoux || ""} &amp; ${reponse.epouse || ""}</p>
+    </div>
+  </div>
+
+  <div class="bloc">
+    <h2>Informations du mariage</h2>
+    <div class="ligne"><span>Date</span><span>${reponse.date || "—"}</span></div>
+    <div class="ligne"><span>Heure</span><span>${reponse.heure || "—"}</span></div>
+    <div class="ligne"><span>Lieu</span><span>${reponse.lieu || "—"}</span></div>
+    <div class="ligne"><span>Email</span><span>${reponse.email || "—"}</span></div>
+    <div class="ligne"><span>Téléphone</span><span>${reponse.telephone || "—"}</span></div>
+  </div>
+
+  <div class="bloc">
+    <h2>Détail du devis — formule ${formuleLabel}</h2>
+    <table class="detail">
+      ${lignesDetail}
+      <tr class="total-row"><td>Total estimé</td><td>${total} €</td></tr>
+    </table>
+  </div>
+
+  ${ligneNotes}
+
+  <div class="pied">Ce devis est indicatif et sera confirmé directement avec le couple avant tout paiement.</div>
+</body>
+</html>`;
+}
+
+// ------------------------------------------------------------------
 // POST /api/livrets — assemble le livret et renvoie le PDF généré
 // ------------------------------------------------------------------
 /**
- * Génère le PDF du livret et l'envoie par email. Fonction centrale, appelée
- * uniquement après confirmation réelle du paiement (webhook Stripe) — c'est
- * la seule façon dont un livret est produit et envoyé dans le service.
- * Retourne le buffer du PDF (utile pour du débogage local) et le résultat
- * de l'envoi d'email.
+ * Génère le PDF (livret complet ou devis, selon le mode) et l'envoie par
+ * email. Fonction centrale, appelée uniquement après confirmation réelle du
+ * paiement (webhook Stripe) — c'est la seule façon dont un livret est
+ * produit et envoyé dans le service. Retourne le buffer du PDF (utile pour
+ * du débogage local) et le résultat de l'envoi d'email.
  *
- * Mode "devis" : aucun PDF n'est généré ni joint — le couple n'a encore fait
- * aucun choix liturgique à ce stade, un aperçu n'aurait donc aucun sens. On
- * se contente de transmettre ses coordonnées par email pour qu'un tarif lui
- * soit proposé ; c'est seulement en repassant par "Je compose mon livret
- * maintenant" qu'un PDF est généré et joint.
+ * Mode "devis" : un PDF de devis (une page, prix détaillé) est généré à
+ * partir de la formule et des options choisies, puis joint à l'email —
+ * distinct du livret de cérémonie complet, qui n'a pas lieu d'être avant
+ * validation du devis par le couple.
  */
 async function genererEtEnvoyerLivret(reponse) {
   if (reponse.typeDemande === "devis") {
+    const { total, detail, formuleLabel } = calculerPrixDevis(reponse);
+
+    let browser;
+    let pdfBuffer = null;
+    try {
+      const html = genererDevisHTML(reponse, { total, detail, formuleLabel });
+      browser = await chromium.launch();
+      const page = await browser.newPage();
+      await page.setContent(html, { waitUntil: "networkidle" });
+      await Promise.race([
+        page.evaluate(() => document.fonts.ready),
+        new Promise((resolve) => setTimeout(resolve, 5000)),
+      ]);
+      pdfBuffer = await page.pdf({ format: "A4", printBackground: true, margin: { top: "0", bottom: "0", left: "0", right: "0" } });
+    } catch (err) {
+      // On ne bloque jamais l'envoi de la demande pour un souci de génération
+      // PDF : au pire, l'email part sans pièce jointe (email.js gère les deux
+      // cas), et tu peux recalculer le devis à la main à partir des infos
+      // transmises dans le corps du message.
+      console.error("Erreur lors de la génération du PDF de devis :", err.message);
+      pdfBuffer = null;
+    } finally {
+      if (browser) await browser.close();
+    }
+
+    const nomFichier = `devis_${reponse.epoux}_${reponse.epouse}`
+      .toLowerCase()
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9_]/g, "");
+
     const resultatEmail = await envoyerLivretParEmail({
       destinataire: process.env.OWNER_EMAIL,
       emailClientReference: reponse.email,
@@ -280,10 +470,13 @@ async function genererEtEnvoyerLivret(reponse) {
       dateMariage: reponse.date,
       heureMariage: reponse.heure,
       lieuMariage: reponse.lieu,
-      // Pas de pdfBuffer/nomFichier : email.js n'ajoute aucune pièce jointe
-      // dans ce cas et adapte le corps du message en conséquence.
+      formuleLabel,
+      prixTotal: total,
+      detailPrix: detail,
+      pdfBuffer,
+      nomFichier,
     });
-    return { pdfBuffer: null, nomFichier: null, resultatEmail };
+    return { pdfBuffer, nomFichier, resultatEmail };
   }
 
   let browser;

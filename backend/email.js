@@ -87,9 +87,9 @@ function envoyerEmailResend({ destinataire, sujet, corpsHtml, pieceJointe }) {
  * email, où tous les livrets générés atterrissent (fixe, indépendante de ce
  * qui est tapé dans le formulaire).
  */
-async function envoyerLivretParEmail({ destinataire, emailClientReference, telephoneClient, notesPersonnalisation, typeLivraison, typeDemande, couleur, couleurAutre, epoux, epouse, dateMariage, heureMariage, lieuMariage, pdfBuffer, nomFichier }) {
-  const libellesDemande = { devis: "Demande de tarif (coordonnées uniquement, aucun choix liturgique)", conception: "Conception complète (avec choix liturgiques détaillés)" };
-  const sujet = `${typeDemande === "devis" ? "Demande de tarif" : "Nouvelle demande de conception"} — ${epoux} & ${epouse}`;
+async function envoyerLivretParEmail({ destinataire, emailClientReference, telephoneClient, notesPersonnalisation, typeLivraison, typeDemande, couleur, couleurAutre, epoux, epouse, dateMariage, heureMariage, lieuMariage, pdfBuffer, nomFichier, formuleLabel, prixTotal, detailPrix }) {
+  const libellesDemande = { devis: "Demande de devis", conception: "Conception complète (avec choix liturgiques détaillés)" };
+  const sujet = `${typeDemande === "devis" ? "Nouveau devis" : "Nouvelle demande de conception"} — ${epoux} & ${epouse}`;
   const ligneTypeDemande = `<p><strong>Type de demande :</strong> ${libellesDemande[typeDemande] || "Non précisé"}</p>`;
   const ligneDate = dateMariage ? `<p><strong>Date du mariage :</strong> ${dateMariage}</p>` : "";
   const ligneHeure = heureMariage ? `<p><strong>Heure :</strong> ${heureMariage}</p>` : "";
@@ -113,9 +113,32 @@ async function envoyerLivretParEmail({ destinataire, emailClientReference, telep
   const ligneNotes = notesPersonnalisation && notesPersonnalisation.trim()
     ? `<p><strong>Notes de personnalisation transmises par le client :</strong><br>${notesPersonnalisation.trim().replace(/\n/g, "<br>")}</p>`
     : "";
+  const ligneFormule = formuleLabel ? `<p><strong>Formule choisie :</strong> ${formuleLabel}</p>` : "";
+  const ligneTotal = typeof prixTotal === "number" ? `<p><strong>Total estimé :</strong> ${prixTotal} €</p>` : "";
+  const ligneDetailPrix = detailPrix && detailPrix.length
+    ? `<p><strong>Détail :</strong><br>${detailPrix.map((d) => `${d.label} — ${d.prix} €`).join("<br>")}</p>`
+    : "";
 
-  // Corps de l'email : deux variantes selon qu'un PDF est joint ou non.
-  const corpsHtml = pdfBuffer
+  // Corps de l'email : trois variantes — devis (formule + prix + PDF de
+  // devis joint), conception complète (aperçu du livret joint), et un
+  // repli sans pièce jointe si jamais la génération PDF a échoué.
+  const corpsHtml = typeDemande === "devis"
+    ? `
+    <p>Une nouvelle <strong>demande de devis</strong> pour <strong>${epoux} &amp; ${epouse}</strong> vient d'être reçue.</p>
+    ${ligneTypeDemande}
+    ${ligneFormule}
+    ${ligneDate}${ligneHeure}${ligneLieu}
+    ${ligneClient}
+    ${ligneTelephone}
+    ${ligneTotal}
+    ${ligneDetailPrix}
+    ${ligneNotes}
+    <p>${pdfBuffer
+      ? "Le devis détaillé est joint en PDF — vérifiez-le puis transmettez-le au couple pour validation. Le lien de paiement est à envoyer séparément une fois le devis validé."
+      : "Le PDF du devis n'a malheureusement pas pu être généré automatiquement — vous pouvez recalculer le montant à partir du détail ci-dessus."}</p>
+    <p><em>— Livret2Mariage</em></p>
+  `
+    : pdfBuffer
     ? `
     <p>Une nouvelle demande pour <strong>${epoux} &amp; ${epouse}</strong> vient d'être reçue. Un aperçu (non final) a été généré automatiquement à partir des choix du client.</p>
     ${ligneTypeDemande}
