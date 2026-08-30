@@ -1196,20 +1196,20 @@ section.step h2{font-size:28px; font-style:italic; margin-bottom:4px;}
           <label class="custo-label">Livrets supplémentaires</label>
           <div class="format-row" data-name="option_livretsSupplementaires">
             <button type="button" class="format-btn active" data-value="aucun" data-prix-confort="0" data-prix-prestige="0">Aucun</button>
-            <button type="button" class="format-btn" data-value="plus5" data-prix-confort="15" data-prix-prestige="22">+5 livrets</button>
-            <button type="button" class="format-btn" data-value="plus10" data-prix-confort="25" data-prix-prestige="40">+10 livrets</button>
-            <button type="button" class="format-btn" data-value="plus20" data-prix-confort="45" data-prix-prestige="70">+20 livrets</button>
+            <button type="button" class="format-btn" data-value="plus5" data-prix-confort="15" data-prix-prestige="22">+5 livrets <span class="livrets-tarif"></span></button>
+            <button type="button" class="format-btn" data-value="plus10" data-prix-confort="25" data-prix-prestige="40">+10 livrets <span class="livrets-tarif"></span></button>
+            <button type="button" class="format-btn" data-value="plus20" data-prix-confort="45" data-prix-prestige="70">+20 livrets <span class="livrets-tarif"></span></button>
           </div>
           <p class="format-note" style="margin-top:6px;">Non proposé avec la formule Essentielle (sans impression physique).</p>
         </div>
 
         <div class="option-devis-card" id="optionColissimoCard">
-          <label class="custo-label">Envoi postal Colissimo suivi</label>
+          <label class="custo-label">Livraison des livrets imprimés</label>
           <div class="format-row" data-name="option_colissimo">
-            <button type="button" class="format-btn active" data-value="aucun" data-prix="0">Non</button>
-            <button type="button" class="format-btn" data-value="oui" data-prix="9">Oui — 9 €</button>
+            <button type="button" class="format-btn active" data-value="surplace" data-prix-confort="0" data-prix-prestige="0">Récupération sur place — gratuit</button>
+            <button type="button" class="format-btn" data-value="colissimo" data-prix-confort="9" data-prix-prestige="0">Envoi Colissimo suivi <span id="colissimoTarifLabel"></span></button>
           </div>
-          <p class="format-note" style="margin-top:6px;">Déjà inclus dans la formule Prestige.</p>
+          <p class="format-note" style="margin-top:6px;">La récupération se fait à mon adresse, à convenir ensemble. Avec la formule Prestige, l'envoi Colissimo est déjà inclus dans le prix.</p>
         </div>
 
         <div class="formule-total-box">

@@ -160,15 +160,31 @@ function ajusterOptionsSelonFormule() {
   const formule = formuleActive();
   const estEssentielle = formule === "essentielle";
 
-  ["optionMarquePageCard", "optionFeuilleChantCard", "optionRubanCard", "optionLivretsSupplementairesCard"].forEach((id) => {
+  // Les 5 options d'impression disparaissent toutes pour Essentielle (100%
+  // numérique). "Livraison des livrets" est en plus propre à Confort/Prestige
+  // uniquement (elle n'a de sens que là où des livrets sont réellement imprimés).
+  ["optionMarquePageCard", "optionFeuilleChantCard", "optionRubanCard", "optionLivretsSupplementairesCard", "optionColissimoCard"].forEach((id) => {
     const carte = document.getElementById(id);
     if (carte) carte.style.display = estEssentielle ? "none" : "";
   });
-  const carteColissimo = document.getElementById("optionColissimoCard");
-  if (carteColissimo) carteColissimo.style.display = formule === "confort" ? "" : "none";
 
   const noteIndisponible = document.getElementById("optionsIndisponiblesNote");
   if (noteIndisponible) noteIndisponible.style.display = estEssentielle ? "" : "none";
+
+  // Tarif du Colissimo affiché sur son bouton : +9 € pour Confort, déjà
+  // inclus (0 €) pour Prestige — la récupération sur place reste gratuite
+  // dans les deux cas.
+  const colissimoTarifLabel = document.getElementById("colissimoTarifLabel");
+  if (colissimoTarifLabel) colissimoTarifLabel.textContent = formule === "prestige" ? "(déjà inclus)" : "(+9 €)";
+
+  // Prix des livrets supplémentaires affiché sur chaque bouton (+5/+10/+20),
+  // propre à la formule choisie — Confort et Prestige n'ont pas le même tarif.
+  document.querySelectorAll("#optionLivretsSupplementairesCard .format-btn").forEach((btn) => {
+    const span = btn.querySelector(".livrets-tarif");
+    if (!span) return; // le bouton "Aucun" n'a pas de prix à afficher
+    const prix = btn.dataset[formule === "prestige" ? "prixPrestige" : "prixConfort"];
+    span.textContent = prix ? `— ${prix} €` : "";
+  });
 
   // Supplément A4 affiché sur le bouton, propre à la formule choisie.
   const supplementLabel = document.getElementById("formuleSupplementA4Label");
@@ -200,10 +216,11 @@ function recalculerTotalDevis() {
     if (btnLivrets) total += parseFloat(btnLivrets.dataset[formule === "prestige" ? "prixPrestige" : "prixConfort"] || "0");
   }
 
-  // "Colissimo" : uniquement pertinent pour Confort (déjà inclus en Prestige).
-  if (formule === "confort") {
+  // "Colissimo" : concerne Confort et Prestige (Prestige l'a déjà inclus,
+  // donc à prix 0 sur ce palier) — la récupération sur place reste gratuite.
+  if (formule !== "essentielle") {
     const btnColissimo = document.querySelector('[data-name="option_colissimo"] .format-btn.active');
-    if (btnColissimo) total += parseFloat(btnColissimo.dataset.prix || "0");
+    if (btnColissimo) total += parseFloat(btnColissimo.dataset[formule === "prestige" ? "prixPrestige" : "prixConfort"] || "0");
   }
 
   const valeur = document.getElementById("formuleTotalValeur");
