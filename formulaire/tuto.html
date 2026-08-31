@@ -44,7 +44,37 @@ body{margin:0;background:var(--cream);color:var(--ink);font-family:'Inter',sans-
 .main-tabs a:hover{border-color:var(--sage);}
 .main-tabs a.active{background:var(--sage-dark); border-color:var(--sage-dark); color:#fff;}
 h1{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:600;font-size:34px;margin:0 0 14px;}
-p.lead{color:var(--ink-soft);font-size:15px;margin-bottom:40px;max-width:52ch;}
+p.lead{color:var(--ink-soft);font-size:15px;margin-bottom:32px;max-width:52ch;}
+
+.guides-section{margin-bottom:36px;}
+.guides-title{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:600;font-size:22px;margin:0 0 4px;}
+.guides-sous-titre{color:var(--ink-soft);font-size:13.5px;margin:0 0 16px;max-width:56ch;}
+.guides-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media (max-width:560px){.guides-grid{grid-template-columns:1fr;}}
+.guide-card{
+  display:flex;
+  gap:14px;
+  align-items:flex-start;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:18px 18px;
+  text-decoration:none;
+  color:inherit;
+}
+.guide-card:hover{border-color:var(--gold);}
+.guide-icone{
+  flex:none;
+  width:38px;height:38px;
+  border-radius:9px;
+  background:var(--sage-pale);
+  color:var(--sage-dark);
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;font-weight:700;
+}
+.guide-texte h3{font-family:'Inter',sans-serif;font-size:14.5px;font-weight:600;margin:0 0 4px;color:var(--ink);}
+.guide-texte p{margin:0;color:var(--ink-soft);font-size:13px;}
+.guide-texte .telecharger{display:inline-block;margin-top:8px;color:var(--sage-dark);font-weight:600;font-size:12.5px;border-bottom:1px solid var(--sage-dark);}
 
 .parcours{
   background:var(--card);
@@ -114,6 +144,29 @@ p.lead{color:var(--ink-soft);font-size:15px;margin-bottom:40px;max-width:52ch;}
   </nav>
   <h1>Comment ça marche</h1>
   <p class="lead">Deux façons de commencer, selon où vous en êtes dans votre préparation — vous choisissez au tout début du formulaire.</p>
+
+  <div class="guides-section">
+    <h2 class="guides-title">Deux guides pour vous accompagner</h2>
+    <p class="guides-sous-titre">À lire avant ou pendant le formulaire, pour faire des choix sereins et sans surprise.</p>
+    <div class="guides-grid">
+      <a class="guide-card" href="/guide-comprendre-liturgie.pdf" target="_blank" rel="noopener">
+        <div class="guide-icone">✝</div>
+        <div class="guide-texte">
+          <h3>Comprendre la liturgie de votre mariage</h3>
+          <p>Le déroulé de la cérémonie et les choix à faire à chaque étape (lectures, prières, bénédictions).</p>
+          <span class="telecharger">Télécharger le PDF ↓</span>
+        </div>
+      </a>
+      <a class="guide-card" href="/guide-composer-livret.pdf" target="_blank" rel="noopener">
+        <div class="guide-icone">✎</div>
+        <div class="guide-texte">
+          <h3>Composer votre livret de mariage</h3>
+          <p>Un guide pas à pas pour remplir sereinement le formulaire, étape par étape.</p>
+          <span class="telecharger">Télécharger le PDF ↓</span>
+        </div>
+      </a>
+    </div>
+  </div>
 
   <div class="parcours">
     <div class="parcours-eyebrow">Option 1</div>
