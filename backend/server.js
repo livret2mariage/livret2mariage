@@ -84,6 +84,7 @@ const MIME = {
   ".css": "text/css; charset=utf-8",
   ".png": "image/png",
   ".json": "application/json; charset=utf-8",
+  ".pdf": "application/pdf",
 };
 
 /** Page HTML minimale de confirmation après paiement (succès ou annulation),
