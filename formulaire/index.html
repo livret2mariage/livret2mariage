@@ -22,22 +22,6 @@ src="https://www.facebook.com/tr?id=1058813200455736&ev=PageView&noscript=1"
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Livret2Mariage — Préparez votre livret de mariage</title>
-<meta name="description" content="Un livret de cérémonie de mariage unique, avec vos textes liturgiques choisis avec vous. Livré par email en PDF, prêt à imprimer. À partir de 39€.">
-
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://livret2mariage.onrender.com/">
-<meta property="og:title" content="Livret2Mariage — Votre livret de cérémonie sur-mesure">
-<meta property="og:description" content="Un livret de cérémonie de mariage unique, avec vos textes liturgiques choisis avec vous. Livré par email en PDF, prêt à imprimer. À partir de 39€.">
-<meta property="og:image" content="https://livret2mariage.onrender.com/og-image.jpg">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta property="og:locale" content="fr_FR">
-
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Livret2Mariage — Votre livret de cérémonie sur-mesure">
-<meta name="twitter:description" content="Un livret de cérémonie de mariage unique, avec vos textes liturgiques choisis avec vous. Livré par email en PDF, prêt à imprimer. À partir de 39€.">
-<meta name="twitter:image" content="https://livret2mariage.onrender.com/og-image.jpg">
-
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Parisienne&family=Alex+Brush&family=Great+Vibes&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -604,6 +588,21 @@ section.step h2{font-size:28px; font-style:italic; margin-bottom:4px;}
 .formule-total-box .label{font-family:'Inter',sans-serif; font-size:13.5px; color:var(--ink-soft); font-weight:600;}
 .formule-total-box .valeur{font-family:'Cormorant Garamond',serif; font-size:26px; font-weight:600; color:var(--gold);}
 .formule-total-note{font-size:12px; color:var(--ink-soft); font-style:italic; margin:0 0 4px;}
+.formule-payer-devis{
+  display:block;
+  text-align:center;
+  margin:14px 0 6px;
+  padding:13px 20px;
+  border-radius:100px;
+  font-size:14.5px;
+  font-weight:600;
+  font-family:'Inter',sans-serif;
+  text-decoration:none;
+  background:var(--sage-dark);
+  color:#fff;
+  transition:background .15s;
+}
+.formule-payer-devis:hover{background:var(--ink);}
 
 /* ---------- Badge de mode (visible pendant tout le parcours) ---------- */
 .mode-badge{
@@ -1232,7 +1231,8 @@ section.step h2{font-size:28px; font-style:italic; margin-bottom:4px;}
           <span class="label">Total estimé</span>
           <span class="valeur" id="formuleTotalValeur">39 €</span>
         </div>
-        <p class="formule-total-note">Ce montant sera confirmé dans le devis que nous vous enverrons par email.</p>
+        <a href="#" target="_blank" rel="noopener" class="formule-payer-devis" id="formulePayerBtn" style="display:none;">Payer maintenant</a>
+        <p class="formule-total-note" id="formuleTotalNote">Ce montant sera confirmé dans le devis que nous vous enverrons par email.</p>
 
         <div class="step-nav">
           <button type="button" class="btn-secondary step-prev">← Précédent</button>

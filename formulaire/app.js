@@ -164,6 +164,14 @@ const FORMULES_DEVIS = {
   prestige: { prix: 169, supplementA4: 10 },
 };
 
+// Liens de paiement Qonto — mêmes liens que sur /tarif, un par formule de
+// base (sans option). Utilisés uniquement quand la formule est prise seule.
+const LIENS_PAIEMENT_QONTO = {
+  essentielle: "https://pay.qonto.com/payment-links/01a08093-6298-71fb-a313-feead02b1041?resource_id=01a08093-6299-7dc3-94c6-88ddb9040f49",
+  confort: "https://pay.qonto.com/payment-links/01a08095-53b1-7a00-afb7-420250601824?resource_id=01a08095-53b2-75c7-8fa2-a90219c54805",
+  prestige: "https://pay.qonto.com/payment-links/01a08098-b6b3-784e-91f8-6896e06569be?resource_id=01a08098-b6b4-7462-b8a1-eee4964276df",
+};
+
 function formuleActive() {
   return document.querySelector("#formuleSwatches .choice-card.active")?.dataset.value || "essentielle";
 }
@@ -242,6 +250,25 @@ function recalculerTotalDevis() {
 
   const valeur = document.getElementById("formuleTotalValeur");
   if (valeur) valeur.textContent = `${total} €`;
+
+  // Bouton "Payer maintenant" : visible uniquement si la formule est prise
+  // seule, sans aucune option (total === prix de base, format A5). Dès
+  // qu'une option ou le format A4 est choisi, on revient au message "lien
+  // envoyé après devis" — cf. LIENS_PAIEMENT_QONTO ci-dessous.
+  const sansOption = total === infoFormule.prix && format === "A5";
+  const btnPayer = document.getElementById("formulePayerBtn");
+  const noteTotal = document.getElementById("formuleTotalNote");
+  if (btnPayer && noteTotal) {
+    if (sansOption && LIENS_PAIEMENT_QONTO[formule]) {
+      btnPayer.href = LIENS_PAIEMENT_QONTO[formule];
+      btnPayer.textContent = `Payer ${total} € maintenant`;
+      btnPayer.style.display = "block";
+      noteTotal.style.display = "none";
+    } else {
+      btnPayer.style.display = "none";
+      noteTotal.style.display = "";
+    }
+  }
 
   ajusterOptionsSelonFormule();
 }
