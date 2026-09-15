@@ -1383,6 +1383,13 @@ section.step h2{font-size:28px; font-style:italic; margin-bottom:4px;}
           <select data-choice="psaume" data-cat="psaumes" required></select>
           <div class="apercu" data-apercu="psaume"></div>
         </div>
+        <div class="field" id="psaumeAutreGroup" style="display:none;">
+          <label>Référence du psaume <span class="hint">(ex. « Psaume 33 »)</span></label>
+          <input type="text" id="psaumeAutreReference" name="psaumeAutreReference" placeholder="ex. Psaume 33">
+          <label style="margin-top:10px; display:block;">Texte du psaume <span class="hint">(refrain et couplets)</span></label>
+          <textarea id="psaumeAutreTexte" name="psaumeAutreTexte" class="paroles-textarea" placeholder="Collez ici le texte complet du psaume que vous souhaitez — une ligne vide entre chaque couplet."></textarea>
+          <p class="format-note" style="margin-top:6px;">Nous mettons ce texte en page dans le livret tel que vous l'aurez saisi.</p>
+        </div>
         <div class="field">
           <label>Lecteur <span class="hint">(optionnel)</span></label>
           <input type="text" data-lecteur="psaume" placeholder="Prénom du lecteur">

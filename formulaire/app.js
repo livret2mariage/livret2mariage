@@ -831,6 +831,33 @@ document.querySelectorAll("select[data-cat]").forEach((select) => {
   });
 });
 
+// ---------- 1bis. Option "Autre" pour le psaume ----------
+// Certains couples souhaitent un psaume différent de ceux proposés dans la
+// liste — plutôt que de les limiter, on leur permet de saisir eux-mêmes la
+// référence et le texte (refrain + couplets), repris tel quel dans le livret.
+(function ajouterOptionPsaumeAutre() {
+  const selectPsaume = document.querySelector('select[data-choice="psaume"]');
+  const groupe = document.getElementById("psaumeAutreGroup");
+  if (!selectPsaume || !groupe) return;
+
+  const optionAutre = document.createElement("option");
+  optionAutre.value = "autre";
+  optionAutre.textContent = "Autre — je propose mon propre psaume";
+  selectPsaume.appendChild(optionAutre);
+
+  const champReference = document.getElementById("psaumeAutreReference");
+  const champTexte = document.getElementById("psaumeAutreTexte");
+
+  selectPsaume.addEventListener("change", () => {
+    const estAutre = selectPsaume.value === "autre";
+    groupe.style.display = estAutre ? "block" : "none";
+    // Les champs ne sont obligatoires que lorsque "Autre" est choisi — sinon
+    // ils resteraient bloquants pour la validation même masqués et vides.
+    champReference?.toggleAttribute("required", estAutre);
+    champTexte?.toggleAttribute("required", estAutre);
+  });
+})();
+
 // ---------- 2. Prévisualisation live de la couverture ----------
 const prevEpoux = document.getElementById("prevEpoux");
 const prevEpouse = document.getElementById("prevEpouse");
@@ -1213,7 +1240,13 @@ function buildReponse() {
     telephone: val("#telephone"),
     choix: {
       lecture: { id: choiceVal("lecture"), lecteur: lecteurVal("lecture") },
-      psaume: { id: choiceVal("psaume"), lecteur: lecteurVal("psaume") },
+      psaume: {
+        id: choiceVal("psaume"),
+        lecteur: lecteurVal("psaume"),
+        ...(choiceVal("psaume") === "autre"
+          ? { referenceLibre: val("#psaumeAutreReference"), texteLibre: document.getElementById("psaumeAutreTexte")?.value.trim() || "" }
+          : {}),
+      },
       evangile: { id: choiceVal("evangile") },
       dialogueInitial: { id: choiceVal("dialogueInitial") },
       consentements: { id: choiceVal("consentements") },
