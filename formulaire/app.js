@@ -618,7 +618,7 @@ wizardGoTo(WIZARD_STEPS[0]);
 // header d'arriver directement à l'étape suivante, sans repasser par le
 // choix explicite de l'étape 1 (qui reste malgré tout modifiable ensuite via
 // le badge "Changer").
-(function appliquerModeDepuisUrl() {
+function appliquerModeDepuisUrl() {
   const modeUrl = new URLSearchParams(window.location.search).get("mode");
   if (modeUrl === "devis" || modeUrl === "conception") {
     const carte = document.querySelector(`#typeDemandeSwatches .choice-card[data-value="${modeUrl}"]`);
@@ -636,7 +636,10 @@ wizardGoTo(WIZARD_STEPS[0]);
   document.querySelectorAll("#mainTabs a[data-tab]").forEach((a) => {
     a.classList.toggle("active", a.dataset.tab === modeActif);
   });
-})();
+
+  return modeUrl === "devis" || modeUrl === "conception";
+}
+appliquerModeDepuisUrl();
 
 // ---------- 1. Remplissage des menus déroulants ----------
 
@@ -1171,6 +1174,11 @@ form.querySelectorAll("[data-name] button").forEach((btn) => {
 // Restauration silencieuse au chargement (pas de bandeau intrusif — comme le
 // ferait un traitement de texte classique en rouvrant un fichier).
 if (restaurerBrouillon()) {
+  // Le brouillon peut contenir un ancien choix "type_demande" (devis ou
+  // conception) datant d'une visite précédente sur ce navigateur — s'il y a
+  // un mode explicite dans l'URL actuelle (ex. lien "Composer mon livret
+  // seul" du menu), celui-ci doit toujours l'emporter sur le brouillon.
+  appliquerModeDepuisUrl();
   updatePreview();
   updateProgress();
   updateDevisRecap();
