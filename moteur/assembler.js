@@ -1,4 +1,4 @@
-const { esc, remplacePrenoms, paragraphes, versetsPsaume, chantHtml, capitaliseNom } = require("./utils");
+const { esc, remplacePrenoms, paragraphes, versetsPsaume, formatParoles, chantHtml, capitaliseNom } = require("./utils");
 
 /**
  * Retrouve un texte par catégorie + id. Si aucun id n'est fourni par le couple
@@ -49,7 +49,11 @@ function assembleLivret(reponse, base) {
   const accueil = trouve(base, "motsAccueil", choix.motAccueil?.id);
   const ouverture = trouve(base, "prieresOuverture", choix.priereOuverture?.id);
   const lecture = trouve(base, "lectures", choix.lecture?.id);
-  const psaume = trouve(base, "psaumes", choix.psaume?.id);
+  // "Autre" : le couple a saisi lui-même la référence et le texte du psaume
+  // (voir formulaire/index.html #psaumeAutreGroup) plutôt que de choisir dans
+  // la liste — on ne cherche alors rien dans data/textes.json.
+  const psaumeEstAutre = choix.psaume?.id === "autre";
+  const psaume = psaumeEstAutre ? null : trouve(base, "psaumes", choix.psaume?.id);
   const evangile = trouve(base, "evangiles", choix.evangile?.id);
   const dialogue = trouve(base, "dialoguesInitiaux", choix.dialogueInitial?.id);
   const invitation = trouve(base, "invitationsConsentement", choix.invitationConsentement?.id);
@@ -158,10 +162,15 @@ function assembleLivret(reponse, base) {
 <section class="page">
   <h3 class="titre-section">Le Psaume</h3>
   ${lecteurTag(choix.psaume?.lecteur)}
+  ${psaumeEstAutre ? `
+  ${choix.psaume?.referenceLibre ? `<p class="reference">${esc(choix.psaume.referenceLibre)}</p>` : ""}
+  ${formatParoles(choix.psaume?.texteLibre)}
+  ` : `
   <p class="reference">${esc(psaume.reference)}</p>
   <p class="reference-titre">${esc(psaume.titre)}</p>
   ${psaume.refrains.map((r, i) => `${i > 0 ? '<p class="refrain-alt">ou</p>' : ""}<p class="refrain">${esc(r)}</p>`).join("\n")}
   ${versetsPsaume(psaume.texte, epoux, epouse, "texte-liturgique verset-psaume")}
+  `}
 </section>
 
 <section class="page">
